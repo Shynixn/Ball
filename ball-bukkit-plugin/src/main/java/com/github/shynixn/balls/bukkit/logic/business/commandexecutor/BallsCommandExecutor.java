@@ -1,6 +1,10 @@
-package com.github.shynixn.balls.api.persistence.controller;
+package com.github.shynixn.balls.bukkit.logic.business.commandexecutor;
 
-import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.bukkit.logic.business.gui.GUI;
+import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by Shynixn 2017.
@@ -29,13 +33,29 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMetaController extends IController<BallMeta> {
+public class BallsCommandExecutor extends SimpleCommandExecutor.UnRegistered {
+
+    private final BallsManager ballsManager;
 
     /**
-     * Creates a new ballMeta wih the given skin.
+     * Initializes a new commandExecutor by using the given config configuration and plugin.
      *
-     * @param skin skin
-     * @return ballMeta
+     * @param plugin        plugin
+     * @throws Exception exception
      */
-    BallMeta create(String skin);
+    public BallsCommandExecutor(BallsManager ballsManager, Plugin plugin) throws Exception {
+        super(plugin.getConfig().get("balls"), (JavaPlugin) plugin);
+        this.ballsManager = ballsManager;
+    }
+
+    /**
+     * Can be overwritten to listen to player executed commands.
+     *
+     * @param player player
+     * @param args   args
+     */
+    @Override
+    public void onPlayerExecuteCommand(Player player, String[] args) {
+        new GUI(player, this.ballsManager);
+    }
 }

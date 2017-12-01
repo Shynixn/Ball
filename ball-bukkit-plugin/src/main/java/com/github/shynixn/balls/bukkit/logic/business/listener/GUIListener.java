@@ -1,6 +1,4 @@
-package com.github.shynixn.balls.api.persistence.controller;
-
-import com.github.shynixn.balls.api.persistence.BallMeta;
+package com.github.shynixn.balls.bukkit.logic.business.listener;
 
 /**
  * Created by Shynixn 2017.
@@ -29,13 +27,5 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMetaController extends IController<BallMeta> {
-
-    /**
-     * Creates a new ballMeta wih the given skin.
-     *
-     * @param skin skin
-     * @return ballMeta
-     */
-    BallMeta create(String skin);
+public class GUIListener {
 }

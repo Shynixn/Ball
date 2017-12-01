@@ -2,6 +2,7 @@ package com.github.shynixn.balls.bukkit.core.logic.persistence.controller;
 
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
 import org.bukkit.plugin.Plugin;
 
 import java.io.Closeable;
@@ -37,30 +38,7 @@ import java.util.List;
  */
 public class BallDataRepository implements BallMetaController {
 
-    private List<BallMeta> items = new ArrayList<BallMeta>();
-    private Plugin plugin;
-
-    public BallDataRepository(Plugin plugin) {
-        this.plugin = plugin;
-    }
-
-    /**
-     * Reloads the content from the fileSystem.
-     */
-    public void reload() {
-
-
-        final Map<String, Object> data = ((MemorySection) this.plugin.getConfig().get("wardrobe." + this.costumeCategory)).getValues(false);
-        for (final String key : data.keySet()) {
-            try {
-                final GUIItemContainer container = new ItemContainer(Integer.parseInt(key), ((MemorySection) data.get(key)).getValues(true));
-                this.items.add(container);
-            } catch (final Exception e) {
-                PetBlocksPlugin.logger().log(Level.WARNING, "Failed to load guiItem " + this.costumeCategory + '.' + key + '.');
-            }
-        }
-    }
-
+    private final List<BallMeta> items = new ArrayList<>();
 
     /**
      * Creates a new ballMeta wih the given skin.
@@ -68,8 +46,9 @@ public class BallDataRepository implements BallMetaController {
      * @param skin skin
      * @return ballMeta
      */
+    @Override
     public BallMeta create(String skin) {
-        return null;
+        return new BallData(skin);
     }
 
     /**
@@ -77,8 +56,13 @@ public class BallDataRepository implements BallMetaController {
      *
      * @param item item
      */
+    @Override
     public void store(BallMeta item) {
-
+        if (item == null)
+            throw new IllegalArgumentException("Item cannot be null!");
+        if (!this.items.contains(item)) {
+            this.items.add(item);
+        }
     }
 
     /**
@@ -86,8 +70,13 @@ public class BallDataRepository implements BallMetaController {
      *
      * @param item item
      */
+    @Override
     public void remove(BallMeta item) {
-
+        if (item == null)
+            throw new IllegalArgumentException("Item cannot be null!");
+        if (this.items.contains(item)) {
+            this.items.remove(item);
+        }
     }
 
     /**
@@ -95,8 +84,17 @@ public class BallDataRepository implements BallMetaController {
      *
      * @return size
      */
+    @Override
     public int size() {
-        return 0;
+        return this.items.size();
+    }
+
+    /**
+     * Clears all items in the repository.
+     */
+    @Override
+    public void clear() {
+        this.items.clear();
     }
 
     /**
@@ -104,8 +102,9 @@ public class BallDataRepository implements BallMetaController {
      *
      * @return items
      */
+    @Override
     public List<BallMeta> getAll() {
-        return null;
+        return this.items;
     }
 
     /**
@@ -153,7 +152,8 @@ public class BallDataRepository implements BallMetaController {
      *
      * @throws Exception if this resource cannot be closed
      */
+    @Override
     public void close() throws Exception {
-
+        this.items.clear();
     }
 }

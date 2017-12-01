@@ -1,6 +1,6 @@
-package com.github.shynixn.balls.api.persistence.controller;
+package com.github.shynixn.balls.bukkit.logic.persistence.configuration;
 
-import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.bukkit.logic.persistence.controller.FixedItemConfiguration;
 
 /**
  * Created by Shynixn 2017.
@@ -29,13 +29,39 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMetaController extends IController<BallMeta> {
+public class Config extends SimpleConfig {
+    private static final Config instance = new Config();
+    private FixedItemConfiguration fixedItemConfiguration;
 
-    /**
-     * Creates a new ballMeta wih the given skin.
-     *
-     * @param skin skin
-     * @return ballMeta
-     */
-    BallMeta create(String skin);
+    private Config() {
+        super();
+    }
+
+    public static Config getInstance() {
+        return instance;
+    }
+
+    public FixedItemConfiguration getGUIItemsController() {
+        if (this.fixedItemConfiguration == null) {
+            this.fixedItemConfiguration = new FixedItemConfiguration(this.plugin);
+            this.fixedItemConfiguration.reload();
+        }
+        return this.fixedItemConfiguration;
+    }
+
+    public String getGUITitle() {
+        return this.getData("messages.gui-title");
+    }
+
+    public String getPrefix() {
+        return this.getData("messages.prefix");
+    }
+
+    public String getPermissionIconYes() {
+        return this.getData("messages.perms-ico-yes");
+    }
+
+    public String getPermissionIconNo() {
+        return this.getData("messages.perms-ico-no");
+    }
 }

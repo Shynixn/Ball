@@ -1,6 +1,6 @@
-package com.github.shynixn.balls.api.persistence.controller;
+package com.github.shynixn.balls.bukkit.logic.business;
 
-import com.github.shynixn.balls.api.persistence.BallMeta;
+import org.bukkit.entity.Player;
 
 /**
  * Created by Shynixn 2017.
@@ -29,13 +29,33 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMetaController extends IController<BallMeta> {
+public enum Permission{
+
+    ALLGUIBALLS("balls.gui.balls.all"),
+    SINGLEGUIBALL("balls.gui.balls.")
+    ;
+
+    private final String perm;
 
     /**
-     * Creates a new ballMeta wih the given skin.
+     * Initializes a new permission.
      *
-     * @param skin skin
-     * @return ballMeta
+     * @param perm permission
      */
-    BallMeta create(String skin);
+    Permission(String perm) {
+        this.perm = perm;
+    }
+
+    /**
+     * Returns the permission string.
+     *
+     * @return permission
+     */
+    public String get() {
+        return this.perm;
+    }
+
+    public boolean hasPermission(Player player) {
+        return player.hasPermission(this.perm);
+    }
 }

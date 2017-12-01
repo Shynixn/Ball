@@ -1,15 +1,20 @@
-package com.github.shynixn.balls.api.persistence.controller;
+package com.github.shynixn.balls.bukkit.logic.persistence.configuration;
 
-import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.bukkit.BallsPlugin;
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * Created by Shynixn 2017.
+ * Copyright 2017 Shynixn
  * <p>
- * Version 1.1
+ * Do not remove this header!
+ * <p>
+ * Version 1.0
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2017
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,13 +34,30 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMetaController extends IController<BallMeta> {
+public class SimpleConfig {
+    Plugin plugin;
 
     /**
-     * Creates a new ballMeta wih the given skin.
-     *
-     * @param skin skin
-     * @return ballMeta
+     * Reloads the config
      */
-    BallMeta create(String skin);
+    public void reload() {
+        this.plugin = JavaPlugin.getPlugin(BallsPlugin.class);
+        this.plugin.reloadConfig();
+    }
+
+    /**
+     * Returns data
+     *
+     * @param path path
+     * @return data
+     */
+    <T> T getData(String path) {
+        if(this.plugin == null)
+            return null;
+        Object data = this.plugin.getConfig().get(path);
+        if (data instanceof String) {
+            data = ChatColor.translateAlternateColorCodes('&', (String) data);
+        }
+        return (T) data;
+    }
 }

@@ -5,6 +5,7 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.BallModifiers;
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.api.persistence.controller.IController;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BounceObjectController;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.io.Serializable;
@@ -40,19 +41,23 @@ import java.util.Map;
  */
 public class BallData implements BallMeta, ConfigurationSerializable {
 
-
     private String skin;
 
     private boolean carryAble;
     private boolean rotating = true;
 
+    private IController<BounceObject> bounceObjectIController;
 
-    public BallData(Map<String, Object> data)
-    {
-
+    public BallData(Map<String, Object> data, IController<BounceObject> bounceObjectIController) {
+        this.skin = (String) data.get("skin");
+        this.carryAble = (boolean) data.get("carry-able");
+        this.rotating = (boolean) data.get("rotating");
+        this.bounceObjectIController = bounceObjectIController;
     }
 
-    public BallData() {
+    public BallData(String skin) {
+        this.skin = skin;
+        this.bounceObjectIController = new BounceObjectController();
     }
 
     /**
@@ -132,7 +137,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
      */
     @Override
     public void setSkin(String skin) {
-        if(skin == null)
+        if (skin == null)
             throw new IllegalArgumentException("Skin cannot be null!");
         this.skin = skin;
     }
@@ -149,9 +154,11 @@ public class BallData implements BallMeta, ConfigurationSerializable {
 
     @Override
     public Map<String, Object> serialize() {
-        Map<String, Object> data = new LinkedHashMap<>();
+        final Map<String, Object> data = new LinkedHashMap<>();
         data.put("skin", this.getSkin());
-
-        return null;
+        data.put("carry-able", this.isCarryable());
+        data.put("rotating", this.isRotatingEnabled());
+        data.put("wall-bouncing", ((BounceObjectController) this.bounceObjectIController).serialize());
+        return data;
     }
 }

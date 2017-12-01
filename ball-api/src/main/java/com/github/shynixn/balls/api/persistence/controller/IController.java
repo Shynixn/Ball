@@ -52,6 +52,11 @@ public interface IController<T> extends AutoCloseable {
     int size();
 
     /**
+     * Clears all items in the repository.
+     */
+    void clear();
+
+    /**
      * Returns all items from the repository as unmodifiableList.
      *
      * @return items

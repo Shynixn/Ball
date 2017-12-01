@@ -1,12 +1,19 @@
-package com.github.shynixn.balls.bukkit.core.logic.persistence.controller;
+package com.github.shynixn.balls.bukkit.logic.persistence.controller;
 
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.api.persistence.controller.IController;
+import com.github.shynixn.balls.api.persistence.controller.IFileController;
+import com.github.shynixn.balls.bukkit.BallsPlugin;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BounceInfo;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.Closeable;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Created by Shynixn 2017.
@@ -35,9 +42,34 @@ import java.util.*;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BounceObjectController implements IController<BounceObject>, ConfigurationSerializable {
+public class BounceInfoFileRepository implements IFileController<BounceObject> {
 
-    private final List<BounceObject> bounceObjects = new ArrayList<>();
+    private final IController<BounceObject> controller;
+    private String key;
+
+    public BounceInfoFileRepository(String key, IController<BounceObject> controller) {
+        this.controller = controller;
+        this.key = key;
+    }
+
+    /**
+     * Reloads the content from the fileSystem.
+     */
+    @Override
+    public void reload() {
+        final Plugin plugin = JavaPlugin.getPlugin(BallsPlugin.class);
+        this.controller.clear();
+        Config.getInstance().reload();
+        final Map<String, Object> data = ((MemorySection) plugin.getConfig().get(this.key)).getValues(false);
+        for (final String key : data.keySet()) {
+            final Map<String, Object> content = ((MemorySection) plugin.getConfig().get(this.key + "." + key)).getValues(true);
+            try {
+                this.store(new BounceInfo(content));
+            } catch (final Exception e) {
+                BallsPlugin.logger().log(Level.WARNING, "Failed to add content " + key + '.', e);
+            }
+        }
+    }
 
     /**
      * Stores a new a item in the repository.
@@ -46,11 +78,7 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public void store(BounceObject item) {
-        if (item == null)
-            throw new IllegalArgumentException("Item cannot be null!");
-        if (!this.bounceObjects.contains(item)) {
-            this.bounceObjects.add(item);
-        }
+        this.controller.store(item);
     }
 
     /**
@@ -60,11 +88,7 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public void remove(BounceObject item) {
-        if (item == null)
-            throw new IllegalArgumentException("Item cannot be null!");
-        if (this.bounceObjects.contains(item)) {
-            this.bounceObjects.remove(item);
-        }
+        this.controller.remove(item);
     }
 
     /**
@@ -74,7 +98,7 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public int size() {
-        return this.bounceObjects.size();
+        return this.controller.size();
     }
 
     /**
@@ -82,7 +106,7 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public void clear() {
-        this.bounceObjects.clear();
+        this.controller.clear();
     }
 
     /**
@@ -92,19 +116,7 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public List<BounceObject> getAll() {
-        return Collections.unmodifiableList(this.bounceObjects);
-    }
-
-    @Override
-    public Map<String, Object> serialize() {
-        final Map<String, Object> data = new LinkedHashMap<>();
-        final List<BounceObject> list = this.getAll();
-        for (int i = 0; i < list.size(); i++) {
-            final BounceInfo bounceInfo = (BounceInfo) list.get(i);
-            data.put(String.valueOf(i + 1), bounceInfo.serialize());
-            list.add(bounceInfo);
-        }
-        return data;
+        return this.controller.getAll();
     }
 
     /**
@@ -154,6 +166,6 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public void close() throws Exception {
-        this.bounceObjects.clear();
+        this.controller.close();
     }
 }

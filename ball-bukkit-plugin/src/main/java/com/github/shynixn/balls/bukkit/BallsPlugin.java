@@ -1,6 +1,9 @@
-package com.github.shynixn.balls.api.persistence.controller;
+package com.github.shynixn.balls.bukkit;
 
-import com.github.shynixn.balls.api.persistence.BallMeta;
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.logging.Logger;
 
 /**
  * Created by Shynixn 2017.
@@ -29,13 +32,25 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMetaController extends IController<BallMeta> {
+public class BallsPlugin extends JavaPlugin {
+    public static final String PREFIX_CONSOLE = ChatColor.YELLOW + "[Balls] ";
+    private static final long SPIGOT_RESOURCEID = 12056;
+    private static final String PLUGIN_NAME = "Balls";
+    private static Logger logger;
+    private boolean disabled;
 
-    /**
-     * Creates a new ballMeta wih the given skin.
-     *
-     * @param skin skin
-     * @return ballMeta
-     */
-    BallMeta create(String skin);
+    @Override
+    public void onEnable() {
+        this.saveDefaultConfig();
+
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
+    }
+
+    public static Logger logger(){
+        return logger;
+    }
 }

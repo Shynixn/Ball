@@ -119,14 +119,8 @@ public class BounceInfo implements BounceObject, ConfigurationSerializable {
     @Override
     public void setBounceModifier(double strength) {
         this.modifier = strength;
-
     }
 
-    /**
-     * Serializes this object.
-     *
-     * @return serializedContent
-     */
     @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> data = new LinkedHashMap<>();

@@ -1,12 +1,21 @@
-package com.github.shynixn.balls.bukkit.core.logic.persistence.controller;
+package com.github.shynixn.balls.bukkit.logic.persistence.controller;
 
-import com.github.shynixn.balls.api.persistence.BounceObject;
-import com.github.shynixn.balls.api.persistence.controller.IController;
-import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BounceInfo;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
+import com.github.shynixn.balls.api.persistence.controller.IFileController;
+import com.github.shynixn.balls.bukkit.BallsPlugin;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BounceObjectController;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
+import com.github.shynixn.balls.bukkit.logic.persistence.entity.ItemContainer;
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.plugin.Plugin;
 
 import java.io.Closeable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Created by Shynixn 2017.
@@ -35,9 +44,44 @@ import java.util.*;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BounceObjectController implements IController<BounceObject>, ConfigurationSerializable {
+public class BallDataFileRepository implements IFileController<ItemContainer> {
 
-    private final List<BounceObject> bounceObjects = new ArrayList<>();
+    private final Map<ItemContainer, BallMeta> items = new HashMap<>();
+    private final Plugin plugin;
+
+    public BallDataFileRepository(Plugin plugin) {
+        this.plugin = plugin;
+    }
+
+    /**
+     * Reloads the content from the fileSystem.
+     */
+    @Override
+    public void reload() {
+        this.clear();
+        final Map<String, Object> data = ((MemorySection) this.plugin.getConfig().get("meta")).getValues(false);
+        for (final String key : data.keySet()) {
+            try {
+                final BounceInfoFileRepository fileRepository = new BounceInfoFileRepository(key + ".wall-bouncing", new BounceObjectController());
+                fileRepository.reload();
+                final ItemContainer container = new ItemContainer(Integer.parseInt(key), ((MemorySection) data.get(key + ".gui")).getValues(true));
+                final BallMeta ballMeta = new BallData(((MemorySection) data.get(key + ".ball")).getValues(true), fileRepository);
+                this.items.put(container, ballMeta);
+            } catch (final Exception e) {
+                BallsPlugin.logger().log(Level.WARNING, "Failed to load guiItem " + key + '.');
+            }
+        }
+    }
+
+    public ItemContainer getContainerFromPosition(int position)
+    {
+
+    }
+
+    public BallMeta getBallMetaFromContainer(ItemContainer itemContainer)
+    {
+
+    }
 
     /**
      * Stores a new a item in the repository.
@@ -45,12 +89,8 @@ public class BounceObjectController implements IController<BounceObject>, Config
      * @param item item
      */
     @Override
-    public void store(BounceObject item) {
-        if (item == null)
-            throw new IllegalArgumentException("Item cannot be null!");
-        if (!this.bounceObjects.contains(item)) {
-            this.bounceObjects.add(item);
-        }
+    public void store(ItemContainer item) {
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -59,12 +99,8 @@ public class BounceObjectController implements IController<BounceObject>, Config
      * @param item item
      */
     @Override
-    public void remove(BounceObject item) {
-        if (item == null)
-            throw new IllegalArgumentException("Item cannot be null!");
-        if (this.bounceObjects.contains(item)) {
-            this.bounceObjects.remove(item);
-        }
+    public void remove(ItemContainer item) {
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -74,7 +110,7 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public int size() {
-        return this.bounceObjects.size();
+        return this.items.size();
     }
 
     /**
@@ -82,7 +118,7 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public void clear() {
-        this.bounceObjects.clear();
+        this.items.clear();
     }
 
     /**
@@ -91,20 +127,8 @@ public class BounceObjectController implements IController<BounceObject>, Config
      * @return items
      */
     @Override
-    public List<BounceObject> getAll() {
-        return Collections.unmodifiableList(this.bounceObjects);
-    }
-
-    @Override
-    public Map<String, Object> serialize() {
-        final Map<String, Object> data = new LinkedHashMap<>();
-        final List<BounceObject> list = this.getAll();
-        for (int i = 0; i < list.size(); i++) {
-            final BounceInfo bounceInfo = (BounceInfo) list.get(i);
-            data.put(String.valueOf(i + 1), bounceInfo.serialize());
-            list.add(bounceInfo);
-        }
-        return data;
+    public List<ItemContainer> getAll() {
+        return Arrays.asList(this.items.keySet().toArray(new ItemContainer[this.size()]));
     }
 
     /**
@@ -154,6 +178,6 @@ public class BounceObjectController implements IController<BounceObject>, Config
      */
     @Override
     public void close() throws Exception {
-        this.bounceObjects.clear();
+        this.items.clear();
     }
 }

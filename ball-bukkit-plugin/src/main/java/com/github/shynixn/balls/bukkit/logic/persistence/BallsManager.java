@@ -1,6 +1,6 @@
-package com.github.shynixn.balls.api.persistence.controller;
+package com.github.shynixn.balls.bukkit.logic.persistence;
 
-import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.bukkit.logic.persistence.controller.BallDataFileRepository;
 
 /**
  * Created by Shynixn 2017.
@@ -29,13 +29,12 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMetaController extends IController<BallMeta> {
+public class BallsManager {
 
-    /**
-     * Creates a new ballMeta wih the given skin.
-     *
-     * @param skin skin
-     * @return ballMeta
-     */
-    BallMeta create(String skin);
+
+    public BallDataFileRepository getGUIBallMetaController()
+    {
+
+    }
+
 }
