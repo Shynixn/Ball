@@ -1,0 +1,10 @@
+name: Balls
+version: 1.0
+author: Shynixn
+main: com.github.shynixn.petblocks.bukkit.PetBlocksPlugin
+commands:
+   balls:
+      description: Reloads the petblock config and lang file.
+      usage: /<command>
+      permission: petblocks.reload
+      permission-message: You don't have permission.

@@ -1,9 +1,9 @@
 package com.github.shynixn.balls.api.persistence.controller;
 
-import java.util.List;
+import com.github.shynixn.balls.api.persistence.BallMeta;
 
 /**
- * Controller interface.
+ * Created by Shynixn 2017.
  * <p>
  * Version 1.1
  * <p>
@@ -29,32 +29,13 @@ import java.util.List;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface IController<T> extends AutoCloseable {
-    /**
-     * Stores a new a item in the repository.
-     *
-     * @param item item
-     */
-    void store(T item);
+public interface BallMetaController extends IFileController<BallMeta> {
 
     /**
-     * Removes an item from the repository.
+     * Creates a new ballMeta wih the given skin.
      *
-     * @param item item
+     * @param skin skin
+     * @return ballMeta
      */
-    void remove(T item);
-
-    /**
-     * Returns the amount of items in the repository.
-     *
-     * @return size
-     */
-    int size();
-
-    /**
-     * Returns all items from the repository as unmodifiableList.
-     *
-     * @return items
-     */
-    List<T> getAll();
+    BallMeta create(String skin);
 }
