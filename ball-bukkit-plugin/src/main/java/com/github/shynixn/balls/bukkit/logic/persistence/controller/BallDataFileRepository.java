@@ -73,14 +73,19 @@ public class BallDataFileRepository implements IFileController<ItemContainer> {
         }
     }
 
-    public ItemContainer getContainerFromPosition(int position)
-    {
-
+    public ItemContainer getContainerFromPosition(int position) {
+        for (final ItemContainer itemContainer : this.items.keySet()) {
+            if (itemContainer.getPosition() == position) {
+                return itemContainer;
+            }
+        }
+        return null;
     }
 
-    public BallMeta getBallMetaFromContainer(ItemContainer itemContainer)
-    {
-
+    public BallMeta getBallMetaFromContainer(ItemContainer itemContainer) {
+        if(this.items.containsKey(itemContainer))
+            return this.items.get(itemContainer);
+        return null;
     }
 
     /**

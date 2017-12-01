@@ -1,4 +1,6 @@
-package com.github.shynixn.balls.bukkit.core;
+package com.github.shynixn.balls.bukkit.core.logic.business;
+
+import com.github.shynixn.balls.api.business.Ball;
 
 /**
  * Created by Shynixn 2017.
@@ -27,5 +29,10 @@ package com.github.shynixn.balls.bukkit.core;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class s {
+public class BallDecorator implements Ball{
+
+
+
+
+
 }

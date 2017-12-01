@@ -70,17 +70,17 @@ public class GUI implements InventoryHolder, AutoCloseable {
         final Inventory inventory = Bukkit.createInventory(this, 54, Config.getInstance().getGUITitle());
         this.player.openInventory(inventory);
         final List<ItemContainer> metas = this.ballsManager.getGUIBallMetaController().getAll();
-        this.setItems(metas, 1, "balls.gui.balls");
+        this.setItems(metas, 1, Permission.SINGLEGUIBALL.get());
         return inventory;
     }
 
     public void click(ItemStack clickedItem, int slot) throws Exception {
         if (Config.getInstance().getGUIItemsController().isGUIItem(clickedItem, "next-page")) {
             final List<ItemContainer> metas = this.ballsManager.getGUIBallMetaController().getAll();
-            this.setItems(metas, 1, "balls.gui.balls");
+            this.setItems(metas, 1, Permission.SINGLEGUIBALL.get());
         } else if (Config.getInstance().getGUIItemsController().isGUIItem(clickedItem, "previous-page")) {
             final List<ItemContainer> metas = this.ballsManager.getGUIBallMetaController().getAll();
-            this.setItems(metas, 2, "balls.gui.balls");
+            this.setItems(metas, 2,Permission.SINGLEGUIBALL.get());
         } else if (slot < 45) {
             if (Permission.ALLGUIBALLS.hasPermission(this.player) || this.player.hasPermission(Permission.SINGLEGUIBALL.get() + slot)) {
                 final ItemContainer itemContainer = this.ballsManager.getGUIBallMetaController().getContainerFromPosition(slot);

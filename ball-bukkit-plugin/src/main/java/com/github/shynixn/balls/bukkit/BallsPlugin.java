@@ -1,8 +1,13 @@
 package com.github.shynixn.balls.bukkit;
 
+import com.github.shynixn.balls.bukkit.core.nms.VersionSupport;
+import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
+import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -34,23 +39,43 @@ import java.util.logging.Logger;
  */
 public class BallsPlugin extends JavaPlugin {
     public static final String PREFIX_CONSOLE = ChatColor.YELLOW + "[Balls] ";
-    private static final long SPIGOT_RESOURCEID = 12056;
     private static final String PLUGIN_NAME = "Balls";
     private static Logger logger;
     private boolean disabled;
 
+    private BallsManager ballsManager;
+
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
+        logger = this.getLogger();
+        if (!VersionSupport.isServerVersionSupported(PLUGIN_NAME, PREFIX_CONSOLE)) {
+            this.disabled = true;
+            Bukkit.getPluginManager().disablePlugin(this);
+        } else {
+            Bukkit.getServer().getConsoleSender().sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Loading Balls ...");
+            Config.getInstance().reload();
+            try {
+                this.ballsManager = new BallsManager(this);
+            } catch (final Exception e) {
+                logger().log(Level.WARNING, "Failed to enable plugin.", e);
+            }
+        }
 
     }
 
     @Override
     public void onDisable() {
-        super.onDisable();
+        if (this.disabled)
+            return;
+        try {
+            this.ballsManager.close();
+        } catch (final Exception e) {
+            logger().log(Level.WARNING, "Failed to close resources.", e);
+        }
     }
 
-    public static Logger logger(){
+    public static Logger logger() {
         return logger;
     }
 }

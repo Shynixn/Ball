@@ -41,10 +41,18 @@ public class Config extends SimpleConfig {
         return instance;
     }
 
+    /**
+     * Reloads the config
+     */
+    @Override
+    public void reload() {
+        super.reload();
+        this.getGUIItemsController().reload();
+    }
+
     public FixedItemConfiguration getGUIItemsController() {
         if (this.fixedItemConfiguration == null) {
             this.fixedItemConfiguration = new FixedItemConfiguration(this.plugin);
-            this.fixedItemConfiguration.reload();
         }
         return this.fixedItemConfiguration;
     }
