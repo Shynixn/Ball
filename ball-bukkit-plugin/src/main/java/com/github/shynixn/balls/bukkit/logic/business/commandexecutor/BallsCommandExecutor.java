@@ -46,6 +46,7 @@ public class BallsCommandExecutor extends SimpleCommandExecutor.UnRegistered {
     public BallsCommandExecutor(BallsManager ballsManager, Plugin plugin) throws Exception {
         super(plugin.getConfig().get("balls"), (JavaPlugin) plugin);
         this.ballsManager = ballsManager;
+        System.out.println("REGISTED");
     }
 
     /**

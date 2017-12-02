@@ -2,8 +2,8 @@ package com.github.shynixn.balls.bukkit.logic.persistence.entity;
 
 import com.github.shynixn.balls.bukkit.BallsPlugin;
 import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
-import com.github.shynixn.balls.bukkit.logic.business.helper.NBTTagHelper;
-import com.github.shynixn.balls.bukkit.logic.business.helper.SkinHelper;
+import com.github.shynixn.balls.bukkit.core.logic.business.helper.NBTTagHelper;
+import com.github.shynixn.balls.bukkit.core.logic.business.helper.SkinHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

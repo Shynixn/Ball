@@ -1,4 +1,8 @@
-package com.github.shynixn.balls.api.business;
+package com.github.shynixn.balls.api.business.controller;
+
+import com.github.shynixn.balls.api.business.entity.Ball;
+import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.api.persistence.controller.IController;
 
 /**
  * Created by Shynixn 2017.
@@ -27,5 +31,16 @@ package com.github.shynixn.balls.api.business;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class s {
+public interface BallController extends IController<Ball> {
+
+    /**
+     * Creates a new ball from the given parameters.
+     *
+     * @param location   location
+     * @param ballMeta   ballMeta
+     * @param persistent persistent for restarts
+     * @param owner      entityOwner
+     * @return ball
+     */
+    Ball create(Object location, BallMeta ballMeta, boolean persistent, Object owner);
 }

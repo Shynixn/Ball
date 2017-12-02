@@ -1,9 +1,6 @@
-package com.github.shynixn.balls.bukkit.logic.business.helper;
+package com.github.shynixn.balls.bukkit.core.logic.business.helper;
 
-import com.github.shynixn.balls.bukkit.BallsPlugin;
-import net.minecraft.server.v1_8_R1.NBTTagCompound;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_10_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.InvocationTargetException;
@@ -70,7 +67,7 @@ public class NBTTagHelper {
                 setNBTTag.invoke(nmsItemStack, nbtTag);
             }
         } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
-            BallsPlugin.logger().log(Level.WARNING, "Failed to set nbt tag.", e);
+            Bukkit.getLogger().log(Level.WARNING, "Failed to set nbt tag.", e);
         }
     }
 

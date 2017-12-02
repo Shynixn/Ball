@@ -1,4 +1,4 @@
-package com.github.shynixn.balls.api.business;
+package com.github.shynixn.balls.api.bukkit.event;
 
 /**
  * Created by Shynixn 2017.
@@ -27,9 +27,5 @@ package com.github.shynixn.balls.api.business;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface Ball {
-
-
-
-
+public class BallMoveEvent {
 }

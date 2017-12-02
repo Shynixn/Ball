@@ -1,7 +1,9 @@
 package com.github.shynixn.balls.api;
 
-import com.github.shynixn.balls.api.business.Ball;
+import com.github.shynixn.balls.api.business.controller.BallController;
+import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
 
 /**
  * Created by Shynixn 2017.
@@ -32,9 +34,16 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  */
 public class BallsApi {
 
+    private static BallController ballController;
+    private static BallMetaController ballMetaController;
 
-    public static BallMeta create(String skin) {
-
+    /**
+     * Returns the controller for meta managing.
+     *
+     * @return controller
+     */
+    public static BallMetaController getBallMetaController() {
+        return ballMetaController;
     }
 
     /**
@@ -47,7 +56,11 @@ public class BallsApi {
     public static Ball spawnBall(Object location, BallMeta ballMeta) {
         if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
-        return null;
+        if (ballMeta == null)
+            throw new IllegalArgumentException("BallMeta cannot be null!");
+        final Ball ball = ballController.create(location, ballMeta, true, null);
+        ballController.store(ball);
+        return ball;
     }
 
     /**
@@ -58,20 +71,34 @@ public class BallsApi {
      * @return ball
      */
     public static Ball spawnTemporaryBall(Object location, BallMeta ballMeta) {
-
+        if (location == null)
+            throw new IllegalArgumentException("Location cannot be null!");
+        if (ballMeta == null)
+            throw new IllegalArgumentException("BallMeta cannot be null!");
+        final Ball ball = ballController.create(location, ballMeta, false, null);
+        ballController.store(ball);
+        return ball;
     }
 
     /**
      * Creates a new managed ball which spawns at the given location and despawns automatically
      * when the owner of the ball is over 50 blocks away, left the server or changes worlds.
      *
-     * @param location
-     * @param player
-     * @param ballMeta
+     * @param location location
+     * @param entity   entity
+     * @param ballMeta meta
      * @return
      */
-    public static Ball spawnPlayerBall(Object location, Object player, BallMeta ballMeta) {
-
+    public static Ball spawnPlayerBall(Object location, Object entity, BallMeta ballMeta) {
+        if (location == null)
+            throw new IllegalArgumentException("Location cannot be null!");
+        if (ballMeta == null)
+            throw new IllegalArgumentException("BallMeta cannot be null!");
+        if (entity == null)
+            throw new IllegalArgumentException("Owner cannot be null!");
+        final Ball ball = ballController.create(location, ballMeta, true, entity);
+        ballController.store(ball);
+        return ball;
     }
 
     /**
@@ -82,14 +109,10 @@ public class BallsApi {
      * @return ball
      */
     public static Ball spawnUnmanagedBall(Object location, BallMeta ballMeta) {
-
-    }
-
-
-
-
-
-    private static Ball spawn(Object location, BallMeta ballMeta, boolean permanent, boolean managed) {
-
+        if (location == null)
+            throw new IllegalArgumentException("Location cannot be null!");
+        if (ballMeta == null)
+            throw new IllegalArgumentException("BallMeta cannot be null!");
+        return ballController.create(location, ballMeta, false, null);
     }
 }

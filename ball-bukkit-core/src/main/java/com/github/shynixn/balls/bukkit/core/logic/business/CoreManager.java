@@ -1,7 +1,5 @@
 package com.github.shynixn.balls.bukkit.core.logic.business;
 
-import com.github.shynixn.balls.api.business.Ball;
-
 /**
  * Created by Shynixn 2017.
  * <p>
@@ -29,10 +27,10 @@ import com.github.shynixn.balls.api.business.Ball;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallDecorator implements Ball{
+public class CoreManager {
 
+    public CoreManager()
+    {
 
-
-
-
+    }
 }

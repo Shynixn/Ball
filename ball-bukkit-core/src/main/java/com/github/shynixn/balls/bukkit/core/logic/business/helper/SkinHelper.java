@@ -1,4 +1,4 @@
-package com.github.shynixn.balls.bukkit.logic.business.helper;
+package com.github.shynixn.balls.bukkit.core.logic.business.helper;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;

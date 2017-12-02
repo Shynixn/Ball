@@ -1,5 +1,15 @@
 package com.github.shynixn.balls.bukkit.core.nms;
 
+import com.github.shynixn.balls.api.business.entity.Ball;
+import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+
 /**
  * Created by Shynixn 2017.
  * <p>
@@ -28,4 +38,13 @@ package com.github.shynixn.balls.bukkit.core.nms;
  * SOFTWARE.
  */
 public class NMSRegistry {
+
+    public static Ball spawnNMSBall(Object location, BallMeta ballMeta, boolean persistent, Entity owner) {
+        try {
+            final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomArmorstand".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
+            return ReflectionUtils.invokeConstructor(clazz, new Class[]{Location.class, BallMeta.class, boolean.class, Entity.class}, new Object[]{location, ballMeta, persistent, owner});
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

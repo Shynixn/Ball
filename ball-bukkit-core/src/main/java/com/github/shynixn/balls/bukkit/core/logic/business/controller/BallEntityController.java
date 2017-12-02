@@ -1,16 +1,17 @@
-package com.github.shynixn.balls.bukkit.logic.persistence;
+package com.github.shynixn.balls.bukkit.core.logic.business.controller;
 
 import com.github.shynixn.balls.api.business.controller.BallController;
+import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
-import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
-import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
-import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BallDataRepository;
-import com.github.shynixn.balls.bukkit.logic.business.commandexecutor.BallsCommandExecutor;
-import com.github.shynixn.balls.bukkit.logic.business.listener.GUIListener;
-import com.github.shynixn.balls.bukkit.logic.persistence.controller.BallDataFileRepository;
-import org.bukkit.plugin.Plugin;
+import com.github.shynixn.balls.bukkit.core.nms.NMSRegistry;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Shynixn 2017.
@@ -39,34 +40,80 @@ import java.io.Closeable;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallsManager implements AutoCloseable {
+public class BallEntityController implements BallController {
 
-    private final BallDataFileRepository fileRepository;
+    private final Set<Ball> balls = new HashSet<>();
 
-    private BallController ballController;
-    private BallMetaController metaController;
-
-    public BallsManager(Plugin plugin) throws Exception {
-        new GUIListener(plugin);
-        new BallsCommandExecutor(this, plugin);
-
-        this.fileRepository = new BallDataFileRepository(plugin);
-        this.fileRepository.reload();
-
-        this.ballController = new BallEntityController();
-        this.metaController = new BallDataRepository();
+    /**
+     * Creates a new ball from the given parameters.
+     *
+     * @param location   location
+     * @param ballMeta   ballMeta
+     * @param persistent persistent for restarts
+     * @param owner      entityOwner
+     * @return ball
+     */
+    @Override
+    public Ball create(Object location, BallMeta ballMeta, boolean persistent, Object owner) {
+        final Ball ball =  NMSRegistry.spawnNMSBall(location, ballMeta, persistent, (Entity) owner);
+        System.out.println("CREATED BALL");
+        ball.respawn();
+        System.out.println("SPAWN THEM ");
+        return ball;
     }
 
-    public BallController getBallController() {
-        return this.ballController;
+    /**
+     * Stores a new a item in the repository.
+     *
+     * @param item item
+     */
+    @Override
+    public void store(Ball item) {
+        if (item == null)
+            throw new IllegalArgumentException("Ball cannot be null!");
+        this.balls.add(item);
     }
 
-    public BallMetaController getMetaController() {
-        return this.metaController;
+    /**
+     * Removes an item from the repository.
+     *
+     * @param item item
+     */
+    @Override
+    public void remove(Ball item) {
+        if (item == null)
+            throw new IllegalArgumentException("Ball cannot be null!");
+        if (this.balls.contains(item)) {
+            this.balls.remove(item);
+        }
     }
 
-    public BallDataFileRepository getGUIBallMetaController() {
-        return this.fileRepository;
+    /**
+     * Returns the amount of items in the repository.
+     *
+     * @return size
+     */
+    @Override
+    public int size() {
+        return this.balls.size();
+    }
+
+    /**
+     * Clears all items in the repository.
+     */
+    @Override
+    public void clear() {
+        this.balls.clear();
+    }
+
+    /**
+     * Returns all items from the repository as unmodifiableList.
+     *
+     * @return items
+     */
+    @Override
+    public List<Ball> getAll() {
+        return new ArrayList<>(this.balls);
     }
 
     /**
@@ -116,6 +163,6 @@ public class BallsManager implements AutoCloseable {
      */
     @Override
     public void close() throws Exception {
-        this.fileRepository.close();
+        this.balls.clear();
     }
 }

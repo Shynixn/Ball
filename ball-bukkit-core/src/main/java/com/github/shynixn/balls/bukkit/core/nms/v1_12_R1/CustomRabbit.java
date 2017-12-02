@@ -1,22 +1,16 @@
 package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
-import com.github.shynixn.balls.api.business.Ball;
-import com.google.common.collect.Sets;
+import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
 import net.minecraft.server.v1_12_R1.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.entity.Rabbit;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Rabbit hitbox implementation for minecraft 1.12.0-1.12.2.
@@ -45,53 +39,29 @@ import java.util.logging.Level;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public final class CustomRabbit extends EntityRabbit {
-    private Ball ball;
+public final class CustomRabbit extends EntityArmorStand {
 
-    public CustomRabbit(World world) {
-        super(world);
-    }
+    private Vector vectorCache;
+    private int rollingTimes = 20;
 
-    public CustomRabbit(org.bukkit.World world, Ball ball) {
-        super(((CraftWorld) world).getHandle());
-        this.setSilent(true);
-        try {
-            final Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
-            final Field cField = PathfinderGoalSelector.class.getDeclaredField("c");
-            this.ignoreFinalField(bField);
-            this.ignoreFinalField(cField);
-            cField.setAccessible(true);
-            bField.set(this.goalSelector, Sets.newLinkedHashSet());
-            bField.set(this.targetSelector, Sets.newLinkedHashSet());
-            cField.set(this.goalSelector, Sets.newLinkedHashSet());
-            cField.set(this.targetSelector, Sets.newLinkedHashSet());
-            this.goalSelector.a(0, new PathfinderGoalFloat(this));
-            this.ball = ball;
-        } catch (final Exception exc) {
-            Bukkit.getLogger().log(Level.WARNING, "Failed to register pathfinder.", exc);
-        }
-    }
 
-    private void ignoreFinalField(Field field) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        field.setAccessible(true);
-        final Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-    }
-
-    void spawn(Location location) {
-        NMSRegistry.accessWorldGuardSpawn(location);
+    public CustomRabbit(Location location) {
+        super(((CraftWorld) location.getWorld()).getHandle());
         final World mcWorld = ((CraftWorld) location.getWorld()).getHandle();
         this.setPosition(location.getX(), location.getY(), location.getZ());
-        mcWorld.addEntity(this, SpawnReason.CUSTOM);
-        this.getSpigotEntity().addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 9999999, 1));
+        mcWorld.addEntity(this, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        final NBTTagCompound compound = new NBTTagCompound();
+        compound.setBoolean("invulnerable", true);
+        compound.setBoolean("Invisible", true);
+        compound.setBoolean("PersistenceRequired", true);
+        compound.setBoolean("NoBasePlate", true);
+        this.a(compound);
+        this.getSpigotEntity().setCustomName("ResourceBallsPlugin");
         this.getSpigotEntity().setCustomNameVisible(false);
-        this.getSpigotEntity().setCustomName("MyBallsIdentifier");
-        NMSRegistry.rollbackWorldGuardSpawn(location);
     }
 
-    Rabbit getSpigotEntity() {
-        return (Rabbit) this.getBukkitEntity();
+    ArmorStand getSpigotEntity() {
+        return (ArmorStand) this.getBukkitEntity();
     }
 
     private void spigotTimings(boolean started) {
@@ -111,13 +81,33 @@ public final class CustomRabbit extends EntityRabbit {
                     ReflectionUtils.invokeMethodByObject(moveTimer, "stopTiming", new Class[]{}, new Object[]{});
                 }
             } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                BlockBallPlugin.logger().log(Level.WARNING, "Failed to invoke entityMoveTimer.");
+                //  BlockBallPlugin.logger().log(Level.WARNING, "Failed to invoke entityMoveTimer.");
             }
         }
     }
 
+    public void setVelocity(Vector velocity)
+    {
+        this.getSpigotEntity().setVelocity(velocity);
+        this.rollingTimes = 60;
+        this.vectorCache = velocity;
+    }
+
     @Override
     public void move(EnumMoveType enummovetype, double d0, double d1, double d2) {
+
+        if(this.rollingTimes >= 0 && this.vectorCache != null)
+        {
+            this.setVelocity(vectorCache);
+            this.vectorCache.setX(this.motX/28);
+            this.vectorCache.setY(this.motY/28);
+            this.vectorCache.setZ(this.motZ/28);
+
+            this.rollingTimes--;
+        }
+
+        System.out.println("TICK");
+
         this.spigotTimings(true);
         if (this.noclip) {
             this.a(this.getBoundingBox().d(d0, d1, d2));
@@ -325,7 +315,7 @@ public final class CustomRabbit extends EntityRabbit {
                 } else if (d8 < d2) {
                     var81 = var81.getRelative(BlockFace.NORTH);
                 }
-                Bukkit.getPluginManager().callEvent(new BallHitWallEvent(this.ball, var81));
+               // Bukkit.getPluginManager().callEvent(new BallHitWallEvent(this.ball, var81));
             }
         }
         this.spigotTimings(false);

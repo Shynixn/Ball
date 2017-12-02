@@ -1,6 +1,6 @@
 package com.github.shynixn.balls.api.bukkit.event;
 
-import com.github.shynixn.balls.api.business.Ball;
+import com.github.shynixn.balls.api.business.entity.Ball;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
