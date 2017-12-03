@@ -1,5 +1,6 @@
 package com.github.shynixn.balls.bukkit.core.logic.business.helper;
 
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
@@ -46,9 +47,9 @@ public class NBTTagHelper {
             final Method setNBTTag = nmsItemStackClass.getDeclaredMethod("setTag", nbtTagClass);
             final Object nmsItemStack = nmsCopyMethod.invoke(null, itemStack);
 
-            final Method nbtSetString = nbtTagClass.getDeclaredMethod("setString", String.class);
-            final Method nbtSetBoolean = nbtTagClass.getDeclaredMethod("setBoolean", Boolean.class);
-            final Method nbtSetInteger = nbtTagClass.getDeclaredMethod("setInt", Integer.class);
+            final Method nbtSetString = nbtTagClass.getDeclaredMethod("setString", String.class, String.class);
+            final Method nbtSetBoolean = nbtTagClass.getDeclaredMethod("setBoolean",String.class, boolean.class);
+            final Method nbtSetInteger = nbtTagClass.getDeclaredMethod("setInt",String.class, int.class);
 
             for (final String key : nbtTags.keySet()) {
                 final Object value = nbtTags.get(key);
@@ -58,11 +59,11 @@ public class NBTTagHelper {
                 }
 
                 if (value instanceof String) {
-                    nbtSetString.invoke(nbtTag, (String) value);
+                    nbtSetString.invoke(nbtTag, key, (String) value);
                 } else if (value instanceof Integer) {
-                    nbtSetInteger.invoke(nbtTag, (Integer) value);
+                    nbtSetInteger.invoke(nbtTag, key, (Integer) value);
                 } else if (value instanceof Boolean) {
-                    nbtSetBoolean.invoke(nbtTag, (Boolean) value);
+                    nbtSetBoolean.invoke(nbtTag, key, (Boolean) value);
                 }
                 setNBTTag.invoke(nmsItemStack, nbtTag);
             }

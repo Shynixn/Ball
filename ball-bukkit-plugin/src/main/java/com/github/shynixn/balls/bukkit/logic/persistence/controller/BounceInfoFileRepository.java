@@ -60,8 +60,11 @@ public class BounceInfoFileRepository implements IFileController<BounceObject> {
         final Plugin plugin = JavaPlugin.getPlugin(BallsPlugin.class);
         this.controller.clear();
         Config.getInstance().reload();
+        System.out.println(key);
         final Map<String, Object> data = ((MemorySection) plugin.getConfig().get(this.key)).getValues(false);
+        System.out.println(key);
         for (final String key : data.keySet()) {
+            System.out.println("RELOAD " + this.key + "." + key);
             final Map<String, Object> content = ((MemorySection) plugin.getConfig().get(this.key + "." + key)).getValues(true);
             try {
                 this.store(new BounceInfo(content));

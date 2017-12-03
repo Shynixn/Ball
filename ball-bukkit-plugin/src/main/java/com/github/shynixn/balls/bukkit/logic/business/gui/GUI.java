@@ -67,11 +67,11 @@ public class GUI implements InventoryHolder, AutoCloseable {
         if (this.player.getOpenInventory() != null) {
             this.player.closeInventory();
         }
-        final Inventory inventory = Bukkit.createInventory(this, 54, Config.getInstance().getGUITitle());
-        this.player.openInventory(inventory);
+        this.inventory = Bukkit.createInventory(this, 54, Config.getInstance().getGUITitle());
+        this.player.openInventory(this.inventory);
         final List<ItemContainer> metas = this.ballsManager.getGUIBallMetaController().getAll();
         this.setItems(metas, 1, Permission.SINGLEGUIBALL.get());
-        return inventory;
+        return this.inventory;
     }
 
     public void click(ItemStack clickedItem, int slot) throws Exception {
@@ -80,8 +80,12 @@ public class GUI implements InventoryHolder, AutoCloseable {
             this.setItems(metas, 1, Permission.SINGLEGUIBALL.get());
         } else if (Config.getInstance().getGUIItemsController().isGUIItem(clickedItem, "previous-page")) {
             final List<ItemContainer> metas = this.ballsManager.getGUIBallMetaController().getAll();
-            this.setItems(metas, 2,Permission.SINGLEGUIBALL.get());
+            this.setItems(metas, 2, Permission.SINGLEGUIBALL.get());
+        } else if (Config.getInstance().getGUIItemsController().isGUIItem(clickedItem, "empty-slot")) {
+            System.out.println("YES IS");
+            return;
         } else if (slot < 45) {
+            slot++;
             if (Permission.ALLGUIBALLS.hasPermission(this.player) || this.player.hasPermission(Permission.SINGLEGUIBALL.get() + slot)) {
                 final ItemContainer itemContainer = this.ballsManager.getGUIBallMetaController().getContainerFromPosition(slot);
                 this.selectBall(itemContainer);
@@ -132,8 +136,7 @@ public class GUI implements InventoryHolder, AutoCloseable {
             }
         }
         this.startCount = count;
-        final ItemContainer backGuiItemContainer = Config.getInstance().getGUIItemsController().getGUIItemByName("back");
-        inventory.setItem(backGuiItemContainer.getPosition(), backGuiItemContainer.generate(this.player));
+        System.out.println("COUNT: " + count);
         if (!(this.startCount % 45 != 0 || containers.size() == this.startCount)) {
             final ItemContainer nextPage = Config.getInstance().getGUIItemsController().getGUIItemByName("next-page");
             inventory.setItem(nextPage.getPosition(), nextPage.generate(this.player));

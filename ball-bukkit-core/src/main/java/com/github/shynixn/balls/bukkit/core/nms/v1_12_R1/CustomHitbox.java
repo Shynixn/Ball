@@ -110,8 +110,6 @@ public final class CustomHitbox extends EntityArmorStand {
             this.rollingTimes--;
         }
 
-        System.out.println("TICK");
-
         this.spigotTimings(true);
         if (this.noclip) {
             this.a(this.getBoundingBox().d(d0, d1, d2));

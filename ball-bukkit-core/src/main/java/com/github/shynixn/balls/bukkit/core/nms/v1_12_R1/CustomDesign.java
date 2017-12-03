@@ -122,15 +122,12 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
     @Override
     protected void doTick() {
         super.doTick();
-        System.out.println("0");
         if (this.hitBox == null)
             return;
-        System.out.println("1");
         if (!this.isPassengerNull() || this.getBukkitEntity().getVehicle() != null)
             return;
 
         try {
-            System.out.println("3");
             this.cancelEntityActionsFromEnvironment();
             this.teleportToHitBox();
             this.checkForEntityMoveInteractions();

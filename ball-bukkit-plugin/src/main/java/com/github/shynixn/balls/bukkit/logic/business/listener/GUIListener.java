@@ -3,6 +3,7 @@ package com.github.shynixn.balls.bukkit.logic.business.listener;
 import com.github.shynixn.balls.bukkit.BallsPlugin;
 import com.github.shynixn.balls.bukkit.core.logic.business.listener.SimpleListener;
 import com.github.shynixn.balls.bukkit.logic.business.gui.GUI;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -52,7 +53,7 @@ public class GUIListener extends SimpleListener {
         if (event.getInventory().getHolder() instanceof GUI) {
             final GUI gui = (GUI) event.getInventory().getHolder();
             try {
-                gui.close();
+           //     gui.close();
             } catch (final Exception e) {
                 BallsPlugin.logger().log(Level.WARNING, "Failed to close inventory.", e);
             }
@@ -65,6 +66,8 @@ public class GUIListener extends SimpleListener {
             final GUI gui = (GUI) event.getInventory().getHolder();
             try {
                 gui.click(event.getCurrentItem(), event.getSlot());
+                event.setCancelled(true);
+                ((Player)event.getWhoClicked()).updateInventory();
             } catch (final Exception e) {
                 BallsPlugin.logger().log(Level.WARNING, "Failed to click in inventory.", e);
             }
