@@ -48,7 +48,9 @@ public final class CustomHitbox extends EntityArmorStand {
     private Vector vectorCache;
     private int rollingTimes = 20;
 
-    private Ball ball;
+    private final Ball ball;
+
+    private int knockBackBumper;
 
     public CustomHitbox(Location location, Ball ball) {
         super(((CraftWorld) location.getWorld()).getHandle());
@@ -96,21 +98,28 @@ public final class CustomHitbox extends EntityArmorStand {
         this.getSpigotEntity().setVelocity(velocity);
         this.rollingTimes = 60;
         this.vectorCache = velocity;
+        System.out.println("VECTOR: " + velocity);
     }
 
     @Override
     public void move(EnumMoveType enummovetype, double d0, double d1, double d2) {
 
+        Vector starter = this.getSpigotEntity().getVelocity();
         if (this.rollingTimes >= 0 && this.vectorCache != null) {
-            this.setVelocity(vectorCache);
+          /*  this.setVelocity(vectorCache);
             this.vectorCache.setX(this.motX / 28);
             this.vectorCache.setY(this.motY / 28);
-            this.vectorCache.setZ(this.motZ / 28);
+            this.vectorCache.setZ(this.motZ / 28);*/
 
             this.rollingTimes--;
         }
 
         this.spigotTimings(true);
+         if(this.knockBackBumper > 0) {
+            this.knockBackBumper--;
+        }
+
+
         if (this.noclip) {
             this.a(this.getBoundingBox().d(d0, d1, d2));
             this.recalcPosition();
@@ -308,75 +317,39 @@ public final class CustomHitbox extends EntityArmorStand {
 
             if (this.positionChanged) {
                 org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
-                Vector againstVectory = null;
                 if (d6 > d0) {
                     var81 = var81.getRelative(BlockFace.EAST);
-                    againstVectory = new Vector(1,0,0);
+                    final Vector n = new Vector(-1, 0, 0);
+                    this.applyKnockBack(starter, n);
                 } else if (d6 < d0) {
                     var81 = var81.getRelative(BlockFace.WEST);
-                    againstVectory = new Vector(-1,0,0);
+                    final Vector n = new Vector(1, 0, 0);
+                    this.applyKnockBack(starter, n);
                 } else if (d8 > d2) {
-                    againstVectory = new Vector(0,0,1);
                     var81 = var81.getRelative(BlockFace.SOUTH);
+                    final Vector n = new Vector(0, 0, -1);
+                    System.out.println("SOUTH: " + n);
+                    this.applyKnockBack(starter, n);
+
                 } else if (d8 < d2) {
-                    againstVectory = new Vector(1,0,-1);
                     var81 = var81.getRelative(BlockFace.NORTH);
+                    final Vector n = new Vector(0, 0, 1);
+                    this.applyKnockBack(starter, n);
                 }
                 if (var81 != null) {
-
-                    Vector start = var81.getLocation().toVector();
-                    Vector direction = new Vector();
-                    switch(var81.getData()) {
-                        case 8:
-                            start.setX(start.getX() + 0.5D);
-                            start.setZ(start.getZ() + 0.5D);
-                            direction.setY(-1);
-                            break;
-                        case 9:
-                            start.setX(start.getX() + 0.5D);
-                            start.setZ(start.getZ() + 0.5D);
-                            start.setY(start.getY() + 1.0D);
-                            direction.setY(1);
-                            break;
-                        case 10:
-                            start.setX(start.getX() + 0.5D);
-                            start.setY(start.getY() + 0.35D);
-                            direction.setZ(-1);
-                            break;
-                        case 11:
-                            start.setX(start.getX() + 0.5D);
-                            start.setZ(start.getZ() + 1.0D);
-                            start.setY(start.getY() + 0.35D);
-                            direction.setZ(1);
-                            break;
-                        case 12:
-                            start.setZ(start.getZ() + 0.5D);
-                            start.setY(start.getY() + 0.35D);
-                            direction.setX(-1);
-                            break;
-                        case 13:
-                            start.setX(start.getX() + 1.0D);
-                            start.setZ(start.getZ() + 0.5D);
-                            start.setY(start.getY() + 0.35D);
-                            direction.setX(1);
-                            break;
-                        default:
-                            return;
-                    }
-
-
                     Bukkit.getPluginManager().callEvent(new BallWallCollideEvent(this.ball, var81));
-
-                    System.out.println("AGAINSTVECTIR; " + againstVectory);
-
-                    for(BounceObject bounceObject : ball.getMeta().getBounceObjectController().getAll())
-                    {
-
-                    }
                 }
             }
         }
         this.spigotTimings(false);
+    }
+
+    private void applyKnockBack(Vector starter, Vector n) {
+        if (this.knockBackBumper <= 0) {
+            final Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n)));
+            this.getSpigotEntity().setVelocity(r);
+            this.knockBackBumper = 20;
+        }
     }
 
     @Override

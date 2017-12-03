@@ -105,7 +105,7 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
                             .toVector()
                             .subtract(entity.getLocation().toVector())
                             .normalize()
-                            .multiply(1.1);
+                            .multiply(4);
                     vector.setY(0.1);
                     try {
                         this.move(vector.getX(), vector.getY(), vector.getZ());
