@@ -70,4 +70,12 @@ public interface BounceObject {
      * @param strength strength
      */
     void setBounceModifier(double strength);
+
+    /**
+     * Returns if the given block is of this type.
+     *
+     * @param block block
+     * @return isType
+     */
+    boolean isBlock(Object block);
 }

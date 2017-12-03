@@ -43,8 +43,6 @@ public class BallsManager implements AutoCloseable {
 
     private final BallDataFileRepository fileRepository;
 
-    private BallController ballController;
-    private BallMetaController metaController;
 
     public BallsManager(Plugin plugin) throws Exception {
         new GUIListener(plugin);
@@ -52,17 +50,6 @@ public class BallsManager implements AutoCloseable {
 
         this.fileRepository = new BallDataFileRepository(plugin);
         this.fileRepository.reload();
-
-        this.ballController = new BallEntityController();
-        this.metaController = new BallDataRepository();
-    }
-
-    public BallController getBallController() {
-        return this.ballController;
-    }
-
-    public BallMetaController getMetaController() {
-        return this.metaController;
     }
 
     public BallDataFileRepository getGUIBallMetaController() {

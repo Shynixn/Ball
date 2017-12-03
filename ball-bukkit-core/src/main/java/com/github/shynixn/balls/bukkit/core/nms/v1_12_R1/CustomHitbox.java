@@ -1,7 +1,11 @@
 package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
+import com.github.shynixn.balls.api.bukkit.event.BallWallCollideEvent;
+import com.github.shynixn.balls.api.business.entity.Ball;
+import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
 import net.minecraft.server.v1_12_R1.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
@@ -39,14 +43,16 @@ import java.util.List;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public final class CustomRabbit extends EntityArmorStand {
+public final class CustomHitbox extends EntityArmorStand {
 
     private Vector vectorCache;
     private int rollingTimes = 20;
 
+    private Ball ball;
 
-    public CustomRabbit(Location location) {
+    public CustomHitbox(Location location, Ball ball) {
         super(((CraftWorld) location.getWorld()).getHandle());
+        this.ball = ball;
         final World mcWorld = ((CraftWorld) location.getWorld()).getHandle();
         this.setPosition(location.getX(), location.getY(), location.getZ());
         mcWorld.addEntity(this, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -86,8 +92,7 @@ public final class CustomRabbit extends EntityArmorStand {
         }
     }
 
-    public void setVelocity(Vector velocity)
-    {
+    public void setVelocity(Vector velocity) {
         this.getSpigotEntity().setVelocity(velocity);
         this.rollingTimes = 60;
         this.vectorCache = velocity;
@@ -96,12 +101,11 @@ public final class CustomRabbit extends EntityArmorStand {
     @Override
     public void move(EnumMoveType enummovetype, double d0, double d1, double d2) {
 
-        if(this.rollingTimes >= 0 && this.vectorCache != null)
-        {
+        if (this.rollingTimes >= 0 && this.vectorCache != null) {
             this.setVelocity(vectorCache);
-            this.vectorCache.setX(this.motX/28);
-            this.vectorCache.setY(this.motY/28);
-            this.vectorCache.setZ(this.motZ/28);
+            this.vectorCache.setX(this.motX / 28);
+            this.vectorCache.setY(this.motY / 28);
+            this.vectorCache.setZ(this.motZ / 28);
 
             this.rollingTimes--;
         }
@@ -306,16 +310,72 @@ public final class CustomRabbit extends EntityArmorStand {
 
             if (this.positionChanged) {
                 org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
+                Vector againstVectory = null;
                 if (d6 > d0) {
                     var81 = var81.getRelative(BlockFace.EAST);
+                    againstVectory = new Vector(1,0,0);
                 } else if (d6 < d0) {
                     var81 = var81.getRelative(BlockFace.WEST);
+                    againstVectory = new Vector(-1,0,0);
                 } else if (d8 > d2) {
+                    againstVectory = new Vector(0,0,1);
                     var81 = var81.getRelative(BlockFace.SOUTH);
                 } else if (d8 < d2) {
+                    againstVectory = new Vector(1,0,-1);
                     var81 = var81.getRelative(BlockFace.NORTH);
                 }
-               // Bukkit.getPluginManager().callEvent(new BallHitWallEvent(this.ball, var81));
+                if (var81 != null) {
+
+                    Vector start = var81.getLocation().toVector();
+                    Vector direction = new Vector();
+                    switch(var81.getData()) {
+                        case 8:
+                            start.setX(start.getX() + 0.5D);
+                            start.setZ(start.getZ() + 0.5D);
+                            direction.setY(-1);
+                            break;
+                        case 9:
+                            start.setX(start.getX() + 0.5D);
+                            start.setZ(start.getZ() + 0.5D);
+                            start.setY(start.getY() + 1.0D);
+                            direction.setY(1);
+                            break;
+                        case 10:
+                            start.setX(start.getX() + 0.5D);
+                            start.setY(start.getY() + 0.35D);
+                            direction.setZ(-1);
+                            break;
+                        case 11:
+                            start.setX(start.getX() + 0.5D);
+                            start.setZ(start.getZ() + 1.0D);
+                            start.setY(start.getY() + 0.35D);
+                            direction.setZ(1);
+                            break;
+                        case 12:
+                            start.setZ(start.getZ() + 0.5D);
+                            start.setY(start.getY() + 0.35D);
+                            direction.setX(-1);
+                            break;
+                        case 13:
+                            start.setX(start.getX() + 1.0D);
+                            start.setZ(start.getZ() + 0.5D);
+                            start.setY(start.getY() + 0.35D);
+                            direction.setX(1);
+                            break;
+                        default:
+                            return;
+                    }
+
+
+                    Bukkit.getPluginManager().callEvent(new BallWallCollideEvent(this.ball, var81));
+
+                    System.out.println("AGAINSTVECTIR; " + againstVectory);
+
+                    for(BounceObject bounceObject : ball.getMeta().getBounceObjectController().getAll())
+                    {
+
+                    }
+                }
             }
         }
         this.spigotTimings(false);

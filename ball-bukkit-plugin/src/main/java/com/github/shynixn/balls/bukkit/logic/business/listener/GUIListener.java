@@ -1,11 +1,11 @@
 package com.github.shynixn.balls.bukkit.logic.business.listener;
 
 import com.github.shynixn.balls.bukkit.BallsPlugin;
+import com.github.shynixn.balls.bukkit.core.logic.business.listener.SimpleListener;
 import com.github.shynixn.balls.bukkit.logic.business.gui.GUI;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.logging.Level;

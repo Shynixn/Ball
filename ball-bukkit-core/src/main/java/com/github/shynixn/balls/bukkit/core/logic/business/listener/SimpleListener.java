@@ -1,4 +1,4 @@
-package com.github.shynixn.balls.bukkit.logic.business.listener;
+package com.github.shynixn.balls.bukkit.core.logic.business.listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;

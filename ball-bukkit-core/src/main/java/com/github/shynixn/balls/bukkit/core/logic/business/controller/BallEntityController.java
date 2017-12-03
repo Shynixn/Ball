@@ -8,10 +8,7 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Shynixn 2017.
@@ -55,11 +52,25 @@ public class BallEntityController implements BallController {
      */
     @Override
     public Ball create(Object location, BallMeta ballMeta, boolean persistent, Object owner) {
-        final Ball ball =  NMSRegistry.spawnNMSBall(location, ballMeta, persistent, (Entity) owner);
-        System.out.println("CREATED BALL");
+        final Ball ball = NMSRegistry.spawnNMSBall(location, ballMeta, persistent, (Entity) owner);
         ball.respawn();
-        System.out.println("SPAWN THEM ");
         return ball;
+    }
+
+    /**
+     * Returns a ball if the given entity is part of a ball.
+     *
+     * @param entity entity
+     * @return ball
+     */
+    @Override
+    public Optional<Ball> getBallFromEntity(Object entity) {
+        for (final Ball ball : this.balls) {
+            if (ball.getArmorstand().equals(entity) || ball.getHitBox().equals(entity)) {
+                return Optional.of(ball);
+            }
+        }
+        return Optional.empty();
     }
 
     /**

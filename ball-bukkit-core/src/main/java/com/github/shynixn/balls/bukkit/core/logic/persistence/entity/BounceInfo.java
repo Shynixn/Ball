@@ -1,6 +1,7 @@
 package com.github.shynixn.balls.bukkit.core.logic.persistence.entity;
 
 import com.github.shynixn.balls.api.persistence.BounceObject;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.util.LinkedHashMap;
@@ -119,6 +120,23 @@ public class BounceInfo implements BounceObject, ConfigurationSerializable {
     @Override
     public void setBounceModifier(double strength) {
         this.modifier = strength;
+    }
+
+    /**
+     * Returns if the given block is of this type.
+     *
+     * @param block block
+     * @return isType
+     */
+    @Override
+    public boolean isBlock(Object block) {
+        Block bukkitBlock = (Block) block;
+        if (bukkitBlock.getTypeId() == this.getMaterialId()) {
+            if (bukkitBlock.getData() == this.getMaterialDamageValue()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

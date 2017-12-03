@@ -1,5 +1,16 @@
 package com.github.shynixn.balls.bukkit.core.logic.business;
 
+import com.github.shynixn.balls.api.BallsApi;
+import com.github.shynixn.balls.api.business.controller.BallController;
+import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
+import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
+import com.github.shynixn.balls.bukkit.core.logic.business.listener.BallListener;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BallDataRepository;
+import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.plugin.Plugin;
+
+import java.lang.reflect.Field;
+
 /**
  * Created by Shynixn 2017.
  * <p>
@@ -29,8 +40,36 @@ package com.github.shynixn.balls.bukkit.core.logic.business;
  */
 public class CoreManager {
 
-    public CoreManager()
-    {
+    private final BallMetaController metaController;
+    private final BallController ballController;
 
+    public CoreManager(Plugin plugin) {
+
+        this.metaController = new BallDataRepository();
+        this.ballController = new BallEntityController();
+
+        new BallListener(this.ballController, plugin);
+
+        Field field;
+        try {
+            field = BallsApi.class.getDeclaredField("ballController");
+            field.setAccessible(true);
+            field.set(null, this.getBallController());
+
+            final Field field2 = BallsApi.class.getDeclaredField("ballMetaController");
+            field2.setAccessible(true);
+            field2.set(null, this.getMetaController());
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public BallMetaController getMetaController() {
+        return this.metaController;
+    }
+
+    public BallController getBallController() {
+        return this.ballController;
     }
 }

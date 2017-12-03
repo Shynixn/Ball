@@ -1,17 +1,14 @@
 package com.github.shynixn.balls.bukkit;
 
 import com.github.shynixn.balls.api.BallsApi;
-import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
+import com.github.shynixn.balls.bukkit.core.logic.business.CoreManager;
 import com.github.shynixn.balls.bukkit.core.nms.VersionSupport;
-import com.github.shynixn.balls.bukkit.core.nms.v1_12_R1.CustomRabbit;
 import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
 import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -53,6 +50,7 @@ public class BallsPlugin extends JavaPlugin {
     private boolean disabled;
 
     private BallsManager ballsManager;
+    private CoreManager coreManager;
 
     @Override
     public void onEnable() {
@@ -80,15 +78,9 @@ public class BallsPlugin extends JavaPlugin {
 
 
                 this.ballsManager = new BallsManager(this);
+                this.coreManager = new CoreManager(this);
 
-                Field field = BallsApi.class.getDeclaredField("ballController");
-                field.setAccessible(true);
-                field.set(null, this.ballsManager.getBallController());
 
-                Field field2 = BallsApi.class.getDeclaredField("ballMetaController");
-                field2.setAccessible(true);
-
-                field2.set(null, this.ballsManager.getMetaController());
 
 
                 Player p = Bukkit.getPlayer("Shynixn");

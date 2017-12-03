@@ -4,6 +4,8 @@ import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 
+import java.util.Optional;
+
 /**
  * Created by Shynixn 2017.
  * <p>
@@ -43,4 +45,12 @@ public interface BallController extends IController<Ball> {
      * @return ball
      */
     Ball create(Object location, BallMeta ballMeta, boolean persistent, Object owner);
+
+    /**
+     * Returns a ball if the given entity is part of a ball.
+     *
+     * @param entity entity
+     * @return ball
+     */
+    Optional<Ball> getBallFromEntity(Object entity);
 }

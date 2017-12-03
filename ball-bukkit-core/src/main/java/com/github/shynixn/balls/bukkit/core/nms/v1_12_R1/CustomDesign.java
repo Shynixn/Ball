@@ -1,7 +1,7 @@
 package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
+import com.github.shynixn.balls.api.bukkit.event.BallDeathEvent;
 import com.github.shynixn.balls.api.bukkit.event.BallInteractEvent;
-import com.github.shynixn.balls.api.bukkit.event.BallKickEvent;
 import com.github.shynixn.balls.api.bukkit.event.BallThrowEvent;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
@@ -18,14 +18,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
 import java.util.logging.Level;
 
-public final class CustomArmorstand extends EntityArmorStand implements Ball {
+public final class CustomDesign extends EntityArmorStand implements Ball {
     private static final Random random = new Random();
     private static final int HITBOX_DETER = 2;
 
@@ -33,7 +32,7 @@ public final class CustomArmorstand extends EntityArmorStand implements Ball {
     private final Entity owner;
 
     private final BallMeta ballMeta;
-    private CustomRabbit hitBox;
+    private CustomHitbox hitBox;
 
     private boolean grabbed;
     private Entity interactionEntity;
@@ -41,8 +40,7 @@ public final class CustomArmorstand extends EntityArmorStand implements Ball {
     private int counter = 20;
     private final int rvalue = 5;
 
-
-    public CustomArmorstand(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
+    public CustomDesign(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
         super(((CraftWorld) location.getWorld()).getHandle());
         this.ballMeta = ballMeta;
         this.owner = owner;
@@ -130,8 +128,6 @@ public final class CustomArmorstand extends EntityArmorStand implements Ball {
         System.out.println("1");
         if (!this.isPassengerNull() || this.getBukkitEntity().getVehicle() != null)
             return;
-
-
 
         try {
             System.out.println("3");
@@ -263,7 +259,7 @@ public final class CustomArmorstand extends EntityArmorStand implements Ball {
         this.getSpigotEntity().setHelmet(itemStack);
         System.out.println("SET KIN");
 
-        this.hitBox = new CustomRabbit(location);
+        this.hitBox = new CustomHitbox(location,this);
     }
 
     /**
@@ -271,6 +267,7 @@ public final class CustomArmorstand extends EntityArmorStand implements Ball {
      */
     @Override
     public void remove() {
+        Bukkit.getPluginManager().callEvent(new BallDeathEvent(this));
         this.getSpigotEntity().remove();
         this.hitBox.getSpigotEntity().remove();
     }
@@ -346,5 +343,15 @@ public final class CustomArmorstand extends EntityArmorStand implements Ball {
     @Override
     public Object getArmorstand() {
         return this.getBukkitEntity();
+    }
+
+    /**
+     * Returns the hitbox of the ball.
+     *
+     * @return armorstand
+     */
+    @Override
+    public Object getHitBox() {
+        return this.hitBox.getSpigotEntity();
     }
 }

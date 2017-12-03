@@ -123,4 +123,11 @@ public interface Ball {
      * @return armorstand
      */
     Object getArmorstand();
+
+    /**
+     * Returns the hitbox of the ball.
+     *
+     * @return armorstand
+     */
+    Object getHitBox();
 }
