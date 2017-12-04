@@ -6,6 +6,7 @@ import com.github.shynixn.balls.api.persistence.BallModifiers;
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BounceObjectController;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.io.Serializable;
@@ -43,20 +44,26 @@ public class BallData implements BallMeta, ConfigurationSerializable {
 
     private String skin;
 
-    private boolean carryAble;
+    private boolean carryAble = true;
     private boolean rotating = true;
+    private double hitbox = 2.0;
 
-    private IController<BounceObject> bounceObjectIController;
+    private final BallModifications modifications;
+
+    private final IController<BounceObject> bounceObjectIController;
 
     public BallData(Map<String, Object> data, IController<BounceObject> bounceObjectIController) {
         this.skin = (String) data.get("skin");
+        this.hitbox = (double) data.get("hitbox-size");
         this.carryAble = (boolean) data.get("carry-able");
         this.rotating = (boolean) data.get("rotating");
         this.bounceObjectIController = bounceObjectIController;
+        this.modifications = new BallModifications(((MemorySection) data.get("modifiers")).getValues(false));
     }
 
     public BallData(String skin) {
         this.skin = skin;
+        this.modifications = new BallModifications();
         this.bounceObjectIController = new BounceObjectController();
     }
 
@@ -77,7 +84,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
      */
     @Override
     public BallModifiers getModifiers() {
-        return null;
+        return this.modifications;
     }
 
     /**
@@ -121,6 +128,26 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     }
 
     /**
+     * Sets the size of the hitbox of the ball. Default 2.
+     *
+     * @param size size
+     */
+    @Override
+    public void setHitBoxSize(double size) {
+        this.hitbox = size;
+    }
+
+    /**
+     * Returns the size of the hitbox of the ball.
+     *
+     * @return size
+     */
+    @Override
+    public double getHitBoxSize() {
+        return this.hitbox;
+    }
+
+    /**
      * Returns if the ball displays a rotation animation when being kicked or thrown.
      *
      * @return enabled
@@ -156,6 +183,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     public Map<String, Object> serialize() {
         final Map<String, Object> data = new LinkedHashMap<>();
         data.put("skin", this.getSkin());
+        data.put("hitbox-size", this.getHitBoxSize());
         data.put("carry-able", this.isCarryable());
         data.put("rotating", this.isRotatingEnabled());
         data.put("wall-bouncing", ((BounceObjectController) this.bounceObjectIController).serialize());

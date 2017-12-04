@@ -39,24 +39,20 @@ public interface Ball {
     void teleport(Object location);
 
     /**
-     * Kicks the ball by the given entity. Returns the calculated velocity for the ball.
-     * The calculated velocity can be manipulated before actually applying it to the ball
-     * in next tick.
+     * Kicks the ball by the given entity.
+     * The calculated velocity can be manipulated by the BallKickEvent.
      *
      * @param entity entity
-     * @return velocity
      */
-    Object kickByEntity(Object entity);
+    void kickByEntity(Object entity);
 
     /**
-     * Throws the ball by the given entity. Returns the calculated velocity for the ball.
-     * The calculated velocity can be manipulated before actually applying it to the ball
-     * in next tick.
+     * Throws the ball by the given entity.
+     * The calculated velocity can be manipulated by the BallThrowEvent.
      *
      * @param entity entity
-     * @return velocity
      */
-    Object throwByEntity(Object entity);
+    void throwByEntity(Object entity);
 
     /**
      * Returns the last entity the ball interacted with. If it is contact, kicking or grabbing.

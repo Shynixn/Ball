@@ -2,7 +2,6 @@ package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
 import com.github.shynixn.balls.api.bukkit.event.BallWallCollideEvent;
 import com.github.shynixn.balls.api.business.entity.Ball;
-import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
@@ -16,6 +15,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Rabbit hitbox implementation for minecraft 1.12.0-1.12.2.
@@ -47,9 +47,9 @@ import java.util.List;
 public final class CustomHitbox extends EntityArmorStand {
 
     private final Ball ball;
-    private int knockBackBumper;
 
-    private Vector reducementVector;
+    private int knockBackBumper;
+    private Vector reduceVector;
     private Vector originVector;
     private int times;
 
@@ -67,80 +67,50 @@ public final class CustomHitbox extends EntityArmorStand {
         this.a(compound);
         this.getSpigotEntity().setCustomName("ResourceBallsPlugin");
         this.getSpigotEntity().setCustomNameVisible(false);
-
     }
 
     ArmorStand getSpigotEntity() {
         return (ArmorStand) this.getBukkitEntity();
     }
 
-    private void spigotTimings(boolean started) {
-        Class<?> clazz = null;
+    void setVelocity(Vector velocity) {
         try {
-            clazz = Class.forName("org.bukkit.craftbukkit.v1_12_R1.SpigotTimings");
-        } catch (final ClassNotFoundException ignored) {
+            this.times = (int) (50 * this.ball.getMeta().getModifiers().getRollingDistanceModifier());
+            this.getSpigotEntity().setVelocity(velocity);
+            final Vector normalized = velocity.clone().normalize();
+            this.originVector = velocity.clone();
+            this.reduceVector = new Vector(normalized.getX() / this.times
+                    , 0.0784 * this.ball.getMeta().getModifiers().getGravityModifier()
+                    , normalized.getZ() / this.times);
+        } catch (IllegalArgumentException ignored) {
 
         }
-        if (clazz != null) {
-            final Object moveTimer;
-            try {
-                moveTimer = ReflectionUtils.invokeFieldByClass(clazz, "entityMoveTimer");
-                if (started) {
-                    ReflectionUtils.invokeMethodByObject(moveTimer, "startTiming", new Class[]{}, new Object[]{});
-                } else {
-                    ReflectionUtils.invokeMethodByObject(moveTimer, "stopTiming", new Class[]{}, new Object[]{});
-                }
-            } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-                //  BlockBallPlugin.logger().log(Level.WARNING, "Failed to invoke entityMoveTimer.");
-            }
-        }
+
     }
 
-    public void setVelocity(Vector velocity) {
-        times = 50;
-
-        this.getSpigotEntity().setVelocity(velocity);
-
-        System.out.println("VELOCITY: " + velocity);
-        System.out.println("NORMALIZED " + velocity.clone().normalize());
-
-        System.out.println("VECTOR: " + velocity);
-
-        Vector normalized = velocity.clone().normalize();
-
-        originVector = velocity.clone();
-
-
-
-        reducementVector = new Vector(normalized.getX()/times, normalized.getY() /times, normalized.getZ()/times);
-
-
+    private void applyKnockBack(Vector starter, Vector n) {
+        if (this.knockBackBumper <= 0) {
+            final Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n)));
+            this.getSpigotEntity().setVelocity(r);
+            this.knockBackBumper = 20;
+        }
     }
 
     @Override
     public void move(EnumMoveType enummovetype, double d0, double d1, double d2) {
-
-        Vector starter = new Vector(d0, d1 ,d2);
-
-        if(times > 0 && originVector != null)
-        {
-            this.originVector = this.originVector.subtract(this.reducementVector);
-
-            this.motX = this.originVector.getX();
+        final Vector starter;
+        if ((this.times > 0 || !this.onGround) && this.originVector != null) {
+            this.originVector = this.originVector.subtract(this.reduceVector);
+            if (this.times > 0) {
+                this.motX = this.originVector.getX();
+                this.motZ = this.originVector.getZ();
+            }
             this.motY = this.originVector.getY();
-            this.motZ = this.originVector.getZ();
-
-
-            times--;
-            starter = new Vector(motX, motY ,motZ);
+            this.times--;
+            starter = new Vector(this.motX, this.motY, this.motZ);
+        } else {
+            starter = new Vector(d0, d1, d2);
         }
-
-        System.out.println("STARTED: " + starter + " - " + times);
-
-
-
-
-
 
         this.spigotTimings(true);
         if (this.knockBackBumper > 0) {
@@ -369,11 +339,25 @@ public final class CustomHitbox extends EntityArmorStand {
         this.spigotTimings(false);
     }
 
-    private void applyKnockBack(Vector starter, Vector n) {
-        if (this.knockBackBumper <= 0) {
-            final Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n)));
-            this.getSpigotEntity().setVelocity(r);
-            this.knockBackBumper = 20;
+    private void spigotTimings(boolean started) {
+        Class<?> clazz = null;
+        try {
+            clazz = Class.forName("org.bukkit.craftbukkit.v1_12_R1.SpigotTimings");
+        } catch (final ClassNotFoundException ignored) {
+
+        }
+        if (clazz != null) {
+            final Object moveTimer;
+            try {
+                moveTimer = ReflectionUtils.invokeFieldByClass(clazz, "entityMoveTimer");
+                if (started) {
+                    ReflectionUtils.invokeMethodByObject(moveTimer, "startTiming", new Class[]{}, new Object[]{});
+                } else {
+                    ReflectionUtils.invokeMethodByObject(moveTimer, "stopTiming", new Class[]{}, new Object[]{});
+                }
+            } catch (NoSuchFieldException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                Bukkit.getLogger().log(Level.WARNING, "Failed to invoke entityMoveTimer.", e);
+            }
         }
     }
 

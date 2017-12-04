@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Optional;
@@ -67,6 +68,20 @@ public class BallListener extends SimpleListener {
                 }
             }
         }, 0L, 20L * 10);
+    }
+
+    /**
+     * Gets called when a player hits the ball and kicks the ball.
+     *
+     * @param event event
+     */
+    @EventHandler
+    public void onPlayerInteractBallEvent(PlayerInteractEvent event) {
+        for (final Ball ball : this.ballController.getAll()) {
+            if (ball.getLastInteractionEntity() != null && ball.getLastInteractionEntity().equals(event.getPlayer())) {
+                ball.throwByEntity(event.getPlayer());
+            }
+        }
     }
 
     /**

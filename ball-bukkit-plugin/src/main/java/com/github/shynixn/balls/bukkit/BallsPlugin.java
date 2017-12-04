@@ -1,6 +1,7 @@
 package com.github.shynixn.balls.bukkit;
 
 import com.github.shynixn.balls.api.BallsApi;
+import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.bukkit.core.logic.business.CoreManager;
 import com.github.shynixn.balls.bukkit.core.nms.VersionSupport;
 import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
@@ -90,21 +91,13 @@ public class BallsPlugin extends JavaPlugin {
 
                 Player p = Bukkit.getPlayer("Shynixn");
 
-                ArmorStand s = (ArmorStand) p.getLocation().getWorld().spawnEntity(p.getLocation(), EntityType.ARMOR_STAND);
-
-                getServer().getScheduler().runTaskTimer(this, new Runnable() {
-
-                    private double x = 0.0;
-
-                    @Override
-                    public void run() {
-                        s.setHeadPose(new EulerAngle(0, 0,x));
-                        x = x + 0.1;
-                    }
-                },0L, 1L);
 
 
-                BallsApi.spawnTemporaryBall(p.getLocation(), BallsApi.getBallMetaController().create("textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14"));
+                BallMeta meta = BallsApi.getBallMetaController().create("textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14");
+
+                meta.getModifiers().setGravityModifier(0.5);
+
+                BallsApi.spawnTemporaryBall(p.getLocation(), meta);
 
                 Bukkit.getServer().getConsoleSender().sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Enabled Balls " + this.getDescription().getVersion() + " by Shynixn");
             } catch (final Exception e) {

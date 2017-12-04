@@ -74,6 +74,20 @@ public interface BallMeta {
     void setRotatingEnabled(boolean enabled);
 
     /**
+     * Sets the size of the hitbox of the ball. Default 2.
+     *
+     * @param size size
+     */
+    void setHitBoxSize(double size);
+
+    /**
+     * Returns the size of the hitbox of the ball.
+     *
+     * @return size
+     */
+    double getHitBoxSize();
+
+    /**
      * Returns if the ball displays a rotation animation when being kicked or thrown.
      *
      * @return enabled

@@ -21,13 +21,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
-import java.util.Random;
 import java.util.logging.Level;
 
 public final class CustomDesign extends EntityArmorStand implements Ball {
-    private static final Random random = new Random();
-    private static final int HITBOX_DETER = 2;
-
     private final boolean persistent;
     private final Entity owner;
 
@@ -47,74 +43,9 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
         this.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 
-    private boolean isPassengerNull() {
-        return this.passengers == null || this.passengers.isEmpty();
-    }
-
-    private void teleportToHitBox() {
-        final Location loc = this.hitBox.getSpigotEntity().getLocation();
-        if (this.isSmall()) {
-            this.setPositionRotation(loc.getX(), loc.getY() - 0.7, loc.getZ(), loc.getYaw(), loc.getPitch());
-        } else {
-            this.setPositionRotation(loc.getX(), loc.getY() - 1.0, loc.getZ(), loc.getYaw(), loc.getPitch());
-        }
-    }
-
-    private void playRotationAnimation() {
-        final double length = new Vector(this.hitBox.motX, this.hitBox.motY, this.hitBox.motZ).length();
-        EulerAngle angle = null;
-        final EulerAngle a = this.getSpigotEntity().getHeadPose();
-        if (length > 1.0) {
-            angle = new EulerAngle(a.getX() + 0.5, 0, 0);
-        } else if (length > 0.1) {
-            angle = new EulerAngle(a.getX() + 0.25, 0, 0);
-        } else if (length > 0.08) {
-            angle = new EulerAngle(a.getX() + 0.025, 0, 0);
-        }
-        if (angle != null) {
-            this.getSpigotEntity().setHeadPose(angle);
-        }
-    }
-
-    private ArmorStand getSpigotEntity() {
-        return (ArmorStand) this.getArmorstand();
-    }
-
-    private void cancelEntityActionsFromEnvironment() {
-        this.getBukkitEntity().setFireTicks(0);
-    }
-
-    private void checkForEntityMoveInteractions() {
-        if (this.counter <= 0) {
-            this.counter = 2;
-            final Location hitBoxLocation = this.hitBox.getSpigotEntity().getLocation();
-            for (final Entity entity : this.getSpigotEntity().getLocation().getChunk().getEntities()) {
-                if (!entity.equals(this.hitBox.getSpigotEntity()) &&
-                        !entity.equals(this.getSpigotEntity()) &&
-                        entity.getLocation().distance(hitBoxLocation) < HITBOX_DETER) {
-                    final BallInteractEvent event = new BallInteractEvent(this, entity);
-                    Bukkit.getPluginManager().callEvent(event);
-                    if (event.isCancelled())
-                        return;
-                    final Vector vector = hitBoxLocation
-                            .toVector()
-                            .subtract(entity.getLocation().toVector())
-                            .normalize();
-                    vector.setY(0.1);
-                    try {
-                        this.hitBox.yaw = entity.getLocation().getYaw();
-                        this.getSpigotEntity().setHeadPose(new EulerAngle(2, 0, 0));
-                        this.move(vector.getX(), vector.getY(), vector.getZ());
-                    } catch (final IllegalArgumentException ex) {
-                    }
-                    return;
-                }
-            }
-        } else {
-            this.counter--;
-        }
-    }
-
+    /**
+     * Ticking entity.
+     */
     @Override
     protected void doTick() {
         super.doTick();
@@ -122,85 +53,63 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
             return;
         if (!this.isPassengerNull() || this.getBukkitEntity().getVehicle() != null)
             return;
-
         try {
             this.cancelEntityActionsFromEnvironment();
             this.teleportToHitBox();
-            this.checkForEntityMoveInteractions();
-            if (this.ballMeta.isRotatingEnabled()) {
-                this.playRotationAnimation();
-                System.out.println("PLAY MOVE");
+            if (!this.isGrabbed()) {
+                this.checkForEntityMoveInteractions();
+                if (this.ballMeta.isRotatingEnabled()) {
+                    this.playRotationAnimation();
+                }
+            } else {
+                this.hitBox.getSpigotEntity().teleport(this.interactionEntity);
             }
         } catch (final Exception ex) {
             Bukkit.getLogger().log(Level.WARNING, "Ball moving failed.", ex);
         }
-
     }
 
     /**
-     * Kicks the ball by the given entity. Returns the calculated velocity for the ball.
-     * The calculated velocity can be manipulated before actually applying it to the ball
-     * in next tick.
+     * Kicks the ball by the given entity.
      *
      * @param entity entity
-     * @return velocity
      */
     @Override
-    public Object kickByEntity(Object entity) {
-        final LivingEntity livingEntity = (LivingEntity) entity;
-        Vector vector = this.getDirection(livingEntity);
-        vector = this.hitBox.getSpigotEntity()
+    public void kickByEntity(Object entity) {
+        if (this.isGrabbed())
+            return;
+        final Vector vector = this.hitBox.getSpigotEntity()
                 .getLocation()
                 .toVector()
                 .subtract(((Entity) entity).getLocation().toVector())
                 .normalize()
                 .multiply(this.ballMeta.getModifiers().getHorizontalKickStrengthModifier());
-        vector.setY(this.ballMeta.getModifiers().getVerticalKickStrengthModifier());
+        this.hitBox.yaw = ((Entity) entity).getLocation().getYaw();
+        vector.setY(0.1 * this.ballMeta.getModifiers().getVerticalKickStrengthModifier());
         this.move(vector.getX(), vector.getY(), vector.getZ());
-        return vector;
     }
 
     /**
-     * Throws the ball by the given entity. Returns the calculated velocity for the ball.
-     * The calculated velocity can be manipulated before actually applying it to the ball
-     * in next tick.
+     * Throws the ball by the given entity.
      *
      * @param entity entity
-     * @return velocity
      */
     @Override
-    public Object throwByEntity(Object entity) {
+    public void throwByEntity(Object entity) {
         final LivingEntity livingEntity = (LivingEntity) entity;
         if (this.isGrabbed() && this.interactionEntity != null && livingEntity.equals(this.interactionEntity)) {
             this.deGrab();
-            final Vector vector = this.getDirection(livingEntity);
+            Vector vector = this.getDirection(livingEntity).normalize();
+            final double y = vector.getY();
+            vector = vector.multiply(this.ballMeta.getModifiers().getHorizontalThrowStrengthModifier());
+            vector.setY(y * 2 * this.ballMeta.getModifiers().getVerticalThrowStrengthModifier());
             final BallThrowEvent event = new BallThrowEvent(this, livingEntity);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
+                this.counter = 10;
                 this.move(vector.getX(), vector.getY(), vector.getZ());
             }
-            return vector;
         }
-        return null;
-    }
-
-    /**
-     * Returns the launch Direction.
-     *
-     * @param entity entity
-     * @return launchDirection
-     */
-    private Vector getDirection(Entity entity) {
-        final Vector vector = new Vector();
-        final double rotX = entity.getLocation().getYaw();
-        final double rotY = entity.getLocation().getPitch();
-        vector.setY(-Math.sin(Math.toRadians(rotY)));
-        final double h = Math.cos(Math.toRadians(rotY));
-        vector.setX(-h * Math.sin(Math.toRadians(rotX)));
-        vector.setZ(h * Math.cos(Math.toRadians(rotX)));
-        vector.setY(0.5);
-        vector.add(entity.getVelocity());
-        return vector.multiply(3);
     }
 
     /**
@@ -210,10 +119,13 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      */
     @Override
     public void grab(Object entity) {
+        if (this.isGrabbed())
+            return;
         this.interactionEntity = (Entity) entity;
         final LivingEntity livingEntity = (LivingEntity) this.interactionEntity;
         if (livingEntity.getEquipment().getItemInHand() == null || livingEntity.getEquipment().getItemInHand().getType() == Material.AIR) {
             livingEntity.getEquipment().setItemInHand(this.getSpigotEntity().getHelmet().clone());
+            this.getSpigotEntity().setHelmet(null);
             this.grabbed = true;
         }
     }
@@ -227,6 +139,9 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
             final LivingEntity livingEntity = (LivingEntity) this.interactionEntity;
             livingEntity.getEquipment().setItemInHand(null);
             this.grabbed = false;
+            final ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+            SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
+            this.getSpigotEntity().setHelmet(itemStack);
         }
     }
 
@@ -235,6 +150,8 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      */
     @Override
     public void respawn() {
+        if (this.isGrabbed())
+            return;
         final Location location = this.getSpigotEntity().getLocation();
         if (!this.isDead()) {
             this.remove();
@@ -248,11 +165,11 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
         compound.setBoolean("PersistenceRequired", true);
         compound.setBoolean("NoBasePlate", true);
         this.a(compound);
-        ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        this.getSpigotEntity().setCustomName("ResourceBallsPlugin");
+        this.getSpigotEntity().setCustomNameVisible(false);
+        final ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
         SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
         this.getSpigotEntity().setHelmet(itemStack);
-        System.out.println("SET KIN");
-
         this.hitBox = new CustomHitbox(location, this);
     }
 
@@ -262,6 +179,7 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
     @Override
     public void remove() {
         Bukkit.getPluginManager().callEvent(new BallDeathEvent(this));
+        this.deGrab();
         this.getSpigotEntity().remove();
         this.hitBox.getSpigotEntity().remove();
     }
@@ -275,6 +193,9 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      */
     @Override
     public void move(double x, double y, double z) {
+        if (this.isGrabbed())
+            return;
+        this.getSpigotEntity().setHeadPose(new EulerAngle(2, 0, 0));
         final Vector vector = new Vector(x, y, z);
         this.hitBox.setVelocity(vector);
     }
@@ -286,6 +207,8 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      */
     @Override
     public void teleport(Object location) {
+        if (this.isGrabbed())
+            return;
         this.hitBox.getSpigotEntity().teleport((Location) location);
     }
 
@@ -347,5 +270,88 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
     @Override
     public Object getHitBox() {
         return this.hitBox.getSpigotEntity();
+    }
+
+    /**
+     * Returns the launch Direction.
+     *
+     * @param entity entity
+     * @return launchDirection
+     */
+    private Vector getDirection(Entity entity) {
+        final Vector vector = new Vector();
+        final double rotX = entity.getLocation().getYaw();
+        final double rotY = entity.getLocation().getPitch();
+        vector.setY(-Math.sin(Math.toRadians(rotY)));
+        final double h = Math.cos(Math.toRadians(rotY));
+        vector.setX(-h * Math.sin(Math.toRadians(rotX)));
+        vector.setZ(h * Math.cos(Math.toRadians(rotX)));
+        vector.setY(0.5);
+        vector.add(entity.getVelocity());
+        return vector.multiply(3);
+    }
+
+    private boolean isPassengerNull() {
+        return this.passengers == null || this.passengers.isEmpty();
+    }
+
+    private void teleportToHitBox() {
+        final Location loc = this.hitBox.getSpigotEntity().getLocation();
+        if (this.isSmall()) {
+            this.setPositionRotation(loc.getX(), loc.getY() - 0.7, loc.getZ(), loc.getYaw(), loc.getPitch());
+        } else {
+            this.setPositionRotation(loc.getX(), loc.getY() - 1.0, loc.getZ(), loc.getYaw(), loc.getPitch());
+        }
+    }
+
+    private void playRotationAnimation() {
+        final double length = new Vector(this.hitBox.motX, this.hitBox.motY, this.hitBox.motZ).length();
+        EulerAngle angle = null;
+        final EulerAngle a = this.getSpigotEntity().getHeadPose();
+        if (length > 1.0) {
+            angle = new EulerAngle(a.getX() + 0.5, 0, 0);
+        } else if (length > 0.1) {
+            angle = new EulerAngle(a.getX() + 0.25, 0, 0);
+        } else if (length > 0.08) {
+            angle = new EulerAngle(a.getX() + 0.025, 0, 0);
+        }
+        if (angle != null) {
+            this.getSpigotEntity().setHeadPose(angle);
+        }
+    }
+
+    private ArmorStand getSpigotEntity() {
+        return (ArmorStand) this.getArmorstand();
+    }
+
+    private void cancelEntityActionsFromEnvironment() {
+        this.getBukkitEntity().setFireTicks(0);
+    }
+
+    private void checkForEntityMoveInteractions() {
+        if (this.counter <= 0) {
+            this.counter = 2;
+            final Location hitBoxLocation = this.hitBox.getSpigotEntity().getLocation();
+            for (final Entity entity : this.getSpigotEntity().getLocation().getChunk().getEntities()) {
+                if (!entity.equals(this.hitBox.getSpigotEntity()) &&
+                        !entity.equals(this.getSpigotEntity()) &&
+                        entity.getLocation().distance(hitBoxLocation) < this.ballMeta.getHitBoxSize()) {
+                    final BallInteractEvent event = new BallInteractEvent(this, entity);
+                    Bukkit.getPluginManager().callEvent(event);
+                    if (event.isCancelled())
+                        return;
+                    final Vector vector = hitBoxLocation
+                            .toVector()
+                            .subtract(entity.getLocation().toVector())
+                            .normalize().multiply(this.ballMeta.getModifiers().getHorizontalTouchModifier());
+                    vector.setY(0.1 * this.ballMeta.getModifiers().getVerticalTouchModifier());
+                    this.hitBox.yaw = entity.getLocation().getYaw();
+                    this.move(vector.getX(), vector.getY(), vector.getZ());
+                    return;
+                }
+            }
+        } else {
+            this.counter--;
+        }
     }
 }

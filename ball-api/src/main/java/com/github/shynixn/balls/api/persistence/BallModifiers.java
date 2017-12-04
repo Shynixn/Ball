@@ -30,6 +30,64 @@ package com.github.shynixn.balls.api.persistence;
 public interface BallModifiers {
 
     /**
+     * Returns the gravity modifier how fast a ball falls to the ground after being kicked or
+     * thrown in to the sky.
+     *
+     * @return strength
+     */
+    double getGravityModifier();
+
+    /**
+     * Sets the gravity modifier how fast a ball falls to the ground after being kicked or
+     * thrown in to the sky.
+     *
+     * @param strength strength
+     */
+    void setGravityModifier(double strength);
+
+    /**
+     * Returns the rolling distance modifier.
+     *
+     * @return modifier
+     */
+    double getRollingDistanceModifier();
+
+    /**
+     * Sets the rolling distance modifier
+     *
+     * @param strength strength
+     */
+    void setRollingDistanceModifier(double strength);
+
+    /**
+     * Returns the modifier value for the horizontal velocity a player touches the ball.
+     *
+     * @return modifier
+     */
+    double getHorizontalTouchModifier();
+
+    /**
+     * Sets the modifier value for the horizontal velocity a player touches the ball.
+     *
+     * @param strength strength
+     */
+    void setHorizontalTouchModifier(double strength);
+
+    /**
+     * Returns the modifier value for the vertical velocity a player touches the ball.
+     *
+     * @return modifier
+     */
+    double getVerticalTouchModifier();
+
+    /**
+     * Sets the modifier value for the vertical velocity a player touches the ball.
+     *
+     * @param strength strength
+     */
+    void setVerticalTouchModifier(double strength);
+
+    /**
      * Returns the modifier value for the horizontal velocity a player kicks the ball.
      *
      * @return strength
