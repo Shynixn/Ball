@@ -8,9 +8,12 @@ import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.EulerAngle;
 
 import java.lang.reflect.Field;
 import java.util.logging.Level;
@@ -83,7 +86,23 @@ public class BallsPlugin extends JavaPlugin {
 
 
 
+
+
                 Player p = Bukkit.getPlayer("Shynixn");
+
+                ArmorStand s = (ArmorStand) p.getLocation().getWorld().spawnEntity(p.getLocation(), EntityType.ARMOR_STAND);
+
+                getServer().getScheduler().runTaskTimer(this, new Runnable() {
+
+                    private double x = 0.0;
+
+                    @Override
+                    public void run() {
+                        s.setHeadPose(new EulerAngle(0, 0,x));
+                        x = x + 0.1;
+                    }
+                },0L, 1L);
+
 
                 BallsApi.spawnTemporaryBall(p.getLocation(), BallsApi.getBallMetaController().create("textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14"));
 

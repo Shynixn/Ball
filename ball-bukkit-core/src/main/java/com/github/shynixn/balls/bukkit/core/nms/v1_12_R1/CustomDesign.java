@@ -38,7 +38,6 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
     private Entity interactionEntity;
 
     private int counter = 20;
-    private final int rvalue = 5;
 
     public CustomDesign(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
         super(((CraftWorld) location.getWorld()).getHandle());
@@ -62,22 +61,18 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
     }
 
     private void playRotationAnimation() {
+        final double length = new Vector(this.hitBox.motX, this.hitBox.motY, this.hitBox.motZ).length();
+        EulerAngle angle = null;
         final EulerAngle a = this.getSpigotEntity().getHeadPose();
-        final int value = (int) a.getX();
-        if (value % this.rvalue != 0) {
-            EulerAngle angle = null;
-            if (this.rvalue - a.getX() > this.rvalue * 0.5) {
-                angle = new EulerAngle(a.getX() + 0.1, a.getY() + 0.2, a.getZ() + 0.3);
-            } else if (this.rvalue - a.getX() > this.rvalue * 0.3) {
-                angle = new EulerAngle(a.getX() + 0.05, a.getY() + 0.1, a.getZ() + 0.15);
-            } else if (this.rvalue - a.getX() > this.rvalue * 0.2) {
-                angle = new EulerAngle(a.getX() + 0.025, a.getY() + 0.05, a.getZ() + 0.075);
-            } else if (this.rvalue - a.getX() > this.rvalue * 0.1) {
-                angle = new EulerAngle(a.getX() + 0.012, a.getY() + 0.025, a.getZ() + 0.035);
-            }
-            if (angle != null) {
-                this.getSpigotEntity().setHeadPose(angle);
-            }
+        if (length > 1.0) {
+            angle = new EulerAngle(a.getX() + 0.5, 0, 0);
+        } else if (length > 0.1) {
+            angle = new EulerAngle(a.getX() + 0.25, 0, 0);
+        } else if (length > 0.08) {
+            angle = new EulerAngle(a.getX() + 0.025, 0, 0);
+        }
+        if (angle != null) {
+            this.getSpigotEntity().setHeadPose(angle);
         }
     }
 
@@ -104,10 +99,11 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
                     final Vector vector = hitBoxLocation
                             .toVector()
                             .subtract(entity.getLocation().toVector())
-                            .normalize()
-                            .multiply(4);
+                            .normalize();
                     vector.setY(0.1);
                     try {
+                        this.hitBox.yaw = entity.getLocation().getYaw();
+                        this.getSpigotEntity().setHeadPose(new EulerAngle(2, 0, 0));
                         this.move(vector.getX(), vector.getY(), vector.getZ());
                     } catch (final IllegalArgumentException ex) {
                     }
@@ -133,6 +129,7 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
             this.checkForEntityMoveInteractions();
             if (this.ballMeta.isRotatingEnabled()) {
                 this.playRotationAnimation();
+                System.out.println("PLAY MOVE");
             }
         } catch (final Exception ex) {
             Bukkit.getLogger().log(Level.WARNING, "Ball moving failed.", ex);
@@ -256,7 +253,7 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
         this.getSpigotEntity().setHelmet(itemStack);
         System.out.println("SET KIN");
 
-        this.hitBox = new CustomHitbox(location,this);
+        this.hitBox = new CustomHitbox(location, this);
     }
 
     /**

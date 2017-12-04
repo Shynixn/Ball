@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.Vector;
@@ -45,12 +46,12 @@ import java.util.List;
  */
 public final class CustomHitbox extends EntityArmorStand {
 
-    private Vector vectorCache;
-    private int rollingTimes = 20;
-
     private final Ball ball;
-
     private int knockBackBumper;
+
+    private Vector reducementVector;
+    private Vector originVector;
+    private int times;
 
     public CustomHitbox(Location location, Ball ball) {
         super(((CraftWorld) location.getWorld()).getHandle());
@@ -66,6 +67,7 @@ public final class CustomHitbox extends EntityArmorStand {
         this.a(compound);
         this.getSpigotEntity().setCustomName("ResourceBallsPlugin");
         this.getSpigotEntity().setCustomNameVisible(false);
+
     }
 
     ArmorStand getSpigotEntity() {
@@ -95,31 +97,55 @@ public final class CustomHitbox extends EntityArmorStand {
     }
 
     public void setVelocity(Vector velocity) {
+        times = 50;
+
         this.getSpigotEntity().setVelocity(velocity);
-        this.rollingTimes = 60;
-        this.vectorCache = velocity;
+
+        System.out.println("VELOCITY: " + velocity);
+        System.out.println("NORMALIZED " + velocity.clone().normalize());
+
         System.out.println("VECTOR: " + velocity);
+
+        Vector normalized = velocity.clone().normalize();
+
+        originVector = velocity.clone();
+
+
+
+        reducementVector = new Vector(normalized.getX()/times, normalized.getY() /times, normalized.getZ()/times);
+
+
     }
 
     @Override
     public void move(EnumMoveType enummovetype, double d0, double d1, double d2) {
 
-        Vector starter = this.getSpigotEntity().getVelocity();
-        if (this.rollingTimes >= 0 && this.vectorCache != null) {
-          /*  this.setVelocity(vectorCache);
-            this.vectorCache.setX(this.motX / 28);
-            this.vectorCache.setY(this.motY / 28);
-            this.vectorCache.setZ(this.motZ / 28);*/
+        Vector starter = new Vector(d0, d1 ,d2);
 
-            this.rollingTimes--;
+        if(times > 0 && originVector != null)
+        {
+            this.originVector = this.originVector.subtract(this.reducementVector);
+
+            this.motX = this.originVector.getX();
+            this.motY = this.originVector.getY();
+            this.motZ = this.originVector.getZ();
+
+
+            times--;
+            starter = new Vector(motX, motY ,motZ);
         }
+
+        System.out.println("STARTED: " + starter + " - " + times);
+
+
+
+
+
 
         this.spigotTimings(true);
-         if(this.knockBackBumper > 0) {
+        if (this.knockBackBumper > 0) {
             this.knockBackBumper--;
         }
-
-
         if (this.noclip) {
             this.a(this.getBoundingBox().d(d0, d1, d2));
             this.recalcPosition();
@@ -328,7 +354,6 @@ public final class CustomHitbox extends EntityArmorStand {
                 } else if (d8 > d2) {
                     var81 = var81.getRelative(BlockFace.SOUTH);
                     final Vector n = new Vector(0, 0, -1);
-                    System.out.println("SOUTH: " + n);
                     this.applyKnockBack(starter, n);
 
                 } else if (d8 < d2) {
