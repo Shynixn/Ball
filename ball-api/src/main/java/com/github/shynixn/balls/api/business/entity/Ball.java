@@ -29,14 +29,14 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface Ball {
+public interface Ball<Location, Entity, Armorstand> {
 
     /**
      * Teleports the ball to the given location.
      *
      * @param location location
      */
-    void teleport(Object location);
+    void teleport(Location location);
 
     /**
      * Kicks the ball by the given entity.
@@ -44,7 +44,7 @@ public interface Ball {
      *
      * @param entity entity
      */
-    void kickByEntity(Object entity);
+    void kickByEntity(Entity entity);
 
     /**
      * Throws the ball by the given entity.
@@ -52,14 +52,14 @@ public interface Ball {
      *
      * @param entity entity
      */
-    void throwByEntity(Object entity);
+    void throwByEntity(Entity entity);
 
     /**
      * Returns the last entity the ball interacted with. If it is contact, kicking or grabbing.
      *
      * @return entity.
      */
-    Object getLastInteractionEntity();
+    Entity getLastInteractionEntity();
 
     /**
      * Sets the ball in the hands of the entity.
@@ -118,12 +118,12 @@ public interface Ball {
      *
      * @return armorstand
      */
-    Object getArmorstand();
+    Armorstand getArmorstand();
 
     /**
      * Returns the hitbox of the ball.
      *
      * @return armorstand
      */
-    Object getHitBox();
+    Armorstand getHitBox();
 }

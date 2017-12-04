@@ -1,6 +1,8 @@
 package com.github.shynixn.balls.bukkit;
 
 import com.github.shynixn.balls.api.BallsApi;
+import com.github.shynixn.balls.api.bukkit.entity.BukkitBall;
+import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.bukkit.core.logic.business.CoreManager;
@@ -104,7 +106,8 @@ public class BallsPlugin extends JavaPlugin {
                 BounceObject grass = meta.getBounceObjectController().create(Material.GRASS.getId(), 0);
                // grass.setBounceModifier(2.0);
 
-                BallsApi.spawnTemporaryBall(p.getLocation(), meta);
+                Ball bukkitBall = BallsApi.spawnTemporaryBall(p.getLocation(), meta);
+
 
                 Bukkit.getServer().getConsoleSender().sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Enabled Balls " + this.getDescription().getVersion() + " by Shynixn");
             } catch (final Exception e) {
