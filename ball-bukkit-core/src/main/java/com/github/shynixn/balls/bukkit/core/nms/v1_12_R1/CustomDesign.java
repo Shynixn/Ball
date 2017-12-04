@@ -35,6 +35,8 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
 
     private int counter = 20;
 
+    boolean revertAnimation;
+
     public CustomDesign(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
         super(((CraftWorld) location.getWorld()).getHandle());
         this.ballMeta = ballMeta;
@@ -142,6 +144,9 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
             final ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
             SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
             this.getSpigotEntity().setHelmet(itemStack);
+            final Vector vector = this.getDirection(livingEntity).normalize().multiply(3);
+            System.out.println(vector);
+            this.teleport(livingEntity.getLocation().add(vector));
         }
     }
 
@@ -195,6 +200,7 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
     public void move(double x, double y, double z) {
         if (this.isGrabbed())
             return;
+        this.revertAnimation = false;
         this.getSpigotEntity().setHeadPose(new EulerAngle(2, 0, 0));
         final Vector vector = new Vector(x, y, z);
         this.hitBox.setVelocity(vector);
@@ -309,11 +315,23 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
         EulerAngle angle = null;
         final EulerAngle a = this.getSpigotEntity().getHeadPose();
         if (length > 1.0) {
-            angle = new EulerAngle(a.getX() + 0.5, 0, 0);
+            if (this.revertAnimation) {
+                angle = new EulerAngle(a.getX() - 0.5, 0, 0);
+            } else {
+                angle = new EulerAngle(a.getX() + 0.5, 0, 0);
+            }
         } else if (length > 0.1) {
-            angle = new EulerAngle(a.getX() + 0.25, 0, 0);
+            if (this.revertAnimation) {
+                angle = new EulerAngle(a.getX() - 0.25, 0, 0);
+            } else {
+                angle = new EulerAngle(a.getX() + 0.25, 0, 0);
+            }
         } else if (length > 0.08) {
-            angle = new EulerAngle(a.getX() + 0.025, 0, 0);
+            if (this.revertAnimation) {
+                angle = new EulerAngle(a.getX() - 0.025, 0, 0);
+            } else {
+                angle = new EulerAngle(a.getX() + 0.025, 0, 0);
+            }
         }
         if (angle != null) {
             this.getSpigotEntity().setHeadPose(angle);

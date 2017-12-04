@@ -1,5 +1,6 @@
 package com.github.shynixn.balls.api.persistence;
 
+import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 
 /**
@@ -50,7 +51,21 @@ public interface BallMeta {
      *
      * @return list
      */
-    IController<BounceObject> getBounceObjectController();
+    BounceController getBounceObjectController();
+
+    /**
+     * Sets always bouncing back from blocks regardless of bounceController.
+     *
+     * @param enabled enabled
+     */
+    void setAlwaysBounceBack(boolean enabled);
+
+    /**
+     * Returns if always bouncing back from blocks regardless of bounceController.
+     *
+     * @return enabled
+     */
+    boolean isAlwaysBounceBack();
 
     /**
      * Sets if the ball is carry able.

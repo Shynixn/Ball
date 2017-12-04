@@ -1,6 +1,7 @@
 package com.github.shynixn.balls.bukkit.core.logic.persistence.controller;
 
 import com.github.shynixn.balls.api.persistence.BounceObject;
+import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BounceInfo;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -35,7 +36,7 @@ import java.util.*;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BounceObjectController implements IController<BounceObject>, ConfigurationSerializable {
+public class BounceObjectController implements BounceController, ConfigurationSerializable {
 
     private final List<BounceObject> bounceObjects = new ArrayList<>();
 
@@ -65,6 +66,36 @@ public class BounceObjectController implements IController<BounceObject>, Config
         if (this.bounceObjects.contains(item)) {
             this.bounceObjects.remove(item);
         }
+    }
+
+    /**
+     * Creates a new bounceObject from the given parameters.
+     *
+     * @param type   type
+     * @param damage damage
+     * @return bounceObject
+     */
+    @Override
+    public BounceObject create(int type, int damage) {
+        final BounceObject object = new BounceInfo(type);
+        object.setMaterialDamageValue(damage);
+        return object;
+    }
+
+    /**
+     * Returns the bounceObject from the given block.
+     *
+     * @param block block
+     * @return optBounceObject
+     */
+    @Override
+    public Optional<BounceObject> getBounceObjectFromBlock(Object block) {
+        for (final BounceObject object : this.bounceObjects) {
+            if (object.isBlock(block)) {
+                return Optional.of(object);
+            }
+        }
+        return Optional.empty();
     }
 
     /**

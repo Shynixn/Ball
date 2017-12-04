@@ -2,12 +2,14 @@ package com.github.shynixn.balls.bukkit;
 
 import com.github.shynixn.balls.api.BallsApi;
 import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.bukkit.core.logic.business.CoreManager;
 import com.github.shynixn.balls.bukkit.core.nms.VersionSupport;
 import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
 import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -95,7 +97,12 @@ public class BallsPlugin extends JavaPlugin {
 
                 BallMeta meta = BallsApi.getBallMetaController().create("textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14");
 
-                meta.getModifiers().setGravityModifier(0.5);
+                BounceObject dirt = meta.getBounceObjectController().create(Material.DIRT.getId(), 0);
+                dirt.setBounceModifier(1.2);
+                meta.getBounceObjectController().store(dirt);
+
+                BounceObject grass = meta.getBounceObjectController().create(Material.GRASS.getId(), 0);
+               // grass.setBounceModifier(2.0);
 
                 BallsApi.spawnTemporaryBall(p.getLocation(), meta);
 

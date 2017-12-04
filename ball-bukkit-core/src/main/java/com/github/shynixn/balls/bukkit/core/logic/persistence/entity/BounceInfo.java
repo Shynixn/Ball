@@ -38,7 +38,7 @@ public class BounceInfo implements BounceObject, ConfigurationSerializable {
 
     private int id;
     private int damage;
-    private double modifier;
+    private double modifier = 1.0;
 
     /**
      * Initializes a new bounce info.

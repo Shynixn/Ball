@@ -4,6 +4,7 @@ import com.github.shynixn.balls.api.persistence.BallEffects;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.BallModifiers;
 import com.github.shynixn.balls.api.persistence.BounceObject;
+import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BounceObjectController;
 import org.bukkit.configuration.MemorySection;
@@ -47,16 +48,18 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     private boolean carryAble = true;
     private boolean rotating = true;
     private double hitbox = 2.0;
+    private boolean alwaysBounce;
 
     private final BallModifications modifications;
 
-    private final IController<BounceObject> bounceObjectIController;
+    private final BounceController bounceObjectIController;
 
-    public BallData(Map<String, Object> data, IController<BounceObject> bounceObjectIController) {
+    public BallData(Map<String, Object> data, BounceController bounceObjectIController) {
         this.skin = (String) data.get("skin");
         this.hitbox = (double) data.get("hitbox-size");
         this.carryAble = (boolean) data.get("carry-able");
         this.rotating = (boolean) data.get("rotating");
+        this.alwaysBounce = (boolean) data.get("always-bounce");
         this.bounceObjectIController = bounceObjectIController;
         this.modifications = new BallModifications(((MemorySection) data.get("modifiers")).getValues(false));
     }
@@ -93,8 +96,28 @@ public class BallData implements BallMeta, ConfigurationSerializable {
      * @return list
      */
     @Override
-    public IController<BounceObject> getBounceObjectController() {
-        return null;
+    public BounceController getBounceObjectController() {
+        return this.bounceObjectIController;
+    }
+
+    /**
+     * Sets always bouncing back from blocks regardless of bounceController.
+     *
+     * @param enabled enabled
+     */
+    @Override
+    public void setAlwaysBounceBack(boolean enabled) {
+        this.alwaysBounce = enabled;
+    }
+
+    /**
+     * Returns if always bouncing back from blocks regardless of bounceController.
+     *
+     * @return enabled
+     */
+    @Override
+    public boolean isAlwaysBounceBack() {
+        return this.alwaysBounce;
     }
 
     /**
@@ -185,6 +208,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         data.put("skin", this.getSkin());
         data.put("hitbox-size", this.getHitBoxSize());
         data.put("carry-able", this.isCarryable());
+        data.put("always-bounce", this.alwaysBounce);
         data.put("rotating", this.isRotatingEnabled());
         data.put("wall-bouncing", ((BounceObjectController) this.bounceObjectIController).serialize());
         return data;

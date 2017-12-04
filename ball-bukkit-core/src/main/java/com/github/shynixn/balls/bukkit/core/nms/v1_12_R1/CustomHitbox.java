@@ -2,6 +2,7 @@ package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
 import com.github.shynixn.balls.api.bukkit.event.BallWallCollideEvent;
 import com.github.shynixn.balls.api.business.entity.Ball;
+import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 /**
@@ -88,11 +90,19 @@ public final class CustomHitbox extends EntityArmorStand {
 
     }
 
-    private void applyKnockBack(Vector starter, Vector n) {
+    private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block) {
         if (this.knockBackBumper <= 0) {
-            final Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n)));
-            this.getSpigotEntity().setVelocity(r);
-            this.knockBackBumper = 20;
+            final Optional<BounceObject> optBounce = this.ball.getMeta().getBounceObjectController().getBounceObjectFromBlock(block);
+            if (optBounce.isPresent() || ball.getMeta().isAlwaysBounceBack()) {
+                Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n))).multiply(0.75);
+                if (optBounce.isPresent()) {
+                    r = r.multiply(optBounce.get().getBounceModifier());
+                }
+                this.setVelocity(r);
+                System.out.println("MOVE!");
+                ((CustomDesign) ball).revertAnimation = !((CustomDesign) ball).revertAnimation;
+                this.knockBackBumper = 5;
+            }
         }
     }
 
@@ -311,29 +321,33 @@ public final class CustomHitbox extends EntityArmorStand {
                 var86.a(this.world, this);
             }
 
-            if (this.positionChanged) {
-                org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
-                if (d6 > d0) {
-                    var81 = var81.getRelative(BlockFace.EAST);
-                    final Vector n = new Vector(-1, 0, 0);
-                    this.applyKnockBack(starter, n);
-                } else if (d6 < d0) {
-                    var81 = var81.getRelative(BlockFace.WEST);
-                    final Vector n = new Vector(1, 0, 0);
-                    this.applyKnockBack(starter, n);
-                } else if (d8 > d2) {
-                    var81 = var81.getRelative(BlockFace.SOUTH);
-                    final Vector n = new Vector(0, 0, -1);
-                    this.applyKnockBack(starter, n);
+            try {
+                if (this.positionChanged) {
+                    org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
+                    if (d6 > d0) {
+                        var81 = var81.getRelative(BlockFace.EAST);
+                        final Vector n = new Vector(-1, 0, 0);
+                        this.applyKnockBack(starter, n, var81);
+                    } else if (d6 < d0) {
+                        var81 = var81.getRelative(BlockFace.WEST);
+                        final Vector n = new Vector(1, 0, 0);
+                        this.applyKnockBack(starter, n, var81);
+                    } else if (d8 > d2) {
+                        var81 = var81.getRelative(BlockFace.SOUTH);
+                        final Vector n = new Vector(0, 0, -1);
+                        this.applyKnockBack(starter, n, var81);
 
-                } else if (d8 < d2) {
-                    var81 = var81.getRelative(BlockFace.NORTH);
-                    final Vector n = new Vector(0, 0, 1);
-                    this.applyKnockBack(starter, n);
+                    } else if (d8 < d2) {
+                        var81 = var81.getRelative(BlockFace.NORTH);
+                        final Vector n = new Vector(0, 0, 1);
+                        this.applyKnockBack(starter, n, var81);
+                    }
+                    if (var81 != null) {
+                        Bukkit.getPluginManager().callEvent(new BallWallCollideEvent(this.ball, var81));
+                    }
                 }
-                if (var81 != null) {
-                    Bukkit.getPluginManager().callEvent(new BallWallCollideEvent(this.ball, var81));
-                }
+            } catch (final Exception ex) {
+                Bukkit.getLogger().log(Level.WARNING, "Critical exception.", ex);
             }
         }
         this.spigotTimings(false);

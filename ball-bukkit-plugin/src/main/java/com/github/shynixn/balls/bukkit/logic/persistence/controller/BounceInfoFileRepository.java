@@ -1,6 +1,7 @@
 package com.github.shynixn.balls.bukkit.logic.persistence.controller;
 
 import com.github.shynixn.balls.api.persistence.BounceObject;
+import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 import com.github.shynixn.balls.api.persistence.controller.IFileController;
 import com.github.shynixn.balls.bukkit.BallsPlugin;
@@ -13,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.Closeable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 
 /**
@@ -42,12 +44,12 @@ import java.util.logging.Level;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BounceInfoFileRepository implements IFileController<BounceObject> {
+public class BounceInfoFileRepository implements IFileController<BounceObject>, BounceController {
 
-    private final IController<BounceObject> controller;
-    private String key;
+    private final BounceController controller;
+    private final String key;
 
-    public BounceInfoFileRepository(String key, IController<BounceObject> controller) {
+    public BounceInfoFileRepository(String key, BounceController controller) {
         this.controller = controller;
         this.key = key;
     }
@@ -60,9 +62,9 @@ public class BounceInfoFileRepository implements IFileController<BounceObject> {
         final Plugin plugin = JavaPlugin.getPlugin(BallsPlugin.class);
         this.controller.clear();
         Config.getInstance().reload();
-        System.out.println(key);
+        System.out.println(this.key);
         final Map<String, Object> data = ((MemorySection) plugin.getConfig().get(this.key)).getValues(false);
-        System.out.println(key);
+        System.out.println(this.key);
         for (final String key : data.keySet()) {
             System.out.println("RELOAD " + this.key + "." + key);
             final Map<String, Object> content = ((MemorySection) plugin.getConfig().get(this.key + "." + key)).getValues(true);
@@ -170,5 +172,28 @@ public class BounceInfoFileRepository implements IFileController<BounceObject> {
     @Override
     public void close() throws Exception {
         this.controller.close();
+    }
+
+    /**
+     * Creates a new bounceObject from the given parameters.
+     *
+     * @param type   type
+     * @param damage damage
+     * @return bounceObject
+     */
+    @Override
+    public BounceObject create(int type, int damage) {
+        return controller.create(type, damage);
+    }
+
+    /**
+     * Returns the bounceObject from the given block.
+     *
+     * @param block block
+     * @return optBounceObject
+     */
+    @Override
+    public Optional<BounceObject> getBounceObjectFromBlock(Object block) {
+        return this.controller.getBounceObjectFromBlock(block);
     }
 }
