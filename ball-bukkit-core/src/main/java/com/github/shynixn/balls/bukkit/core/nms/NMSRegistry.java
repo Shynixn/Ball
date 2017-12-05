@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -43,6 +44,15 @@ public class NMSRegistry {
         try {
             final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
             return ReflectionUtils.invokeConstructor(clazz, new Class[]{Location.class, BallMeta.class, boolean.class, Entity.class}, new Object[]{location, ballMeta, persistent, owner});
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Ball spawnNMSBall(String uuid, Map<String, Object> data) {
+        try {
+            final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
+            return ReflectionUtils.invokeConstructor(clazz, new Class[]{String.class, Map.class}, new Object[]{uuid, data});
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

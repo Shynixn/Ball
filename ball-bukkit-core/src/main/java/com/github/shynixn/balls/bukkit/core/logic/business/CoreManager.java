@@ -5,6 +5,7 @@ import com.github.shynixn.balls.api.business.controller.BallController;
 import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
 import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
 import com.github.shynixn.balls.bukkit.core.logic.business.listener.BallListener;
+import com.github.shynixn.balls.bukkit.core.logic.business.listener.StorageListener;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BallDataRepository;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.Plugin;
@@ -46,9 +47,11 @@ public class CoreManager {
     public CoreManager(Plugin plugin) {
 
         this.metaController = new BallDataRepository();
-        this.ballController = new BallEntityController();
+        this.ballController = new BallEntityController(plugin);
 
         new BallListener(this.ballController, plugin);
+
+        new StorageListener(plugin, (BallEntityController) ballController);
 
         Field field;
         try {

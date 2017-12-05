@@ -4,6 +4,7 @@ import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BounceInfo;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
 import java.io.Closeable;
@@ -39,6 +40,16 @@ import java.util.*;
 public class BounceObjectController implements BounceController, ConfigurationSerializable {
 
     private final List<BounceObject> bounceObjects = new ArrayList<>();
+
+    public BounceObjectController() {
+    }
+
+    public BounceObjectController(Map<String, Object> data) {
+        for (final String key : data.keySet()) {
+            final BounceObject bounceObject = new BounceInfo(((MemorySection) data.get(key)).getValues(false));
+            this.store(bounceObject);
+        }
+    }
 
     /**
      * Stores a new a item in the repository.
@@ -133,7 +144,6 @@ public class BounceObjectController implements BounceController, ConfigurationSe
         for (int i = 0; i < list.size(); i++) {
             final BounceInfo bounceInfo = (BounceInfo) list.get(i);
             data.put(String.valueOf(i + 1), bounceInfo.serialize());
-            list.add(bounceInfo);
         }
         return data;
     }

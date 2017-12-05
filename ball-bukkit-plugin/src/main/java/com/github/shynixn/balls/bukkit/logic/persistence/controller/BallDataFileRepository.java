@@ -62,17 +62,9 @@ public class BallDataFileRepository implements IFileController<ItemContainer> {
         final Map<String, Object> data = ((MemorySection) this.plugin.getConfig().get("meta")).getValues(false);
         for (final String key : data.keySet()) {
             try {
-
-                final BounceInfoFileRepository fileRepository = new BounceInfoFileRepository("meta." + key +  ".ball.wall-bouncing", new BounceObjectController());
-                fileRepository.reload();
-
-                System.out.println("KEY: " + key + ".gui");
-
-
-                final ItemContainer container = new ItemContainer(Integer.parseInt(key), ((MemorySection)((MemorySection) data.get(key)).get("gui")).getValues(true));
-                final BallMeta ballMeta = new BallData(((MemorySection)((MemorySection) data.get(key)).get("ball")).getValues(true), fileRepository);
+                final ItemContainer container = new ItemContainer(Integer.parseInt(key), ((MemorySection) ((MemorySection) data.get(key)).get("gui")).getValues(true));
+                final BallMeta ballMeta = new BallData(((MemorySection) ((MemorySection) data.get(key)).get("ball")).getValues(true));
                 this.items.put(container, ballMeta);
-                System.out.println("PUT: " + container + " : " + ballMeta);
             } catch (final Exception e) {
                 BallsPlugin.logger().log(Level.WARNING, "Failed to load guiItem " + key + '.', e);
                 return;
@@ -91,7 +83,7 @@ public class BallDataFileRepository implements IFileController<ItemContainer> {
 
     public BallMeta getBallMetaFromContainer(ItemContainer itemContainer) {
         System.out.println("DATA: " + this.items.get(itemContainer));
-        if(this.items.containsKey(itemContainer))
+        if (this.items.containsKey(itemContainer))
             return this.items.get(itemContainer);
         return null;
     }

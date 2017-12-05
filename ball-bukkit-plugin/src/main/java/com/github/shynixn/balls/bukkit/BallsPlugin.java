@@ -106,7 +106,7 @@ public class BallsPlugin extends JavaPlugin {
                 BounceObject grass = meta.getBounceObjectController().create(Material.GRASS.getId(), 0);
                // grass.setBounceModifier(2.0);
 
-                Ball bukkitBall = BallsApi.spawnTemporaryBall(p.getLocation(), meta);
+                Ball bukkitBall = BallsApi.spawnBall(p.getLocation(), meta);
 
 
                 Bukkit.getServer().getConsoleSender().sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Enabled Balls " + this.getDescription().getVersion() + " by Shynixn");

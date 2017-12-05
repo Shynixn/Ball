@@ -2,6 +2,9 @@ package com.github.shynixn.balls.api.business.entity;
 
 import com.github.shynixn.balls.api.persistence.BallMeta;
 
+import java.util.Optional;
+import java.util.UUID;
+
 /**
  * Created by Shynixn 2017.
  * <p>
@@ -37,6 +40,13 @@ public interface Ball<Location, Entity, Armorstand> {
      * @param location location
      */
     void teleport(Location location);
+
+    /**
+     * Returns the location of the ball.
+     *
+     * @return location
+     */
+    Location getLocation();
 
     /**
      * Kicks the ball by the given entity.
@@ -114,6 +124,27 @@ public interface Ball<Location, Entity, Armorstand> {
     void move(double x, double y, double z);
 
     /**
+     * Sets if the ball should be stored on the fileSystem.
+     *
+     * @param enabled enabled
+     */
+    void setPersistent(boolean enabled);
+
+    /**
+     * Returns if the ball should be stored on the fileSystem.
+     *
+     * @return persistent
+     */
+    boolean isPersistent();
+
+    /**
+     * Returns the owner of the ball.
+     *
+     * @return owner
+     */
+    Optional<Entity> getOwner();
+
+    /**
      * Returns the armorstand of the ball.
      *
      * @return armorstand
@@ -126,4 +157,11 @@ public interface Ball<Location, Entity, Armorstand> {
      * @return armorstand
      */
     Armorstand getHitBox();
+
+    /**
+     * Returns the id of the ball.
+     *
+     * @return id
+     */
+    UUID getUUID();
 }

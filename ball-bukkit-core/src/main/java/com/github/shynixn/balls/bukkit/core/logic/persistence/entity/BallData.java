@@ -54,13 +54,13 @@ public class BallData implements BallMeta, ConfigurationSerializable {
 
     private final BounceController bounceObjectIController;
 
-    public BallData(Map<String, Object> data, BounceController bounceObjectIController) {
+    public BallData(Map<String, Object> data) {
         this.skin = (String) data.get("skin");
         this.hitbox = (double) data.get("hitbox-size");
         this.carryAble = (boolean) data.get("carry-able");
         this.rotating = (boolean) data.get("rotating");
         this.alwaysBounce = (boolean) data.get("always-bounce");
-        this.bounceObjectIController = bounceObjectIController;
+        this.bounceObjectIController = new BounceObjectController(((MemorySection) data.get("wall-bouncing")).getValues(false));
         this.modifications = new BallModifications(((MemorySection) data.get("modifiers")).getValues(false));
     }
 
@@ -210,6 +210,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         data.put("carry-able", this.isCarryable());
         data.put("always-bounce", this.alwaysBounce);
         data.put("rotating", this.isRotatingEnabled());
+        data.put("modifiers", this.modifications.serialize());
         data.put("wall-bouncing", ((BounceObjectController) this.bounceObjectIController).serialize());
         return data;
     }

@@ -1,14 +1,27 @@
 package com.github.shynixn.balls.bukkit.core.logic.business.controller;
 
+import com.github.shynixn.balls.api.bukkit.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.controller.BallController;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.bukkit.core.nms.NMSRegistry;
+import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.plugin.Plugin;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Created by Shynixn 2017.
@@ -40,6 +53,11 @@ import java.util.*;
 public class BallEntityController implements BallController {
 
     private final Set<Ball> balls = new HashSet<>();
+    private final Plugin plugin;
+
+    public BallEntityController(Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     /**
      * Creates a new ball from the given parameters.
@@ -55,6 +73,67 @@ public class BallEntityController implements BallController {
         final Ball ball = NMSRegistry.spawnNMSBall(location, ballMeta, persistent, (Entity) owner);
         ball.respawn();
         return ball;
+    }
+
+    public Ball create(String uuid, Map<String, Object> data) {
+        final Ball ball = NMSRegistry.spawnNMSBall(uuid, data);
+        ball.respawn();
+        return ball;
+    }
+
+    /**
+     * Saves the current ball and destroys the entity from the server.
+     *
+     * @param ball ball
+     */
+    public void saveAndDestroy(Ball ball, boolean destroy) {
+        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            try {
+                final File file = new File(this.plugin.getDataFolder(), "storage.yml");
+                if (!file.exists())
+                    file.createNewFile();
+                final FileConfiguration configuration = new YamlConfiguration();
+                configuration.load(file);
+                final ConfigurationSerializable serializable = (ConfigurationSerializable) ball;
+                configuration.set("balls." + ball.getUUID().toString(), serializable.serialize());
+                configuration.save(file);
+                this.plugin.getLogger().log(Level.INFO, "Saved ball with id " + ball.getUUID().toString() + ".");
+                if (destroy) {
+                    this.plugin.getServer().getScheduler().runTask(this.plugin, ball::remove);
+                }
+            } catch (IOException | InvalidConfigurationException ex) {
+                this.plugin.getLogger().log(Level.WARNING, "Failed to save ball.", ex);
+            }
+        });
+    }
+
+    public void loadAndSpawn(Chunk chunk) {
+        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            try {
+                final File file = new File(this.plugin.getDataFolder(), "storage.yml");
+                if (!file.exists()) {
+                    return;
+                }
+                final FileConfiguration configuration = new YamlConfiguration();
+                configuration.load(file);
+                final Map<String, Object> balls = ((MemorySection) configuration.get("balls")).getValues(false);
+                for (final String key : balls.keySet()) {
+                    final Map<String, Object> data = ((MemorySection) balls.get(key)).getValues(true);
+                    final Location location = Location.deserialize(((MemorySection) data.get("location")).getValues(true));
+                    this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
+                        final Chunk dataChunk = chunk.getWorld().getChunkAt(location);
+
+                        if (dataChunk != null && chunk.equals(dataChunk)) {
+                            final Ball ball = this.create(key, data);
+                            this.store(ball);
+                            this.plugin.getLogger().log(Level.INFO, "Loaded ball with id " + ball.getUUID().toString() + ".");
+                        }
+                    });
+                }
+            } catch (IOException | InvalidConfigurationException ex) {
+                this.plugin.getLogger().log(Level.WARNING, "Failed to load ball.", ex);
+            }
+        });
     }
 
     /**
@@ -83,6 +162,7 @@ public class BallEntityController implements BallController {
         if (item == null)
             throw new IllegalArgumentException("Ball cannot be null!");
         this.balls.add(item);
+        this.plugin.getLogger().log(Level.INFO, "Added managed ball with id " + item.getUUID() + ".");
     }
 
     /**
@@ -96,6 +176,7 @@ public class BallEntityController implements BallController {
             throw new IllegalArgumentException("Ball cannot be null!");
         if (this.balls.contains(item)) {
             this.balls.remove(item);
+            this.plugin.getLogger().log(Level.INFO, "Removed managed ball with id " + item.getUUID() + ".");
         }
     }
 

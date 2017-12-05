@@ -1,17 +1,20 @@
 package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
+import com.github.shynixn.balls.api.bukkit.entity.BukkitBall;
 import com.github.shynixn.balls.api.bukkit.event.BallDeathEvent;
 import com.github.shynixn.balls.api.bukkit.event.BallInteractEvent;
 import com.github.shynixn.balls.api.bukkit.event.BallThrowEvent;
-import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.SkinHelper;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
 import net.minecraft.server.v1_12_R1.EntityArmorStand;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import net.minecraft.server.v1_12_R1.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -21,11 +24,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 
-public final class CustomDesign extends EntityArmorStand implements Ball {
-    private final boolean persistent;
-    private final Entity owner;
+public final class CustomDesign extends EntityArmorStand implements BukkitBall, ConfigurationSerializable {
+    private boolean persistent;
+    private Entity owner;
 
     private final BallMeta ballMeta;
     private CustomHitbox hitBox;
@@ -37,12 +44,24 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
 
     boolean revertAnimation;
 
+    private UUID uuid;
+
     public CustomDesign(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
         super(((CraftWorld) location.getWorld()).getHandle());
         this.ballMeta = ballMeta;
         this.owner = owner;
         this.persistent = persistent;
         this.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        this.uuid = UUID.randomUUID();
+    }
+
+    public CustomDesign(String uuid, Map<String, Object> data) {
+        super(((CraftWorld) Bukkit.getWorld((String) data.get("location.world"))).getHandle());
+        this.uuid = UUID.fromString(uuid);
+        this.ballMeta = new BallData(((MemorySection) data.get("meta")).getValues(true));
+        Location location = Location.deserialize(((MemorySection) data.get("location")).getValues(true));
+        this.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        this.persistent = true;
     }
 
     /**
@@ -77,16 +96,16 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      * @param entity entity
      */
     @Override
-    public void kickByEntity(Object entity) {
+    public void kickByEntity(Entity entity) {
         if (this.isGrabbed())
             return;
         final Vector vector = this.hitBox.getSpigotEntity()
                 .getLocation()
                 .toVector()
-                .subtract(((Entity) entity).getLocation().toVector())
+                .subtract(entity.getLocation().toVector())
                 .normalize()
                 .multiply(this.ballMeta.getModifiers().getHorizontalKickStrengthModifier());
-        this.hitBox.yaw = ((Entity) entity).getLocation().getYaw();
+        this.hitBox.yaw = entity.getLocation().getYaw();
         vector.setY(0.1 * this.ballMeta.getModifiers().getVerticalKickStrengthModifier());
         this.move(vector.getX(), vector.getY(), vector.getZ());
     }
@@ -97,7 +116,7 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      * @param entity entity
      */
     @Override
-    public void throwByEntity(Object entity) {
+    public void throwByEntity(Entity entity) {
         final LivingEntity livingEntity = (LivingEntity) entity;
         if (this.isGrabbed() && this.interactionEntity != null && livingEntity.equals(this.interactionEntity)) {
             this.deGrab();
@@ -207,15 +226,55 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
     }
 
     /**
+     * Sets if the ball should be stored on the fileSystem.
+     *
+     * @param enabled enabled
+     */
+    @Override
+    public void setPersistent(boolean enabled) {
+        this.persistent = enabled;
+    }
+
+    /**
+     * Returns if the ball should be stored on the fileSystem.
+     *
+     * @return persistent
+     */
+    @Override
+    public boolean isPersistent() {
+        return persistent;
+    }
+
+    /**
+     * Returns the owner of the ball.
+     *
+     * @return owner
+     */
+    @Override
+    public Optional<Entity> getOwner() {
+        return Optional.ofNullable(this.owner);
+    }
+
+    /**
      * Teleports the ball to the given location.
      *
      * @param location location
      */
     @Override
-    public void teleport(Object location) {
+    public void teleport(Location location) {
         if (this.isGrabbed())
             return;
-        this.hitBox.getSpigotEntity().teleport((Location) location);
+        this.hitBox.getSpigotEntity().teleport(location);
+    }
+
+    /**
+     * Returns the location of the ball.
+     *
+     * @return location
+     */
+    @Override
+    public Location getLocation() {
+        return this.getSpigotEntity().getLocation();
     }
 
     /**
@@ -224,7 +283,7 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      * @return entity.
      */
     @Override
-    public Object getLastInteractionEntity() {
+    public Entity getLastInteractionEntity() {
         return this.interactionEntity;
     }
 
@@ -264,8 +323,8 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      * @return armorstand
      */
     @Override
-    public Object getArmorstand() {
-        return this.getBukkitEntity();
+    public ArmorStand getArmorstand() {
+        return (ArmorStand) this.getBukkitEntity();
     }
 
     /**
@@ -274,8 +333,18 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
      * @return armorstand
      */
     @Override
-    public Object getHitBox() {
+    public ArmorStand getHitBox() {
         return this.hitBox.getSpigotEntity();
+    }
+
+    /**
+     * Returns the id of the ball.
+     *
+     * @return id
+     */
+    @Override
+    public UUID getUUID() {
+        return uuid;
     }
 
     /**
@@ -339,7 +408,7 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
     }
 
     private ArmorStand getSpigotEntity() {
-        return (ArmorStand) this.getArmorstand();
+        return this.getArmorstand();
     }
 
     private void cancelEntityActionsFromEnvironment() {
@@ -371,5 +440,13 @@ public final class CustomDesign extends EntityArmorStand implements Ball {
         } else {
             this.counter--;
         }
+    }
+
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> data = new LinkedHashMap<>();
+        data.put("location", this.getLocation().serialize());
+        data.put("meta", ((BallData) ballMeta).serialize());
+        return data;
     }
 }

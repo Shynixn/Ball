@@ -82,7 +82,7 @@ public class BallsApi {
 
     /**
      * Creates a new managed ball which spawns at the given location and despawns automatically
-     * when the owner of the ball is over 50 blocks away, left the server or changes worlds.
+     * when the owner of the ball left the server, the chunk gets unloaded or changed worlds.
      *
      * @param location location
      * @param entity   entity
@@ -96,7 +96,7 @@ public class BallsApi {
             throw new IllegalArgumentException("BallMeta cannot be null!");
         if (entity == null)
             throw new IllegalArgumentException("Owner cannot be null!");
-        final Ball ball = ballController.create(location, ballMeta, true, entity);
+        final Ball ball = ballController.create(location, ballMeta, false, entity);
         ballController.store(ball);
         return ball;
     }

@@ -62,15 +62,6 @@ public class BallListener extends SimpleListener {
     public BallListener(BallController ballController, Plugin plugin) {
         super(plugin);
         this.ballController = ballController;
-        this.plugin.getServer().getScheduler().runTaskTimer(this.plugin, () -> {
-            for (final World world : Bukkit.getWorlds()) {
-                for (final Entity entity : world.getEntities()) {
-                    if (BallListener.this.isDeadBall(entity)) {
-                        entity.remove();
-                    }
-                }
-            }
-        }, 0L, 20L * 10);
     }
 
     /**
@@ -103,8 +94,6 @@ public class BallListener extends SimpleListener {
             if (ball.getMeta().isCarryable() && !ball.isGrabbed()) {
                 ball.grab(event.getPlayer());
             }
-            event.setCancelled(true);
-        } else if (this.isDeadBall(event.getRightClicked())) {
             event.setCancelled(true);
         }
     }
@@ -216,29 +205,6 @@ public class BallListener extends SimpleListener {
         if (optBall.isPresent()) {
             event.setCancelled(true);
         }
-    }
-
-    /**
-     * Checks if the ball is a dead ball.
-     *
-     * @param entity entity
-     * @return isDead
-     */
-    private boolean isDeadBall(Entity entity) {
-        final Optional<Ball> optBall = this.ballController.getBallFromEntity(entity);
-        if (!optBall.isPresent()) {
-            if (entity instanceof ArmorStand) {
-                final ArmorStand stand = (ArmorStand) entity;
-                final int xidentifier = (int) stand.getBodyPose().getZ();
-                final int identifier = (int) stand.getRightArmPose().getX();
-                if (xidentifier == 2777 && identifier == 2777) {
-                    return true;
-                }
-            } else if (entity instanceof Rabbit && entity.getCustomName() != null && entity.getCustomName().equals("MyBallsIdentifier")) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void dropBall(Player player) {
