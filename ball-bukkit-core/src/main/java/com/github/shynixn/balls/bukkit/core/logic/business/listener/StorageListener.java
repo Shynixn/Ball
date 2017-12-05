@@ -4,6 +4,7 @@ import com.github.shynixn.balls.api.business.controller.BallController;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
 import org.bukkit.Chunk;
+import org.bukkit.craftbukkit.v1_8_R1.CraftChunk;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +15,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -47,7 +48,7 @@ import java.util.logging.Level;
 public class StorageListener extends SimpleListener {
 
     private final BallEntityController ballController;
-    private Chunk saved;
+    private final List<UUID> cache = new ArrayList<>();
 
     /**
      * Initializes a new listener by plugin
@@ -75,17 +76,13 @@ public class StorageListener extends SimpleListener {
 
     @EventHandler
     public void onChunkSaveEvent(ChunkUnloadEvent event) {
-        if(saved != null && event.getChunk().equals(saved))
-        {
-            plugin.getLogger().log(Level.INFO, "Saved chunk got unloaded.");
-        }
-
         for (final Entity entity : event.getChunk().getEntities()) {
             final Optional<Ball> ball;
             if ((ball = this.ballController.getBallFromEntity(entity)).isPresent()) {
                 if (ball.get().isPersistent()) {
+                    this.pushToCache(ball.get());
+                    this.ballController.remove(ball.get());
                     this.ballController.saveAndDestroy(ball.get(), true);
-                    saved = event.getChunk();
                 } else {
                     ball.get().remove();
                 }
@@ -107,10 +104,6 @@ public class StorageListener extends SimpleListener {
 
     @EventHandler
     public void onChunkLoadEvent(ChunkLoadEvent event) {
-        if(saved != null && event.getChunk().equals(saved))
-        {
-            plugin.getLogger().log(Level.INFO, "Saved chunk got loaded.");
-        }
         for (final Entity entity : event.getChunk().getEntities()) {
             if (entity.getCustomName() != null && entity.getCustomName().equals("ResourceBallsPlugin")) {
                 this.plugin.getLogger().log(Level.INFO, "Removed unknown ball.");
@@ -127,5 +120,17 @@ public class StorageListener extends SimpleListener {
             }
         }
         return Optional.empty();
+    }
+
+    private boolean pushToCache(Ball ball) {
+        final UUID uuid = ball.getUUID();
+        if (!this.cache.contains(uuid)) {
+            this.cache.add(uuid);
+            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
+                this.cache.remove(uuid);
+            }, 60L);
+            return true;
+        }
+        return false;
     }
 }
