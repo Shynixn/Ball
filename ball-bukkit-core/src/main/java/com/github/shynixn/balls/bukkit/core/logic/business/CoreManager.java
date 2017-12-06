@@ -65,6 +65,15 @@ public class CoreManager {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    public void onEnable()
+    {
+
+    }
+
+    public void onDisable()
+    {
 
     }
 

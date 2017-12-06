@@ -274,7 +274,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
      */
     @Override
     public Location getLocation() {
-        return this.getSpigotEntity().getLocation();
+        return this.getHitBox().getLocation();
     }
 
     /**

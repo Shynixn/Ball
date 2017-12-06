@@ -4,8 +4,11 @@ import com.github.shynixn.balls.api.business.controller.BallController;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R1.CraftChunk;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -83,6 +86,11 @@ public class StorageListener extends SimpleListener {
                     this.pushToCache(ball.get());
                     this.ballController.remove(ball.get());
                     this.ballController.saveAndDestroy(ball.get(), true);
+                    final ArmorStand armorStand = (ArmorStand) event.getWorld().spawnEntity(((Location) ball.get().getLocation()), EntityType.ARMOR_STAND);
+                    armorStand.setCustomNameVisible(false);
+                    armorStand.setRemoveWhenFarAway(false);
+                    armorStand.setVisible(false);
+                    armorStand.setCustomName("balluuid-" + ball.get().getUUID().toString());
                 } else {
                     ball.get().remove();
                 }
@@ -97,6 +105,7 @@ public class StorageListener extends SimpleListener {
             if ((ball = this.ballController.getBallFromEntity(entity)).isPresent()) {
                 if (ball.get().isPersistent()) {
                     this.ballController.saveAndDestroy(ball.get(), false);
+
                 }
             }
         }
@@ -105,12 +114,16 @@ public class StorageListener extends SimpleListener {
     @EventHandler
     public void onChunkLoadEvent(ChunkLoadEvent event) {
         for (final Entity entity : event.getChunk().getEntities()) {
-            if (entity.getCustomName() != null && entity.getCustomName().equals("ResourceBallsPlugin")) {
-                this.plugin.getLogger().log(Level.INFO, "Removed unknown ball.");
-                entity.remove();
+            if (entity.getCustomName() != null) {
+                if (entity.getCustomName().equals("ResourceBallsPlugin")) {
+                    this.plugin.getLogger().log(Level.INFO, "Removed unknown ball.");
+                    entity.remove();
+                } else if (entity.getCustomName().startsWith("balluuid-")) {
+                    entity.remove();
+                    this.ballController.loadAndSpawn(UUID.fromString(entity.getCustomName().replace("balluuid-", "")));
+                }
             }
         }
-        this.ballController.loadAndSpawn(event.getChunk());
     }
 
     private Optional<Ball> getBallFromPlayer(Player player) {

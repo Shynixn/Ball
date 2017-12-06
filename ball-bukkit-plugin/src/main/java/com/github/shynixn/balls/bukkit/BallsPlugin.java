@@ -62,18 +62,6 @@ public class BallsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        for(World world : Bukkit.getWorlds())
-        {
-            for(Entity entity : world.getEntities())
-            {
-                if(entity instanceof Player == false)
-                {
-                    entity.remove();
-                }
-            }
-        }
-
-
         this.saveDefaultConfig();
         logger = this.getLogger();
         if (!VersionSupport.isServerVersionSupported(PLUGIN_NAME, PREFIX_CONSOLE)) {

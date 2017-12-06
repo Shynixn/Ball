@@ -56,8 +56,6 @@ public class BallEntityController implements BallController {
     private final Plugin plugin;
     private final File file;
 
-    private final Set<String> locked = new HashSet<>();
-
     public BallEntityController(Plugin plugin) {
         this.plugin = plugin;
         this.file = new File(this.plugin.getDataFolder(), "storage.yml");
@@ -91,20 +89,20 @@ public class BallEntityController implements BallController {
      * @param ball ball
      */
     public void saveAndDestroy(Ball ball, boolean destroy) {
-        UUID uuid = ball.getUUID();
-
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
                 synchronized (this.file) {
-                    if (!this.file.exists())
-                        this.file.createNewFile();
+                    if (!this.file.exists()) {
+                        if (this.file.createNewFile()) {
+                            this.plugin.getLogger().log(Level.INFO, "Created file " + this.file.getName() + ".");
+                        }
+                    }
                     final FileConfiguration configuration = new YamlConfiguration();
                     configuration.load(this.file);
                     final ConfigurationSerializable serializable = (ConfigurationSerializable) ball;
                     configuration.set("balls." + ball.getUUID().toString(), serializable.serialize());
                     configuration.save(this.file);
                     this.plugin.getLogger().log(Level.INFO, "Saved ball with id " + ball.getUUID().toString() + ".");
-
                     if (destroy) {
                         this.plugin.getServer().getScheduler().runTask(this.plugin, ball::remove);
                     }
@@ -113,13 +111,9 @@ public class BallEntityController implements BallController {
                 this.plugin.getLogger().log(Level.WARNING, "Failed to save ball.", ex);
             }
         });
-        synchronized (this.locked) {
-            this.locked.add(uuid.toString());
-            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> this.locked.remove(uuid.toString()), 60L);
-        }
     }
 
-    public void loadAndSpawn(Chunk chunk) {
+    public void loadAndSpawn(UUID uuid) {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
                 synchronized (this.file) {
@@ -127,23 +121,15 @@ public class BallEntityController implements BallController {
                         return;
                     final FileConfiguration configuration = new YamlConfiguration();
                     configuration.load(this.file);
+                    final String dataUUID = uuid.toString();
                     final Map<String, Object> balls = ((MemorySection) configuration.get("balls")).getValues(false);
-                    for (final String key : balls.keySet()) {
-                        synchronized (this.locked) {
-                            if (!this.locked.contains(key)) {
-                                final Map<String, Object> data = ((MemorySection) balls.get(key)).getValues(true);
-                                final Location location = Location.deserialize(((MemorySection) data.get("location")).getValues(true));
-                                this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
-                                    final Chunk dataChunk = chunk.getWorld().getChunkAt(location);
-                                    if (dataChunk != null && chunk.equals(dataChunk)) {
-                                        final Ball ball = this.create(key, data);
-                                        this.store(ball);
-                                        this.plugin.getLogger().log(Level.INFO, "Loaded ball with id " + ball.getUUID().toString() + ".");
-                                    }
-                                });
-                            }
-                        }
-
+                    if (balls.containsKey(dataUUID)) {
+                        final Map<String, Object> data = ((MemorySection) balls.get(dataUUID)).getValues(true);
+                        this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
+                            final Ball ball = this.create(dataUUID, data);
+                            this.store(ball);
+                            this.plugin.getLogger().log(Level.INFO, "Loaded ball with id " + ball.getUUID().toString() + ".");
+                        });
                     }
                 }
             } catch (IOException | InvalidConfigurationException ex) {
