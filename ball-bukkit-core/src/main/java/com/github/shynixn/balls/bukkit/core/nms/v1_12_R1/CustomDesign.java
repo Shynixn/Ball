@@ -5,6 +5,7 @@ import com.github.shynixn.balls.api.bukkit.event.BallDeathEvent;
 import com.github.shynixn.balls.api.bukkit.event.BallInteractEvent;
 import com.github.shynixn.balls.api.bukkit.event.BallThrowEvent;
 import com.github.shynixn.balls.api.persistence.BallMeta;
+import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.SkinHelper;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
 import net.minecraft.server.v1_12_R1.EntityArmorStand;
@@ -44,7 +45,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
 
     boolean revertAnimation;
 
-    private UUID uuid;
+    private final UUID uuid;
 
     public CustomDesign(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
         super(((CraftWorld) location.getWorld()).getHandle());
@@ -146,7 +147,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
         final LivingEntity livingEntity = (LivingEntity) this.interactionEntity;
         if (livingEntity.getEquipment().getItemInHand() == null || livingEntity.getEquipment().getItemInHand().getType() == Material.AIR) {
             livingEntity.getEquipment().setItemInHand(this.getSpigotEntity().getHelmet().clone());
-            this.getSpigotEntity().setHelmet(null);
+            this.setHelmet(null);
             this.grabbed = true;
         }
     }
@@ -162,9 +163,8 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
             this.grabbed = false;
             final ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
             SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
-            this.getSpigotEntity().setHelmet(itemStack);
+            this.setHelmet(itemStack);
             final Vector vector = this.getDirection(livingEntity).normalize().multiply(3);
-            System.out.println(vector);
             this.teleport(livingEntity.getLocation().add(vector));
         }
     }
@@ -193,8 +193,20 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
         this.getSpigotEntity().setCustomNameVisible(false);
         final ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
         SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
-        this.getSpigotEntity().setHelmet(itemStack);
+        this.setHelmet(itemStack);
         this.hitBox = new CustomHitbox(location, this);
+    }
+
+    private void setHelmet(ItemStack itemStack) {
+        switch (this.ballMeta.getSize()) {
+            case SMALL:
+                this.getSpigotEntity().setSmall(true);
+                this.getSpigotEntity().setHelmet(itemStack);
+                break;
+            case NORMAL:
+                this.getSpigotEntity().setHelmet(itemStack);
+                break;
+        }
     }
 
     /**
@@ -220,7 +232,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
         if (this.isGrabbed())
             return;
         this.revertAnimation = false;
-        this.getSpigotEntity().setHeadPose(new EulerAngle(2, 0, 0));
+        this.setHeadPose(new EulerAngle(2, 0, 0));
         final Vector vector = new Vector(x, y, z);
         this.hitBox.setVelocity(vector);
     }
@@ -242,7 +254,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
      */
     @Override
     public boolean isPersistent() {
-        return persistent;
+        return this.persistent;
     }
 
     /**
@@ -344,7 +356,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
      */
     @Override
     public UUID getUUID() {
-        return uuid;
+        return this.uuid;
     }
 
     /**
@@ -373,7 +385,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
     private void teleportToHitBox() {
         final Location loc = this.hitBox.getSpigotEntity().getLocation();
         if (this.isSmall()) {
-            this.setPositionRotation(loc.getX(), loc.getY() - 0.7, loc.getZ(), loc.getYaw(), loc.getPitch());
+            this.setPositionRotation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
         } else {
             this.setPositionRotation(loc.getX(), loc.getY() - 1.0, loc.getZ(), loc.getYaw(), loc.getPitch());
         }
@@ -382,7 +394,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
     private void playRotationAnimation() {
         final double length = new Vector(this.hitBox.motX, this.hitBox.motY, this.hitBox.motZ).length();
         EulerAngle angle = null;
-        final EulerAngle a = this.getSpigotEntity().getHeadPose();
+        final EulerAngle a = this.getHeadPose();
         if (length > 1.0) {
             if (this.revertAnimation) {
                 angle = new EulerAngle(a.getX() - 0.5, 0, 0);
@@ -403,8 +415,16 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
             }
         }
         if (angle != null) {
-            this.getSpigotEntity().setHeadPose(angle);
+            this.setHeadPose(angle);
         }
+    }
+
+    private EulerAngle getHeadPose() {
+        return this.getSpigotEntity().getHeadPose();
+    }
+
+    private void setHeadPose(EulerAngle angle) {
+        this.getSpigotEntity().setHeadPose(angle);
     }
 
     private ArmorStand getSpigotEntity() {
@@ -446,7 +466,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
     public Map<String, Object> serialize() {
         final Map<String, Object> data = new LinkedHashMap<>();
         data.put("location", this.getLocation().serialize());
-        data.put("meta", ((BallData) ballMeta).serialize());
+        data.put("meta", ((BallData) this.ballMeta).serialize());
         return data;
     }
 }

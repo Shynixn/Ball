@@ -1,6 +1,5 @@
 package com.github.shynixn.balls.bukkit.core.logic.business.helper;
 
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,18 +37,20 @@ import java.util.logging.Level;
  */
 public class NBTTagHelper {
 
-    public static void setItemStackNBTTag(ItemStack itemStack, Map<String, Object> nbtTags) {
+    public static ItemStack setItemStackNBTTag(ItemStack itemStack, Map<String, Object> nbtTags) {
         try {
             final Method nmsCopyMethod = createClass("org.bukkit.craftbukkit.VERSION.inventory.CraftItemStack").getDeclaredMethod("asNMSCopy", ItemStack.class);
+
             final Class<?> nbtTagClass = createClass("net.minecraft.server.VERSION.NBTTagCompound");
             final Class<?> nmsItemStackClass = createClass("net.minecraft.server.VERSION.ItemStack");
+            final Method bukkitCopyMethod = createClass("org.bukkit.craftbukkit.VERSION.inventory.CraftItemStack").getDeclaredMethod("asBukkitCopy", nmsItemStackClass);
             final Method getNBTTag = nmsItemStackClass.getDeclaredMethod("getTag");
             final Method setNBTTag = nmsItemStackClass.getDeclaredMethod("setTag", nbtTagClass);
             final Object nmsItemStack = nmsCopyMethod.invoke(null, itemStack);
 
             final Method nbtSetString = nbtTagClass.getDeclaredMethod("setString", String.class, String.class);
-            final Method nbtSetBoolean = nbtTagClass.getDeclaredMethod("setBoolean",String.class, boolean.class);
-            final Method nbtSetInteger = nbtTagClass.getDeclaredMethod("setInt",String.class, int.class);
+            final Method nbtSetBoolean = nbtTagClass.getDeclaredMethod("setBoolean", String.class, boolean.class);
+            final Method nbtSetInteger = nbtTagClass.getDeclaredMethod("setInt", String.class, int.class);
 
             for (final String key : nbtTags.keySet()) {
                 final Object value = nbtTags.get(key);
@@ -63,13 +64,21 @@ public class NBTTagHelper {
                 } else if (value instanceof Integer) {
                     nbtSetInteger.invoke(nbtTag, key, (Integer) value);
                 } else if (value instanceof Boolean) {
+                    System.out.println("ADDED: " + key + " " + value);
                     nbtSetBoolean.invoke(nbtTag, key, (Boolean) value);
+                    System.out.println("ADDED NBT");
                 }
+                System.out.println("NOPE");
                 setNBTTag.invoke(nmsItemStack, nbtTag);
+
+
+
+                return (ItemStack) bukkitCopyMethod.invoke(null, nmsItemStack);
             }
         } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
             Bukkit.getLogger().log(Level.WARNING, "Failed to set nbt tag.", e);
         }
+        return null;
     }
 
     private static Class<?> createClass(String path) throws ClassNotFoundException {

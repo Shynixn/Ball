@@ -6,6 +6,7 @@ import com.github.shynixn.balls.api.persistence.BallModifiers;
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
+import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BounceObjectController;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -49,6 +50,8 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     private boolean rotating = true;
     private double hitbox = 2.0;
     private boolean alwaysBounce;
+    private BallSize size = BallSize.NORMAL;
+
 
     private final BallModifications modifications;
 
@@ -56,6 +59,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
 
     public BallData(Map<String, Object> data) {
         this.skin = (String) data.get("skin");
+        this.size =  BallSize.valueOf((String) data.get("size"));
         this.hitbox = (double) data.get("hitbox-size");
         this.carryAble = (boolean) data.get("carry-able");
         this.rotating = (boolean) data.get("rotating");
@@ -202,10 +206,31 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         return this.skin;
     }
 
+    /**
+     * Returns the size of the ball.
+     *
+     * @return size
+     */
+    @Override
+    public BallSize getSize() {
+        return this.size;
+    }
+
+    /**
+     * Sets the size of the ball.
+     *
+     * @param size size
+     */
+    @Override
+    public void setSize(BallSize size) {
+        this.size = size;
+    }
+
     @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> data = new LinkedHashMap<>();
         data.put("skin", this.getSkin());
+        data.put("size", this.getSize().name().toUpperCase());
         data.put("hitbox-size", this.getHitBoxSize());
         data.put("carry-able", this.isCarryable());
         data.put("always-bounce", this.alwaysBounce);

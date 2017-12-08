@@ -1,7 +1,9 @@
 package com.github.shynixn.balls.api.persistence;
 
+import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
+import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 
 /**
  * Created by Shynixn 2017.
@@ -122,4 +124,18 @@ public interface BallMeta {
      * @return skin
      */
     String getSkin();
+
+    /**
+     * Returns the size of the ball.
+     *
+     * @return size
+     */
+    BallSize getSize();
+
+    /**
+     * Sets the size of the ball.
+     *
+     * @param size size
+     */
+    void setSize(BallSize size);
 }

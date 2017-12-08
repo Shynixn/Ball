@@ -29,6 +29,5 @@ package com.github.shynixn.balls.api.persistence.enumeration;
  */
 public enum BallSize {
     NORMAL,
-    SMALL,
-    MINI,
+    SMALL
 }

@@ -5,6 +5,7 @@ import com.github.shynixn.balls.api.bukkit.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.BounceObject;
+import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 import com.github.shynixn.balls.bukkit.core.logic.business.CoreManager;
 import com.github.shynixn.balls.bukkit.core.nms.VersionSupport;
 import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
@@ -86,7 +87,9 @@ public class BallsPlugin extends JavaPlugin {
 
 
                 BallMeta meta = BallsApi.getBallMetaController().create("textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14");
+                meta.setSize(BallSize.SMALL);
 
+                meta.setAlwaysBounceBack(true);
                 BounceObject dirt = meta.getBounceObjectController().create(Material.DIRT.getId(), 0);
                 dirt.setBounceModifier(1.2);
                 meta.getBounceObjectController().store(dirt);

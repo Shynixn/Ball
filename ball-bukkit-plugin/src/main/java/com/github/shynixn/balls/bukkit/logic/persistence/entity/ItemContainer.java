@@ -111,13 +111,13 @@ public class ItemContainer {
             return this.cache.clone();
         }
         try {
-            final ItemStack itemStack = new ItemStack(Material.getMaterial(this.id), 1, (short) this.damage);
+            ItemStack itemStack = new ItemStack(Material.getMaterial(this.id), 1, (short) this.damage);
             if (itemStack.getType() == Material.SKULL_ITEM && this.skin != null) {
                 SkinHelper.setItemStackSkin(itemStack, skin);
             }
             final Map<String, Object> data = new HashMap<>();
             data.put("Unbreakable", this.unbreakable);
-            NBTTagHelper.setItemStackNBTTag(itemStack, data);
+            itemStack = NBTTagHelper.setItemStackNBTTag(itemStack, data);
             final ItemMeta itemMeta = itemStack.getItemMeta();
             itemMeta.setDisplayName(this.name);
             itemStack.setItemMeta(itemMeta);

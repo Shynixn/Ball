@@ -166,15 +166,28 @@ meta:
        name: '&e&lPikachu'
        unbreakable: false
        lore:
+        - 'none'
     ball:
-      skin: 'http://textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14'
-      carry-able: false
+      skin: 'textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14'
+      size: SMALL
+      hitbox-size: 2.0
+      carry-able: true
+      always-bounce: false
       rotating: true
+      modifiers:
+        horizontal-touch: 1.0
+        vertical-touch: 1.0
+        horizontal-kick: 1.0
+        vertical-kick: 1.0
+        horizontal-throw: 1.0
+        vertical-throw: 1.0
+        rolling-distance: 1.0
+        gravity: 1.0
       wall-bouncing:
-        1:
-          id: 2
+        '1':
+          id: 3
           damage: 0
-          modifier: 1.0
+          modifier: 1.2
 
 #******************
 # Particle list (Color/material particles require the color/material template to work)
