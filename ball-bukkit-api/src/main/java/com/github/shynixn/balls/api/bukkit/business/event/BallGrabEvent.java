@@ -1,9 +1,11 @@
-package com.github.shynixn.balls.api.bukkit.event;
+package com.github.shynixn.balls.api.bukkit.business.event;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
+import org.bukkit.entity.Entity;
 
 /**
- * Event which gets called when a ball gets removed.
+ * Event which gets called when an entity grabs a ball.
  * <p>
  * Version 1.1
  * <p>
@@ -29,14 +31,14 @@ import com.github.shynixn.balls.api.business.entity.Ball;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallDeathEvent extends BallEvent {
-
+public class BallGrabEvent extends BallInteractEvent {
     /**
-     * Initializes a new ball event.
+     * Initializes a new ball kick event with the given entity interacting with the ball.
      *
-     * @param ball ball
+     * @param ball   ball
+     * @param entity entity
      */
-    public BallDeathEvent(Ball ball) {
-        super(ball);
+    public BallGrabEvent(BukkitBall ball, Entity entity) {
+        super(ball, entity);
     }
 }

@@ -33,7 +33,7 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallController extends IController<Ball> {
+public interface BallController<K extends Ball, Location, Entity> extends IController<K> {
 
     /**
      * Creates a new ball from the given parameters.
@@ -44,7 +44,7 @@ public interface BallController extends IController<Ball> {
      * @param owner      entityOwner
      * @return ball
      */
-    Ball create(Object location, BallMeta ballMeta, boolean persistent, Object owner);
+    K create(Location location, BallMeta ballMeta, boolean persistent, Entity owner);
 
     /**
      * Returns a ball if the given entity is part of a ball.
@@ -52,5 +52,5 @@ public interface BallController extends IController<Ball> {
      * @param entity entity
      * @return ball
      */
-    Optional<Ball> getBallFromEntity(Object entity);
+    Optional<K> getBallFromEntity(Entity entity);
 }

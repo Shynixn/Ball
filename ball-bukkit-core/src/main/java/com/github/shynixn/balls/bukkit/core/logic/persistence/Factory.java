@@ -1,5 +1,12 @@
 package com.github.shynixn.balls.bukkit.core.logic.persistence;
 
+import com.github.shynixn.balls.api.bukkit.business.controller.BukkitBallController;
+import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
+import com.github.shynixn.balls.bukkit.core.logic.business.CoreManager;
+import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BallDataRepository;
+import org.bukkit.plugin.Plugin;
+
 /**
  * Created by Shynixn 2017.
  * <p>
@@ -27,5 +34,48 @@ package com.github.shynixn.balls.bukkit.core.logic.persistence;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class Factory {
+public final class Factory {
+
+    private static CoreManager coreManager;
+
+    /**
+     * Initializes the api with the given plugin. Throws exception if already initialized.
+     *
+     * @param plugin plugin
+     */
+    public static synchronized void initialize(Plugin plugin) throws IllegalArgumentException {
+        if (plugin == null)
+            throw new IllegalArgumentException("Plugin cannot be null!");
+        if (coreManager != null)
+            throw new IllegalArgumentException("Ball core is already initialized. Api can be used!");
+        coreManager = new CoreManager(plugin);
+    }
+
+    /**
+     * Creates a new ball managing controller for the given plugin. Does not include a listener so the ball does
+     * not react to the default events when you add the ball to the default ballcontroller.
+     *
+     * @param plugin plugin
+     * @return bukkitBallController
+     */
+    public static BukkitBallController createBallController(Plugin plugin) {
+        if (plugin == null)
+            throw new IllegalArgumentException("Plugin cannot be null!");
+        return new BallEntityController(plugin);
+    }
+
+    /**
+     * Creates a new ball meta managing controller for the given plugin. Can be used to store and retrieve multiple ball meta from files.
+     *
+     * @param plugin   plugin
+     * @param fileName fileName
+     * @return ballMetaController
+     */
+    public static BallMetaController createBallMetaController(Plugin plugin, String fileName) {
+        if (plugin == null)
+            throw new IllegalArgumentException("Plugin cannot be null!");
+        if (fileName == null)
+            throw new IllegalArgumentException("Filename cannot be null!");
+        return new BallDataRepository(plugin, fileName);
+    }
 }

@@ -1,8 +1,8 @@
-package com.github.shynixn.balls.api.bukkit.entity;
+package com.github.shynixn.balls.api.bukkit.business.controller;
 
-import com.github.shynixn.balls.api.business.entity.Ball;
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
+import com.github.shynixn.balls.api.business.controller.BallController;
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 
 /**
@@ -32,6 +32,5 @@ import org.bukkit.entity.Entity;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BukkitBall extends Ball<Location, Entity, ArmorStand> {
-
+public interface BukkitBallController extends BallController<BukkitBall,Location, Entity> {
 }

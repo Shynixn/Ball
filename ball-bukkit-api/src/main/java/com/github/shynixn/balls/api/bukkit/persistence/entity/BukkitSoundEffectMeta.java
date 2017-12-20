@@ -1,10 +1,11 @@
-package com.github.shynixn.balls.api.bukkit.event;
+package com.github.shynixn.balls.api.bukkit.persistence.entity;
 
-import com.github.shynixn.balls.api.business.entity.Ball;
-import org.bukkit.entity.Entity;
+import com.github.shynixn.balls.api.persistence.effect.SoundEffectMeta;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 /**
- * Event which gets called when an entity kicks the ball.
+ * Created by Shynixn 2017.
  * <p>
  * Version 1.1
  * <p>
@@ -30,15 +31,5 @@ import org.bukkit.entity.Entity;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallKickEvent extends BallInteractEvent {
-
-    /**
-     * Initializes a new ball kick event with the given entity kicking the ball.
-     *
-     * @param ball   ball
-     * @param entity entity
-     */
-    public BallKickEvent(Ball ball, Entity entity) {
-        super(ball, entity);
-    }
+public interface BukkitSoundEffectMeta extends SoundEffectMeta<Location, Player, BukkitSoundEffectMeta> {
 }

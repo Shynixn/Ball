@@ -1,9 +1,11 @@
-package com.github.shynixn.balls.api.bukkit.event;
+package com.github.shynixn.balls.api.bukkit.business.event;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
+import org.bukkit.entity.Entity;
 
 /**
- * SubEvent of every Ball event which is cancelable.
+ * Event which gets called when an entity interacts with the ball.
  * <p>
  * Version 1.1
  * <p>
@@ -29,34 +31,27 @@ import com.github.shynixn.balls.api.business.entity.Ball;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallCancelableEvent extends BallEvent {
+public class BallInteractEvent extends BallCancelableEvent {
 
-    private boolean cancelled;
+    private final Entity entity;
 
     /**
-     * Initializes a new ball event.
+     * Initializes a new ball kick event with the given entity interacting with the ball.
      *
-     * @param ball ball
+     * @param ball   ball
+     * @param entity entity
      */
-    public BallCancelableEvent(Ball ball) {
+    public BallInteractEvent(BukkitBall ball, Entity entity) {
         super(ball);
+        this.entity = entity;
     }
 
     /**
-     * Returns if the event was cancelled.
+     * Returns the entity interacting with the ball.
      *
-     * @return cancelled
+     * @return entity
      */
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    /**
-     * Sets the event cancelled.
-     *
-     * @param cancelled cancelled
-     */
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
+    public Entity getEntity() {
+        return this.entity;
     }
 }

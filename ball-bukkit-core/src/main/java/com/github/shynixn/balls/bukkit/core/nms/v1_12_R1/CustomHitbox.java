@@ -1,6 +1,6 @@
 package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
-import com.github.shynixn.balls.api.bukkit.event.BallWallCollideEvent;
+import com.github.shynixn.balls.api.bukkit.business.event.BallWallCollideEvent;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftEntity;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.Vector;
@@ -99,7 +98,6 @@ public final class CustomHitbox extends EntityArmorStand {
                     r = r.multiply(optBounce.get().getBounceModifier());
                 }
                 this.setVelocity(r);
-                System.out.println("MOVE!");
                 ((CustomDesign) ball).revertAnimation = !((CustomDesign) ball).revertAnimation;
                 this.knockBackBumper = 5;
             }

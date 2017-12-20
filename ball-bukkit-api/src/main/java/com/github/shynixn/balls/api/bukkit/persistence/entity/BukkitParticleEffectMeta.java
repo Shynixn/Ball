@@ -1,10 +1,9 @@
-package com.github.shynixn.balls.bukkit.logic.business.commandexecutor;
+package com.github.shynixn.balls.api.bukkit.persistence.entity;
 
-import com.github.shynixn.balls.bukkit.logic.business.gui.GUI;
-import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
+import com.github.shynixn.balls.api.persistence.effect.ParticleEffectMeta;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by Shynixn 2017.
@@ -33,29 +32,5 @@ import org.bukkit.plugin.java.JavaPlugin;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallsCommandExecutor extends SimpleCommandExecutor.UnRegistered {
-
-    private final BallsManager ballsManager;
-
-    /**
-     * Initializes a new commandExecutor by using the given config configuration and plugin.
-     *
-     * @param plugin        plugin
-     * @throws Exception exception
-     */
-    public BallsCommandExecutor(BallsManager ballsManager, Plugin plugin) throws Exception {
-        super(plugin.getConfig().get("balls"), (JavaPlugin) plugin);
-        this.ballsManager = ballsManager;
-    }
-
-    /**
-     * Can be overwritten to listen to player executed commands.
-     *
-     * @param player player
-     * @param args   args
-     */
-    @Override
-    public void onPlayerExecuteCommand(Player player, String[] args) {
-        new GUI(player, this.ballsManager);
-    }
+public interface BukkitParticleEffectMeta extends ParticleEffectMeta<Location, Player, Material,BukkitParticleEffectMeta>{
 }

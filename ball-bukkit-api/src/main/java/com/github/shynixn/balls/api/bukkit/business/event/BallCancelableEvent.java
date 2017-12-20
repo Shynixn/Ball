@@ -1,11 +1,10 @@
-package com.github.shynixn.balls.api.bukkit.event;
+package com.github.shynixn.balls.api.bukkit.business.event;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
-import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 
 /**
- * SubEvent of every Ball event.
+ * SubEvent of every Ball event which is cancelable.
  * <p>
  * Version 1.1
  * <p>
@@ -31,48 +30,34 @@ import org.bukkit.event.HandlerList;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallEvent extends Event {
+public class BallCancelableEvent extends BallEvent {
 
-    private final static HandlerList handlers = new HandlerList();
-    private final Ball ball;
+    private boolean cancelled;
 
     /**
      * Initializes a new ball event.
      *
      * @param ball ball
      */
-    public BallEvent(Ball ball) {
-        super();
-        if (ball == null)
-            throw new IllegalArgumentException("Ball cannot be null!");
-        this.ball = ball;
+    public BallCancelableEvent(BukkitBall ball) {
+        super(ball);
     }
 
     /**
-     * Returns the ball of the event.
+     * Returns if the event was cancelled.
      *
-     * @return ball
+     * @return cancelled
      */
-    public Ball getBall() {
-        return this.ball;
+    public boolean isCancelled() {
+        return this.cancelled;
     }
 
     /**
-     * Bukkit implementation of the handlerList.
+     * Sets the event cancelled.
      *
-     * @return handler
+     * @param cancelled cancelled
      */
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    /**
-     * Bukkit implementation of the handlerList.
-     *
-     * @return handlerList
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
     }
 }

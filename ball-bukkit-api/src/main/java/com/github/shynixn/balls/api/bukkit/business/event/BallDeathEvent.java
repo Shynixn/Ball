@@ -1,13 +1,10 @@
-package com.github.shynixn.balls.bukkit.logic.business.commandexecutor;
+package com.github.shynixn.balls.api.bukkit.business.event;
 
-import com.github.shynixn.balls.bukkit.logic.business.gui.GUI;
-import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
+import com.github.shynixn.balls.api.business.entity.Ball;
 
 /**
- * Created by Shynixn 2017.
+ * Event which gets called when a ball gets removed.
  * <p>
  * Version 1.1
  * <p>
@@ -33,29 +30,14 @@ import org.bukkit.plugin.java.JavaPlugin;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallsCommandExecutor extends SimpleCommandExecutor.UnRegistered {
-
-    private final BallsManager ballsManager;
+public class BallDeathEvent extends BallEvent {
 
     /**
-     * Initializes a new commandExecutor by using the given config configuration and plugin.
+     * Initializes a new ball event.
      *
-     * @param plugin        plugin
-     * @throws Exception exception
+     * @param ball ball
      */
-    public BallsCommandExecutor(BallsManager ballsManager, Plugin plugin) throws Exception {
-        super(plugin.getConfig().get("balls"), (JavaPlugin) plugin);
-        this.ballsManager = ballsManager;
-    }
-
-    /**
-     * Can be overwritten to listen to player executed commands.
-     *
-     * @param player player
-     * @param args   args
-     */
-    @Override
-    public void onPlayerExecuteCommand(Player player, String[] args) {
-        new GUI(player, this.ballsManager);
+    public BallDeathEvent(BukkitBall ball) {
+        super(ball);
     }
 }

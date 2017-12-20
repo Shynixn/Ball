@@ -119,7 +119,6 @@ public class FixedItemConfiguration implements IFileController<ItemContainer> {
             try {
                 final ItemContainer container = new ItemContainer(0, ((MemorySection) data.get(key)).getValues(false));
                 this.items.put(key, container);
-                System.out.println("LOADED: " + key);
             } catch (final Exception e) {
                 BallsPlugin.logger().log(Level.WARNING, "Failed to load guiItem " + key + '.', e);
             }

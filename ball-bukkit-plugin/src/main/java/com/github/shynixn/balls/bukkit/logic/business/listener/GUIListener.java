@@ -81,41 +81,4 @@ public class GUIListener extends SimpleListener {
             }
         }
     }
-
-    @EventHandler
-    public void onHitWallEvent(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-            if (event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() == Material.ARROW) {
-                event.getPlayer().launchProjectile(Arrow.class);
-            }
-        }
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            System.out.println(event.getBlockFace());
-        }
-    }
-
-    @EventHandler
-    public void onHitWallEvent(ProjectileHitEvent event) {
-        Arrow arrow = (Arrow) event.getEntity();
-        Player player = Bukkit.getPlayer("Shynixn");
-
-        Vector d = event.getEntity().getVelocity();
-        System.out.println("VECTOR d" + d);
-
-        BlockFace face = BlockFace.SOUTH;
-
-        if (face == BlockFace.SOUTH) {
-            Vector n = new Vector(0, 0, 1);
-            Vector k = n.multiply(2 * d.dot(n));
-            Vector r = d.subtract(k);
-
-            arrow.setVelocity(r);
-            player.getWorld().spawnArrow(arrow.getLocation(), r, 1.0F, 1.0F);
-
-            System.out.println("NEW SHOOT " + r);
-
-        }
-
-    }
-
 }

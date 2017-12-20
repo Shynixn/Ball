@@ -31,7 +31,7 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BounceController extends IController<BounceObject> {
+public interface BounceController<Block> extends IController<BounceObject> {
 
     /**
      * Creates a new bounceObject from the given parameters.
@@ -48,5 +48,5 @@ public interface BounceController extends IController<BounceObject> {
      * @param block block
      * @return optBounceObject
      */
-    Optional<BounceObject> getBounceObjectFromBlock(Object block);
+    Optional<BounceObject> getBounceObjectFromBlock(Block block);
 }

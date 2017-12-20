@@ -53,14 +53,14 @@ public class BallsApi {
      * @param location location
      * @return bal
      */
-    public static Ball spawnBall(Object location, BallMeta ballMeta) {
+    public static <T extends Ball> T spawnBall(Object location, BallMeta ballMeta) {
         if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (ballMeta == null)
             throw new IllegalArgumentException("BallMeta cannot be null!");
         final Ball ball = ballController.create(location, ballMeta, true, null);
         ballController.store(ball);
-        return ball;
+        return (T) ball;
     }
 
     /**

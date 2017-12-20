@@ -11,6 +11,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
+import java.util.logging.Level;
 
 /**
  * Created by Shynixn 2017.
@@ -43,17 +44,24 @@ public class CoreManager {
 
     private final BallMetaController metaController;
     private final BallController ballController;
+    private final Plugin plugin;
 
+    /**
+     * Initializes a new core manager.
+     * @param plugin plugin
+     */
     public CoreManager(Plugin plugin) {
-
-        this.metaController = new BallDataRepository();
+        super();
+        if(plugin == null)
+            throw new IllegalArgumentException("Plugin cannot be null!");
+        this.plugin = plugin;
+        this.metaController = new BallDataRepository(plugin, "meta.yml");
         this.ballController = new BallEntityController(plugin);
 
         new BallListener(this.ballController, plugin);
+        new StorageListener(plugin, (BallEntityController) this.ballController);
 
-        new StorageListener(plugin, (BallEntityController) ballController);
-
-        Field field;
+        final Field field;
         try {
             field = BallsApi.class.getDeclaredField("ballController");
             field.setAccessible(true);
@@ -63,24 +71,31 @@ public class CoreManager {
             field2.setAccessible(true);
             field2.set(null, this.getMetaController());
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            plugin.getLogger().log(Level.WARNING, "Failed to initialize api.", e);
         }
     }
 
-    public void onEnable()
-    {
-
+    /**
+     * Returns the plugin which has initialized the core.
+     *
+     * @return plugin
+     */
+    public Plugin getPlugin() {
+        return this.plugin;
     }
 
-    public void onDisable()
-    {
-
-    }
-
+    /**
+     * Returns the default meta controller.
+     * @return metaController
+     */
     public BallMetaController getMetaController() {
         return this.metaController;
     }
 
+    /**
+     * Returns the ball controller.
+     * @return controller
+     */
     public BallController getBallController() {
         return this.ballController;
     }

@@ -1,19 +1,16 @@
 package com.github.shynixn.balls.bukkit.core.logic.business.controller;
 
-import com.github.shynixn.balls.api.bukkit.entity.BukkitBall;
-import com.github.shynixn.balls.api.business.controller.BallController;
+import com.github.shynixn.balls.api.bukkit.business.controller.BukkitBallController;
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.bukkit.core.nms.NMSRegistry;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.Plugin;
 
@@ -50,9 +47,9 @@ import java.util.logging.Level;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallEntityController implements BallController {
+public class BallEntityController implements BukkitBallController {
 
-    private final Set<Ball> balls = new HashSet<>();
+    private final Set<BukkitBall> balls = new HashSet<>();
     private final Plugin plugin;
     private final File file;
 
@@ -61,24 +58,8 @@ public class BallEntityController implements BallController {
         this.file = new File(this.plugin.getDataFolder(), "storage.yml");
     }
 
-    /**
-     * Creates a new ball from the given parameters.
-     *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
-     */
-    @Override
-    public Ball create(Object location, BallMeta ballMeta, boolean persistent, Object owner) {
-        final Ball ball = NMSRegistry.spawnNMSBall(location, ballMeta, persistent, (Entity) owner);
-        ball.respawn();
-        return ball;
-    }
-
-    public Ball create(String uuid, Map<String, Object> data) {
-        final Ball ball = NMSRegistry.spawnNMSBall(uuid, data);
+    public BukkitBall create(UUID uuid, Map<String, Object> data) {
+        final BukkitBall ball = NMSRegistry.spawnNMSBall(uuid, data);
         ball.respawn();
         return ball;
     }
@@ -126,7 +107,7 @@ public class BallEntityController implements BallController {
                     if (balls.containsKey(dataUUID)) {
                         final Map<String, Object> data = ((MemorySection) balls.get(dataUUID)).getValues(true);
                         this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
-                            final Ball ball = this.create(dataUUID, data);
+                            final BukkitBall ball = this.create(uuid, data);
                             this.store(ball);
                             this.plugin.getLogger().log(Level.INFO, "Loaded ball with id " + ball.getUUID().toString() + ".");
                         });
@@ -139,30 +120,21 @@ public class BallEntityController implements BallController {
     }
 
     /**
-     * Returns a ball if the given entity is part of a ball.
-     *
-     * @param entity entity
-     * @return ball
-     */
-    @Override
-    public Optional<Ball> getBallFromEntity(Object entity) {
-        for (final Ball ball : this.balls) {
-            if (ball.getArmorstand().equals(entity) || ball.getHitBox().equals(entity)) {
-                return Optional.of(ball);
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
      * Stores a new a item in the repository.
      *
      * @param item item
      */
     @Override
-    public void store(Ball item) {
+    public void store(BukkitBall item) {
         if (item == null)
             throw new IllegalArgumentException("Ball cannot be null!");
+        if (item.getOwner().isPresent()) {
+            for (final Ball ball : getAll()) {
+                if (ball.getOwner().isPresent() && ball.getOwner().get().equals(item.getOwner().get())) {
+                    ball.remove();
+                }
+            }
+        }
         this.balls.add(item);
         this.plugin.getLogger().log(Level.INFO, "Added managed ball with id " + item.getUUID() + ".");
     }
@@ -173,7 +145,7 @@ public class BallEntityController implements BallController {
      * @param item item
      */
     @Override
-    public void remove(Ball item) {
+    public void remove(BukkitBall item) {
         if (item == null)
             throw new IllegalArgumentException("Ball cannot be null!");
         if (this.balls.contains(item)) {
@@ -206,7 +178,7 @@ public class BallEntityController implements BallController {
      * @return items
      */
     @Override
-    public List<Ball> getAll() {
+    public List<BukkitBall> getAll() {
         return new ArrayList<>(this.balls);
     }
 
@@ -258,5 +230,37 @@ public class BallEntityController implements BallController {
     @Override
     public void close() throws Exception {
         this.balls.clear();
+    }
+
+    /**
+     * Creates a new ball from the given parameters.
+     *
+     * @param location   location
+     * @param ballMeta   ballMeta
+     * @param persistent persistent for restarts
+     * @param owner      entityOwner
+     * @return ball
+     */
+    @Override
+    public BukkitBall create(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
+        final BukkitBall ball = NMSRegistry.spawnNMSBall(location, ballMeta, persistent, owner);
+        ball.respawn();
+        return ball;
+    }
+
+    /**
+     * Returns a ball if the given entity is part of a ball.
+     *
+     * @param entity entity
+     * @return ball
+     */
+    @Override
+    public Optional<BukkitBall> getBallFromEntity(Entity entity) {
+        for (final BukkitBall ball : this.balls) {
+            if (ball.getArmorstand().equals(entity) || ball.getHitBox().equals(entity)) {
+                return Optional.of(ball);
+            }
+        }
+        return Optional.empty();
     }
 }

@@ -1,10 +1,7 @@
-package com.github.shynixn.balls.api.bukkit.event;
-
-import com.github.shynixn.balls.api.business.entity.Ball;
-import org.bukkit.entity.Entity;
+package com.github.shynixn.balls.api.bukkit.business.event;
 
 /**
- * Event which gets called when an entity interacts with the ball.
+ * Created by Shynixn 2017.
  * <p>
  * Version 1.1
  * <p>
@@ -30,27 +27,5 @@ import org.bukkit.entity.Entity;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallInteractEvent extends BallCancelableEvent {
-
-    private final Entity entity;
-
-    /**
-     * Initializes a new ball kick event with the given entity interacting with the ball.
-     *
-     * @param ball   ball
-     * @param entity entity
-     */
-    public BallInteractEvent(Ball ball, Entity entity) {
-        super(ball);
-        this.entity = entity;
-    }
-
-    /**
-     * Returns the entity interacting with the ball.
-     *
-     * @return entity
-     */
-    public Entity getEntity() {
-        return this.entity;
-    }
+public class BallMoveEvent {
 }

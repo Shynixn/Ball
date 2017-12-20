@@ -1,10 +1,12 @@
-package com.github.shynixn.balls.api.bukkit.event;
+package com.github.shynixn.balls.api.bukkit.business.entity;
 
 import com.github.shynixn.balls.api.business.entity.Ball;
-import org.bukkit.block.Block;
+import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 
 /**
- * Event which gets called when a ball collides with a wall.
+ * Created by Shynixn 2017.
  * <p>
  * Version 1.1
  * <p>
@@ -30,27 +32,6 @@ import org.bukkit.block.Block;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallWallCollideEvent extends BallEvent {
-    private final Block block;
+public interface BukkitBall extends Ball<Location, Entity, ArmorStand> {
 
-    /**
-     * Initializes a new ball event with the colliding block.
-     *
-     * @param ball ball
-     */
-    public BallWallCollideEvent(Ball ball, Block block) {
-        super(ball);
-        if (block == null)
-            throw new IllegalArgumentException("Block cannot be null!");
-        this.block = block;
-    }
-
-    /**
-     * Returns the block the ball collided with.
-     *
-     * @return block
-     */
-    public Block getBlock() {
-        return this.block;
-    }
 }

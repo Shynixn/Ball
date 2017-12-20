@@ -1,10 +1,12 @@
-package com.github.shynixn.balls.api.bukkit.event;
+package com.github.shynixn.balls.api.bukkit.business.event;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
-import org.bukkit.entity.Entity;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
- * Event which gets called when an entity throws the ball.
+ * SubEvent of every Ball event.
  * <p>
  * Version 1.1
  * <p>
@@ -30,14 +32,48 @@ import org.bukkit.entity.Entity;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallThrowEvent extends BallInteractEvent {
+public class BallEvent extends Event {
+
+    private final static HandlerList handlers = new HandlerList();
+    private final BukkitBall ball;
+
     /**
-     * Initializes a new ball kick event with the given entity interacting with the ball.
+     * Initializes a new ball event.
      *
-     * @param ball   ball
-     * @param entity entity
+     * @param ball ball
      */
-    public BallThrowEvent(Ball ball, Entity entity) {
-        super(ball, entity);
+    public BallEvent(BukkitBall ball) {
+        super();
+        if (ball == null)
+            throw new IllegalArgumentException("Ball cannot be null!");
+        this.ball = ball;
+    }
+
+    /**
+     * Returns the ball of the event.
+     *
+     * @return ball
+     */
+    public BukkitBall getBall() {
+        return this.ball;
+    }
+
+    /**
+     * Bukkit implementation of the handlerList.
+     *
+     * @return handler
+     */
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    /**
+     * Bukkit implementation of the handlerList.
+     *
+     * @return handlerList
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 }

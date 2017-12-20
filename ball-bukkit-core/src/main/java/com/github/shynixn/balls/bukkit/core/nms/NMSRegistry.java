@@ -1,18 +1,18 @@
 package com.github.shynixn.balls.bukkit.core.nms;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.UUID;
 
 /**
- * Created by Shynixn 2017.
+ * Registry for handling access to entities from different versions.
  * <p>
  * Version 1.1
  * <p>
@@ -40,7 +40,20 @@ import java.util.logging.Level;
  */
 public class NMSRegistry {
 
-    public static Ball spawnNMSBall(Object location, BallMeta ballMeta, boolean persistent, Entity owner) {
+    /**
+     * Spawns a completely new ball entity at the given location with the ballMeta, persistent state and owner.
+     *
+     * @param location   location
+     * @param ballMeta   ballMeta
+     * @param persistent persistent
+     * @param owner      nullable owner entity
+     * @return ball
+     */
+    public static BukkitBall spawnNMSBall(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
+        if (location == null)
+            throw new IllegalArgumentException("Location cannot be null!");
+        if (ballMeta == null)
+            throw new IllegalArgumentException("Ballmeta cannot be null!");
         try {
             final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
             return ReflectionUtils.invokeConstructor(clazz, new Class[]{Location.class, BallMeta.class, boolean.class, Entity.class}, new Object[]{location, ballMeta, persistent, owner});
@@ -49,10 +62,17 @@ public class NMSRegistry {
         }
     }
 
-    public static Ball spawnNMSBall(String uuid, Map<String, Object> data) {
+    /**
+     * Spawns a ball from a given uuid and a serialized Ball meta data.
+     *
+     * @param uuid uuid of the ball
+     * @param data data serialized meta data.
+     * @return ball
+     */
+    public static BukkitBall spawnNMSBall(UUID uuid, Map<String, Object> data) {
         try {
             final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
-            return ReflectionUtils.invokeConstructor(clazz, new Class[]{String.class, Map.class}, new Object[]{uuid, data});
+            return ReflectionUtils.invokeConstructor(clazz, new Class[]{String.class, Map.class}, new Object[]{uuid.toString(), data});
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

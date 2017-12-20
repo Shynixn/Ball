@@ -29,7 +29,7 @@ import java.util.Collection;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface SoundEffectMeta extends EffectMeta {
+public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> extends EffectMeta<T> {
 
     /**
      * Applies the sound at the given location.
@@ -37,7 +37,7 @@ public interface SoundEffectMeta extends EffectMeta {
      * @param location location
      * @throws Exception ex
      */
-    void applyToLocation(Object location) throws Exception;
+    void applyToLocation(Location location) throws Exception;
 
     /**
      * Applies the sound to the given players.
@@ -45,7 +45,7 @@ public interface SoundEffectMeta extends EffectMeta {
      * @param players players
      * @throws Exception ex
      */
-    void applyToPlayers(Collection<Object> players) throws Exception;
+    void applyToPlayers(Collection<Player> players) throws Exception;
 
     /**
      * Returns the name of the sound.
@@ -60,7 +60,7 @@ public interface SoundEffectMeta extends EffectMeta {
      * @param name name
      * @return builder
      */
-    SoundEffectMeta setName(String name);
+    <T extends SoundEffectMeta> T setName(String name);
 
     /**
      * Returns the volume of the sound.
@@ -75,7 +75,7 @@ public interface SoundEffectMeta extends EffectMeta {
      * @param volume volume
      * @return builder
      */
-    SoundEffectMeta setVolume(double volume);
+    <T extends SoundEffectMeta> T setVolume(double volume);
 
     /**
      * Returns the pitch of the sound.
@@ -90,7 +90,7 @@ public interface SoundEffectMeta extends EffectMeta {
      * @param pitch pitch
      * @return builder
      */
-    SoundEffectMeta setPitch(double pitch);
+    <T extends SoundEffectMeta> T setPitch(double pitch);
 
     /**
      * Clones the current object.

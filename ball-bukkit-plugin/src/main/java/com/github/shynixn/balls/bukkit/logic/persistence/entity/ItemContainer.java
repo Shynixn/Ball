@@ -65,7 +65,6 @@ public class ItemContainer {
      */
     public ItemContainer(int orderNumber, Map<String, Object> data) throws Exception {
         super();
-        System.out.println("GOT YOU");
         this.position = orderNumber;
         if (data.containsKey("id"))
             this.id = (int) data.get("id");

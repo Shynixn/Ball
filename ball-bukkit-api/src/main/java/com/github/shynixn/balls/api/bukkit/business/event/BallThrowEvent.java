@@ -1,7 +1,11 @@
-package com.github.shynixn.balls.api.bukkit.event;
+package com.github.shynixn.balls.api.bukkit.business.event;
+
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
+import com.github.shynixn.balls.api.business.entity.Ball;
+import org.bukkit.entity.Entity;
 
 /**
- * Created by Shynixn 2017.
+ * Event which gets called when an entity throws the ball.
  * <p>
  * Version 1.1
  * <p>
@@ -27,5 +31,14 @@ package com.github.shynixn.balls.api.bukkit.event;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallMoveEvent {
+public class BallThrowEvent extends BallInteractEvent {
+    /**
+     * Initializes a new ball kick event with the given entity interacting with the ball.
+     *
+     * @param ball   ball
+     * @param entity entity
+     */
+    public BallThrowEvent(BukkitBall ball, Entity entity) {
+        super(ball, entity);
+    }
 }

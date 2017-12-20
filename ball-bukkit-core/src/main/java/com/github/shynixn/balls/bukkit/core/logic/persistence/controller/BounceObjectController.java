@@ -1,9 +1,11 @@
 package com.github.shynixn.balls.bukkit.core.logic.persistence.controller;
 
+import com.github.shynixn.balls.api.bukkit.persistence.controller.BukkitBounceController;
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BounceInfo;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
@@ -37,14 +39,24 @@ import java.util.*;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BounceObjectController implements BounceController, ConfigurationSerializable {
+public class BounceObjectController implements BukkitBounceController, ConfigurationSerializable {
 
     private final List<BounceObject> bounceObjects = new ArrayList<>();
 
+    /**
+     * New instance.
+     */
     public BounceObjectController() {
     }
 
+    /**
+     * Initializes the bounceController with serializedContent.
+     *
+     * @param data data
+     */
     public BounceObjectController(Map<String, Object> data) {
+        if (data == null)
+            throw new IllegalArgumentException("Data cannot be null!");
         for (final String key : data.keySet()) {
             final BounceObject bounceObject = new BounceInfo(((MemorySection) data.get(key)).getValues(false));
             this.store(bounceObject);
@@ -100,7 +112,9 @@ public class BounceObjectController implements BounceController, ConfigurationSe
      * @return optBounceObject
      */
     @Override
-    public Optional<BounceObject> getBounceObjectFromBlock(Object block) {
+    public Optional<BounceObject> getBounceObjectFromBlock(Block block) {
+        if (block == null)
+            throw new IllegalArgumentException("Block cannot be null!");
         for (final BounceObject object : this.bounceObjects) {
             if (object.isBlock(block)) {
                 return Optional.of(object);
@@ -137,6 +151,11 @@ public class BounceObjectController implements BounceController, ConfigurationSe
         return Collections.unmodifiableList(this.bounceObjects);
     }
 
+    /**
+     * Serializes the given content.
+     *
+     * @return serializedContent.
+     */
     @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> data = new LinkedHashMap<>();

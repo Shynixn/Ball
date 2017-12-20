@@ -1,11 +1,8 @@
 package com.github.shynixn.balls.bukkit.core.logic.business.listener;
 
-import com.github.shynixn.balls.api.business.controller.BallController;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R1.CraftChunk;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -18,7 +15,10 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -54,7 +54,7 @@ public class StorageListener extends SimpleListener {
     private final List<UUID> cache = new ArrayList<>();
 
     /**
-     * Initializes a new listener by plugin
+     * Initializes a new listener by plugin.
      *
      * @param plugin plugin
      */
@@ -63,12 +63,22 @@ public class StorageListener extends SimpleListener {
         this.ballController = ballController;
     }
 
+    /**
+     * Removes the ball of a player before he leaves the server.
+     *
+     * @param event event
+     */
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         final Optional<Ball> optBall = this.getBallFromPlayer(event.getPlayer());
         optBall.ifPresent(Ball::remove);
     }
 
+    /**
+     * Removes the ball of a player before he teleports to another world
+     *
+     * @param event event
+     */
     @EventHandler
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         if (!event.getTo().getWorld().equals(event.getFrom().getWorld())) {
@@ -77,6 +87,12 @@ public class StorageListener extends SimpleListener {
         }
     }
 
+    /**
+     * Saves the ball asynchronously when it is inside of a chunk which gets unloaded. Replaces the entity with an invisible armorstands which holds the
+     * ball information for respawning.
+     *
+     * @param event event
+     */
     @EventHandler
     public void onChunkSaveEvent(ChunkUnloadEvent event) {
         for (final Entity entity : event.getChunk().getEntities()) {
@@ -98,6 +114,11 @@ public class StorageListener extends SimpleListener {
         }
     }
 
+    /**
+     * Saves all balls from the world similar to chunk unload.
+     *
+     * @param event event
+     */
     @EventHandler
     public void onWorldSaveEvent(WorldSaveEvent event) {
         for (final Entity entity : event.getWorld().getEntities()) {
@@ -105,12 +126,16 @@ public class StorageListener extends SimpleListener {
             if ((ball = this.ballController.getBallFromEntity(entity)).isPresent()) {
                 if (ball.get().isPersistent()) {
                     this.ballController.saveAndDestroy(ball.get(), false);
-
                 }
             }
         }
     }
 
+    /**
+     * Checks if an ball armorstand is inside of the chunk and spawns a ball at the location-
+     *
+     * @param event event
+     */
     @EventHandler
     public void onChunkLoadEvent(ChunkLoadEvent event) {
         for (final Entity entity : event.getChunk().getEntities()) {
@@ -135,6 +160,12 @@ public class StorageListener extends SimpleListener {
         return Optional.empty();
     }
 
+    /**
+     * Cache for ball saving so the ball gets not saved twice by ridicolous chunk unloading of minecraft.
+     *
+     * @param ball ball
+     * @return success
+     */
     private boolean pushToCache(Ball ball) {
         final UUID uuid = ball.getUUID();
         if (!this.cache.contains(uuid)) {

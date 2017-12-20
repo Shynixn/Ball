@@ -45,10 +45,13 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
     private double verticalTouchStrength = 1.0;
 
     public BallModifications() {
-
+        super();
     }
 
     public BallModifications(Map<String, Object> data) {
+        super();
+        if (data == null)
+            throw new IllegalArgumentException("Data cannot be null!");
         this.horizontalKickStrength = (double) data.get("horizontal-kick");
         this.verticalKickStrength = (double) data.get("vertical-kick");
         this.horizontalThrowStrength = (double) data.get("horizontal-throw");

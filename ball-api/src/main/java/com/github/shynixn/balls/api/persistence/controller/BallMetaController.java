@@ -29,7 +29,7 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMetaController extends IController<BallMeta> {
+public interface BallMetaController extends IFileController<BallMeta> {
 
     /**
      * Creates a new ballMeta wih the given skin.
@@ -38,4 +38,9 @@ public interface BallMetaController extends IController<BallMeta> {
      * @return ballMeta
      */
     BallMeta create(String skin);
+
+    /**
+     * Saves all stored items into the file asynchronly.
+     */
+    void persist();
 }

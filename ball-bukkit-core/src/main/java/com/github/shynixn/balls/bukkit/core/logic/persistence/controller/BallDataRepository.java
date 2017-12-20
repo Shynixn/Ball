@@ -3,11 +3,21 @@ package com.github.shynixn.balls.bukkit.core.logic.persistence.controller;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.plugin.Plugin;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
 /**
  * Created by Shynixn 2017.
@@ -38,7 +48,27 @@ import java.util.List;
  */
 public class BallDataRepository implements BallMetaController {
 
+    private final Plugin plugin;
+    private final File file;
+    private final String fileName;
     private final List<BallMeta> items = new ArrayList<>();
+
+    /**
+     * Initializes a new ball data repository where to store ball meta data into the given file.
+     *
+     * @param plugin   plugin
+     * @param fileName fileName
+     */
+    public BallDataRepository(Plugin plugin, String fileName) {
+        super();
+        if (plugin == null)
+            throw new IllegalArgumentException("Plugin cannot be null!");
+        if (fileName == null)
+            throw new IllegalArgumentException("FileName cannot be null!");
+        this.plugin = plugin;
+        this.fileName = fileName;
+        this.file = new File(this.plugin.getDataFolder(), "UnrealBalls");
+    }
 
     /**
      * Creates a new ballMeta wih the given skin.
@@ -80,6 +110,56 @@ public class BallDataRepository implements BallMetaController {
     }
 
     /**
+     * Saves all stored items into the file asynchronly.
+     */
+    @Override
+    public void persist() {
+        final BallMeta[] items = this.items.toArray(new BallMeta[this.items.size()]);
+        this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            try {
+                synchronized (this.file) {
+                    final File storage = this.createFiles();
+                    final FileConfiguration configuration = new YamlConfiguration();
+                    configuration.load(storage);
+                    for (int i = 0; i < items.length; i++) {
+                        final ConfigurationSerializable serializable = (ConfigurationSerializable) items[i];
+                        configuration.set("meta." + (i + 1) + ".ball", serializable.serialize());
+                        configuration.save(storage);
+                    }
+                }
+            } catch (IOException | InvalidConfigurationException ex) {
+                this.plugin.getLogger().log(Level.WARNING, "Failed to save meta.", ex);
+            }
+        });
+    }
+
+    /**
+     * Reloads the content from the fileSystem.
+     */
+    @Override
+    public void reload() {
+        this.items.clear();
+        try {
+            synchronized (this.file) {
+                final File storage = this.createFiles();
+                final FileConfiguration configuration = new YamlConfiguration();
+                configuration.load(storage);
+                final Map<String, Object> data = ((MemorySection) configuration.get("meta")).getValues(false);
+                for (final String key : data.keySet()) {
+                    try {
+                        final BallMeta ballMeta = new BallData(((MemorySection) ((MemorySection) data.get(key)).get("ball")).getValues(true));
+                        this.items.add(ballMeta);
+                    } catch (final Exception e) {
+                        this.plugin.getLogger().log(Level.WARNING, "Failed to load meta " + key + '.', e);
+                    }
+                }
+            }
+        } catch (IOException | InvalidConfigurationException ex) {
+            this.plugin.getLogger().log(Level.WARNING, "Failed to load meta.", ex);
+        }
+    }
+
+    /**
      * Returns the amount of items in the repository.
      *
      * @return size
@@ -104,7 +184,7 @@ public class BallDataRepository implements BallMetaController {
      */
     @Override
     public List<BallMeta> getAll() {
-        return this.items;
+        return Collections.unmodifiableList(this.items);
     }
 
     /**
@@ -155,5 +235,20 @@ public class BallDataRepository implements BallMetaController {
     @Override
     public void close() throws Exception {
         this.items.clear();
+    }
+
+    private File createFiles() throws IOException {
+        final File storageFile = new File(this.file, this.fileName);
+        if (!this.file.exists()) {
+            if (this.file.mkdir()) {
+                this.plugin.getLogger().log(Level.INFO, "Created folder " + this.file.getName() + ".");
+            }
+        }
+        if (!storageFile.exists()) {
+            if (storageFile.createNewFile()) {
+                this.plugin.getLogger().log(Level.INFO, "Created file " + storageFile.getName() + ".");
+            }
+        }
+        return storageFile;
     }
 }

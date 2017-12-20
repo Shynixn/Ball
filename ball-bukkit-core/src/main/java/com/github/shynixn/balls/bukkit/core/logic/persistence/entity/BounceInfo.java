@@ -130,7 +130,7 @@ public class BounceInfo implements BounceObject, ConfigurationSerializable {
      */
     @Override
     public boolean isBlock(Object block) {
-        Block bukkitBlock = (Block) block;
+        final Block bukkitBlock = (Block) block;
         if (bukkitBlock.getTypeId() == this.getMaterialId()) {
             if (bukkitBlock.getData() == this.getMaterialDamageValue()) {
                 return true;
@@ -139,6 +139,11 @@ public class BounceInfo implements BounceObject, ConfigurationSerializable {
         return false;
     }
 
+    /**
+     * Serializes the bounceInfo
+     *
+     * @return serializedContent.
+     */
     @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> data = new LinkedHashMap<>();

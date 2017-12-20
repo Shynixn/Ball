@@ -82,7 +82,6 @@ public class BallDataFileRepository implements IFileController<ItemContainer> {
     }
 
     public BallMeta getBallMetaFromContainer(ItemContainer itemContainer) {
-        System.out.println("DATA: " + this.items.get(itemContainer));
         if (this.items.containsKey(itemContainer))
             return this.items.get(itemContainer);
         return null;

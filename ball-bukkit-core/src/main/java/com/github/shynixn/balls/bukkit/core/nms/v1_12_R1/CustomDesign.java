@@ -1,11 +1,10 @@
 package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
-import com.github.shynixn.balls.api.bukkit.entity.BukkitBall;
-import com.github.shynixn.balls.api.bukkit.event.BallDeathEvent;
-import com.github.shynixn.balls.api.bukkit.event.BallInteractEvent;
-import com.github.shynixn.balls.api.bukkit.event.BallThrowEvent;
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
+import com.github.shynixn.balls.api.bukkit.business.event.BallDeathEvent;
+import com.github.shynixn.balls.api.bukkit.business.event.BallInteractEvent;
+import com.github.shynixn.balls.api.bukkit.business.event.BallThrowEvent;
 import com.github.shynixn.balls.api.persistence.BallMeta;
-import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.SkinHelper;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
 import net.minecraft.server.v1_12_R1.EntityArmorStand;

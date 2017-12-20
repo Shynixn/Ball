@@ -52,14 +52,19 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     private boolean alwaysBounce;
     private BallSize size = BallSize.NORMAL;
 
-
     private final BallModifications modifications;
-
     private final BounceController bounceObjectIController;
 
+    /**
+     * Deserializes a ballData.
+     *
+     * @param data data
+     */
     public BallData(Map<String, Object> data) {
+        if (data == null)
+            throw new IllegalArgumentException("Data cannot be null!");
         this.skin = (String) data.get("skin");
-        this.size =  BallSize.valueOf((String) data.get("size"));
+        this.size = BallSize.valueOf((String) data.get("size"));
         this.hitbox = (double) data.get("hitbox-size");
         this.carryAble = (boolean) data.get("carry-able");
         this.rotating = (boolean) data.get("rotating");
@@ -68,7 +73,14 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         this.modifications = new BallModifications(((MemorySection) data.get("modifiers")).getValues(false));
     }
 
+    /**
+     * Initializes the ball data with a new skin.
+     *
+     * @param skin skin
+     */
     public BallData(String skin) {
+        if (skin == null)
+            throw new IllegalArgumentException("Skin cannot be null!");
         this.skin = skin;
         this.modifications = new BallModifications();
         this.bounceObjectIController = new BounceObjectController();
@@ -226,6 +238,11 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         this.size = size;
     }
 
+    /**
+     * Serializes the given content.
+     *
+     * @return serializedContent
+     */
     @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> data = new LinkedHashMap<>();

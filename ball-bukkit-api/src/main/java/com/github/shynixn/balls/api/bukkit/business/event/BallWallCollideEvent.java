@@ -1,10 +1,11 @@
-package com.github.shynixn.balls.api.bukkit.event;
+package com.github.shynixn.balls.api.bukkit.business.event;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
-import org.bukkit.entity.Entity;
+import org.bukkit.block.Block;
 
 /**
- * Event which gets called when an entity grabs a ball.
+ * Event which gets called when a ball collides with a wall.
  * <p>
  * Version 1.1
  * <p>
@@ -30,14 +31,27 @@ import org.bukkit.entity.Entity;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallGrabEvent extends BallInteractEvent {
+public class BallWallCollideEvent extends BallEvent {
+    private final Block block;
+
     /**
-     * Initializes a new ball kick event with the given entity interacting with the ball.
+     * Initializes a new ball event with the colliding block.
      *
-     * @param ball   ball
-     * @param entity entity
+     * @param ball ball
      */
-    public BallGrabEvent(Ball ball, Entity entity) {
-        super(ball, entity);
+    public BallWallCollideEvent(BukkitBall ball, Block block) {
+        super(ball);
+        if (block == null)
+            throw new IllegalArgumentException("Block cannot be null!");
+        this.block = block;
+    }
+
+    /**
+     * Returns the block the ball collided with.
+     *
+     * @return block
+     */
+    public Block getBlock() {
+        return this.block;
     }
 }

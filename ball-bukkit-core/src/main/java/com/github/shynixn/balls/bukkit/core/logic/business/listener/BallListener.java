@@ -1,14 +1,12 @@
 package com.github.shynixn.balls.bukkit.core.logic.business.listener;
 
-import com.github.shynixn.balls.api.bukkit.event.BallDeathEvent;
+import com.github.shynixn.balls.api.bukkit.business.controller.BukkitBallController;
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
+import com.github.shynixn.balls.api.bukkit.business.event.BallDeathEvent;
 import com.github.shynixn.balls.api.business.controller.BallController;
 import com.github.shynixn.balls.api.business.entity.Ball;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Rabbit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -51,7 +49,7 @@ import java.util.Optional;
  * SOFTWARE.
  */
 public class BallListener extends SimpleListener {
-    private final BallController ballController;
+    private final BukkitBallController ballController;
 
     /**
      * Initializes a new ball listener.
@@ -59,7 +57,7 @@ public class BallListener extends SimpleListener {
      * @param ballController controller
      * @param plugin         plugin
      */
-    public BallListener(BallController ballController, Plugin plugin) {
+    public BallListener(BukkitBallController ballController, Plugin plugin) {
         super(plugin);
         this.ballController = ballController;
     }
@@ -71,7 +69,7 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void onPlayerInteractBallEvent(PlayerInteractEvent event) {
-        for (final Ball ball : this.ballController.getAll()) {
+        for (final BukkitBall ball : this.ballController.getAll()) {
             if (ball.getLastInteractionEntity() != null && ball.getLastInteractionEntity().equals(event.getPlayer())) {
                 ball.throwByEntity(event.getPlayer());
             }
@@ -88,7 +86,7 @@ public class BallListener extends SimpleListener {
         if (!(event.getRightClicked() instanceof ArmorStand))
             return;
         this.dropBall(event.getPlayer());
-        final Optional<Ball> optBall = this.ballController.getBallFromEntity(event.getRightClicked());
+        final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity(event.getRightClicked());
         if (optBall.isPresent()) {
             final Ball ball = optBall.get();
             if (ball.getMeta().isCarryable() && !ball.isGrabbed()) {
@@ -116,9 +114,9 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void onPlayerDamageBallEvent(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof ArmorStand) {
-            final Optional<Ball> optBall = this.ballController.getBallFromEntity(event.getEntity());
+            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity(event.getEntity());
             if (optBall.isPresent()) {
-                final Ball ball = optBall.get();
+                final BukkitBall ball = optBall.get();
                 ball.kickByEntity(event.getDamager());
             }
         }
@@ -132,7 +130,7 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void entityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof ArmorStand) {
-            final Optional<Ball> optBall = this.ballController.getBallFromEntity(event.getEntity());
+            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity(event.getEntity());
             if (optBall.isPresent()) {
                 event.setCancelled(true);
             }
@@ -201,7 +199,7 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void entityLeashEvent(PlayerLeashEntityEvent event) {
-        final Optional<Ball> optBall = this.ballController.getBallFromEntity(event.getEntity());
+        final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity(event.getEntity());
         if (optBall.isPresent()) {
             event.setCancelled(true);
         }

@@ -60,19 +60,13 @@ public class NBTTagHelper {
                 }
 
                 if (value instanceof String) {
-                    nbtSetString.invoke(nbtTag, key, (String) value);
+                    nbtSetString.invoke(nbtTag, key, value);
                 } else if (value instanceof Integer) {
-                    nbtSetInteger.invoke(nbtTag, key, (Integer) value);
+                    nbtSetInteger.invoke(nbtTag, key, value);
                 } else if (value instanceof Boolean) {
-                    System.out.println("ADDED: " + key + " " + value);
-                    nbtSetBoolean.invoke(nbtTag, key, (Boolean) value);
-                    System.out.println("ADDED NBT");
+                    nbtSetBoolean.invoke(nbtTag, key, value);
                 }
-                System.out.println("NOPE");
                 setNBTTag.invoke(nmsItemStack, nbtTag);
-
-
-
                 return (ItemStack) bukkitCopyMethod.invoke(null, nmsItemStack);
             }
         } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
