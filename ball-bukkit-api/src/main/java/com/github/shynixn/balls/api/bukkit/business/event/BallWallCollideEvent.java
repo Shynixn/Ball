@@ -3,6 +3,8 @@ package com.github.shynixn.balls.api.bukkit.business.event;
 import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.util.Vector;
 
 /**
  * Event which gets called when a ball collides with a wall.
@@ -31,19 +33,50 @@ import org.bukkit.block.Block;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallWallCollideEvent extends BallEvent {
+public class BallWallCollideEvent extends BallCancelableEvent {
     private final Block block;
+    private final BlockFace blockFace;
+    private final Vector resultVector;
+    private final Vector incomingVector;
 
     /**
-     * Initializes a new ball event with the colliding block.
-     *
+     * Initializes a new ball collide event.
      * @param ball ball
+     * @param block block
+     * @param blockFace blockFace hitting the ball
+     * @param resultVector vector of the ball after he hit the wall
+     * @param incomingVector vector of the ball before he hit the wall
      */
-    public BallWallCollideEvent(BukkitBall ball, Block block) {
+    public BallWallCollideEvent(BukkitBall ball, Block block, BlockFace blockFace, Vector resultVector, Vector incomingVector) {
         super(ball);
-        if (block == null)
-            throw new IllegalArgumentException("Block cannot be null!");
         this.block = block;
+        this.blockFace = blockFace;
+        this.resultVector = resultVector;
+        this.incomingVector = incomingVector;
+    }
+
+    /**
+     * Returns the blockFace hitting the ball is hitting.
+     * @return blockFace.
+     */
+    public BlockFace getBlockFace() {
+        return this.blockFace;
+    }
+
+    /**
+     * Returns the outgoing Vector which the ball has after he hit the wall.
+     * @return vector
+     */
+    public Vector getResultVector() {
+        return this.resultVector;
+    }
+
+    /**
+     * Returns the incoming Vector which the ball had before he hit the wall-
+     * @return vector
+     */
+    public Vector getIncomingVector() {
+        return this.incomingVector;
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.github.shynixn.balls.bukkit.core.logic.business;
 
 import com.github.shynixn.balls.api.BallsApi;
+import com.github.shynixn.balls.api.bukkit.business.controller.BukkitBallController;
 import com.github.shynixn.balls.api.business.controller.BallController;
 import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
 import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
@@ -43,7 +44,7 @@ import java.util.logging.Level;
 public class CoreManager {
 
     private final BallMetaController metaController;
-    private final BallController ballController;
+    private final BukkitBallController ballController;
     private final Plugin plugin;
 
     /**

@@ -2,8 +2,10 @@ package com.github.shynixn.balls.api.bukkit.business.entity;
 
 import com.github.shynixn.balls.api.business.entity.Ball;
 import org.bukkit.Location;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 
 /**
  * Created by Shynixn 2017.
@@ -32,6 +34,6 @@ import org.bukkit.entity.Entity;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BukkitBall extends Ball<Location, Entity, ArmorStand> {
+public interface BukkitBall extends Ball<Location, LivingEntity, ArmorStand>, ConfigurationSerializable {
 
 }

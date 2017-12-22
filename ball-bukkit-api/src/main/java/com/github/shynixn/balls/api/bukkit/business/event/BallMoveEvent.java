@@ -1,5 +1,7 @@
 package com.github.shynixn.balls.api.bukkit.business.event;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
+
 /**
  * Created by Shynixn 2017.
  * <p>
@@ -27,5 +29,13 @@ package com.github.shynixn.balls.api.bukkit.business.event;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallMoveEvent {
+public class BallMoveEvent extends BallCancelableEvent{
+    /**
+     * Initializes a new ball event.
+     *
+     * @param ball ball
+     */
+    public BallMoveEvent(BukkitBall ball) {
+        super(ball);
+    }
 }

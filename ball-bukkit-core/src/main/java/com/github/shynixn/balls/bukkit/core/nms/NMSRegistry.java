@@ -1,11 +1,11 @@
 package com.github.shynixn.balls.bukkit.core.nms;
 
 import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
-import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
@@ -49,14 +49,14 @@ public class NMSRegistry {
      * @param owner      nullable owner entity
      * @return ball
      */
-    public static BukkitBall spawnNMSBall(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
+    public static BukkitBall spawnNMSBall(Location location, BallMeta ballMeta, boolean persistent, LivingEntity owner) {
         if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (ballMeta == null)
             throw new IllegalArgumentException("Ballmeta cannot be null!");
         try {
             final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
-            return ReflectionUtils.invokeConstructor(clazz, new Class[]{Location.class, BallMeta.class, boolean.class, Entity.class}, new Object[]{location, ballMeta, persistent, owner});
+            return ReflectionUtils.invokeConstructor(clazz, new Class[]{Location.class, BallMeta.class, boolean.class, LivingEntity.class}, new Object[]{location, ballMeta, persistent, owner});
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -70,6 +70,10 @@ public class NMSRegistry {
      * @return ball
      */
     public static BukkitBall spawnNMSBall(UUID uuid, Map<String, Object> data) {
+        if (uuid == null)
+            throw new IllegalArgumentException("UUID cannot be null!");
+        if (data == null)
+            throw new IllegalArgumentException("Data cannot be null!");
         try {
             final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
             return ReflectionUtils.invokeConstructor(clazz, new Class[]{String.class, Map.class}, new Object[]{uuid.toString(), data});

@@ -1,12 +1,10 @@
 package com.github.shynixn.balls.bukkit.core.logic.business.listener;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.bukkit.core.logic.business.controller.BallEntityController;
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -60,6 +58,8 @@ public class StorageListener extends SimpleListener {
      */
     public StorageListener(Plugin plugin, BallEntityController ballController) {
         super(plugin);
+        if(ballController == null)
+            throw new IllegalArgumentException("BallEntityController cannot be null!");
         this.ballController = ballController;
     }
 
@@ -96,19 +96,21 @@ public class StorageListener extends SimpleListener {
     @EventHandler
     public void onChunkSaveEvent(ChunkUnloadEvent event) {
         for (final Entity entity : event.getChunk().getEntities()) {
-            final Optional<Ball> ball;
-            if ((ball = this.ballController.getBallFromEntity(entity)).isPresent()) {
-                if (ball.get().isPersistent()) {
-                    this.pushToCache(ball.get());
-                    this.ballController.remove(ball.get());
-                    this.ballController.saveAndDestroy(ball.get(), true);
-                    final ArmorStand armorStand = (ArmorStand) event.getWorld().spawnEntity(((Location) ball.get().getLocation()), EntityType.ARMOR_STAND);
-                    armorStand.setCustomNameVisible(false);
-                    armorStand.setRemoveWhenFarAway(false);
-                    armorStand.setVisible(false);
-                    armorStand.setCustomName("balluuid-" + ball.get().getUUID().toString());
-                } else {
-                    ball.get().remove();
+            final Optional<BukkitBall> ball;
+            if (entity instanceof LivingEntity) {
+                if ((ball = this.ballController.getBallFromEntity((LivingEntity) entity)).isPresent()) {
+                    if (ball.get().isPersistent()) {
+                        this.pushToCache(ball.get());
+                        this.ballController.remove(ball.get());
+                        this.ballController.saveAndDestroy(ball.get(), true);
+                        final ArmorStand armorStand = (ArmorStand) event.getWorld().spawnEntity(((Location) ball.get().getLocation()), EntityType.ARMOR_STAND);
+                        armorStand.setCustomNameVisible(false);
+                        armorStand.setRemoveWhenFarAway(false);
+                        armorStand.setVisible(false);
+                        armorStand.setCustomName("balluuid-" + ball.get().getUUID().toString());
+                    } else {
+                        ball.get().remove();
+                    }
                 }
             }
         }
@@ -122,10 +124,12 @@ public class StorageListener extends SimpleListener {
     @EventHandler
     public void onWorldSaveEvent(WorldSaveEvent event) {
         for (final Entity entity : event.getWorld().getEntities()) {
-            final Optional<Ball> ball;
-            if ((ball = this.ballController.getBallFromEntity(entity)).isPresent()) {
-                if (ball.get().isPersistent()) {
-                    this.ballController.saveAndDestroy(ball.get(), false);
+            final Optional<BukkitBall> ball;
+            if (entity instanceof LivingEntity) {
+                if ((ball = this.ballController.getBallFromEntity((LivingEntity) entity)).isPresent()) {
+                    if (ball.get().isPersistent()) {
+                        this.ballController.saveAndDestroy(ball.get(), false);
+                    }
                 }
             }
         }
@@ -161,7 +165,7 @@ public class StorageListener extends SimpleListener {
     }
 
     /**
-     * Cache for ball saving so the ball gets not saved twice by ridicolous chunk unloading of minecraft.
+     * Cache for ball saving so the ball gets not saved twice by ridiculous chunk unloading of minecraft.
      *
      * @param ball ball
      * @return success

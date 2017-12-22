@@ -1,6 +1,9 @@
 package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
+import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
+import com.github.shynixn.balls.api.bukkit.business.event.BallMoveEvent;
 import com.github.shynixn.balls.api.bukkit.business.event.BallWallCollideEvent;
+import com.github.shynixn.balls.api.bukkit.persistence.controller.BukkitBounceController;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
@@ -47,14 +50,14 @@ import java.util.logging.Level;
  */
 public final class CustomHitbox extends EntityArmorStand {
 
-    private final Ball ball;
+    private final BukkitBall ball;
 
     private int knockBackBumper;
     private Vector reduceVector;
     private Vector originVector;
     private int times;
 
-    public CustomHitbox(Location location, Ball ball) {
+    CustomHitbox(Location location, BukkitBall ball) {
         super(((CraftWorld) location.getWorld()).getHandle());
         this.ball = ball;
         final World mcWorld = ((CraftWorld) location.getWorld()).getHandle();
@@ -86,26 +89,34 @@ public final class CustomHitbox extends EntityArmorStand {
         } catch (IllegalArgumentException ignored) {
 
         }
-
     }
 
-    private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block) {
+    private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block, BlockFace blockFace) {
         if (this.knockBackBumper <= 0) {
-            final Optional<BounceObject> optBounce = this.ball.getMeta().getBounceObjectController().getBounceObjectFromBlock(block);
-            if (optBounce.isPresent() || ball.getMeta().isAlwaysBounceBack()) {
+            final Optional<BounceObject> optBounce = this.ball.getMeta().<BukkitBounceController>getBounceObjectController().getBounceObjectFromBlock(block);
+            if (optBounce.isPresent() || this.ball.getMeta().isAlwaysBounceBack()) {
                 Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n))).multiply(0.75);
                 if (optBounce.isPresent()) {
                     r = r.multiply(optBounce.get().getBounceModifier());
                 }
-                this.setVelocity(r);
-                ((CustomDesign) ball).revertAnimation = !((CustomDesign) ball).revertAnimation;
-                this.knockBackBumper = 5;
+                final BallWallCollideEvent event = new BallWallCollideEvent(this.ball, block, blockFace, r.clone(), starter.clone());
+                Bukkit.getPluginManager().callEvent(event);
+                if (!event.isCancelled()) {
+                    this.setVelocity(r);
+                    ((CustomDesign) this.ball).revertAnimation = !((CustomDesign) this.ball).revertAnimation;
+                    this.knockBackBumper = 5;
+                }
             }
         }
     }
 
     @Override
     public void move(EnumMoveType enummovetype, double d0, double d1, double d2) {
+        final BallMoveEvent cevent = new BallMoveEvent(this.ball);
+        Bukkit.getPluginManager().callEvent(cevent);
+        if (cevent.isCancelled()) {
+            return;
+        }
         final Vector starter;
         if ((this.times > 0 || !this.onGround) && this.originVector != null) {
             this.originVector = this.originVector.subtract(this.reduceVector);
@@ -325,23 +336,20 @@ public final class CustomHitbox extends EntityArmorStand {
                     if (d6 > d0) {
                         var81 = var81.getRelative(BlockFace.EAST);
                         final Vector n = new Vector(-1, 0, 0);
-                        this.applyKnockBack(starter, n, var81);
+                        this.applyKnockBack(starter, n, var81, BlockFace.EAST);
                     } else if (d6 < d0) {
                         var81 = var81.getRelative(BlockFace.WEST);
                         final Vector n = new Vector(1, 0, 0);
-                        this.applyKnockBack(starter, n, var81);
+                        this.applyKnockBack(starter, n,var81, (BlockFace.WEST));
                     } else if (d8 > d2) {
                         var81 = var81.getRelative(BlockFace.SOUTH);
                         final Vector n = new Vector(0, 0, -1);
-                        this.applyKnockBack(starter, n, var81);
+                        this.applyKnockBack(starter, n,var81, BlockFace.SOUTH);
 
                     } else if (d8 < d2) {
                         var81 = var81.getRelative(BlockFace.NORTH);
                         final Vector n = new Vector(0, 0, 1);
-                        this.applyKnockBack(starter, n, var81);
-                    }
-                    if (var81 != null) {
-                        Bukkit.getPluginManager().callEvent(new BallWallCollideEvent(this.ball, var81));
+                        this.applyKnockBack(starter, n, var81,BlockFace.NORTH);
                     }
                 }
             } catch (final Exception ex) {

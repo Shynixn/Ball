@@ -4,6 +4,10 @@ import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.controller.BallController;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Shynixn 2017.
@@ -32,5 +36,14 @@ import org.bukkit.entity.Entity;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BukkitBallController extends BallController<BukkitBall,Location, Entity> {
+public interface BukkitBallController extends BallController<BukkitBall, Location, LivingEntity> {
+
+    /**
+     * Creates a new ball from an uuid and the serialized Ball data.
+     *
+     * @param uuid uuid
+     * @param data data
+     * @return ball
+     */
+    BukkitBall create(UUID uuid, Map<String, Object> data);
 }

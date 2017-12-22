@@ -3,9 +3,9 @@ package com.github.shynixn.balls.bukkit.core.logic.business.listener;
 import com.github.shynixn.balls.api.bukkit.business.controller.BukkitBallController;
 import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.bukkit.business.event.BallDeathEvent;
-import com.github.shynixn.balls.api.business.controller.BallController;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -59,6 +59,8 @@ public class BallListener extends SimpleListener {
      */
     public BallListener(BukkitBallController ballController, Plugin plugin) {
         super(plugin);
+        if (ballController == null)
+            throw new IllegalArgumentException("BallEntityController cannot be null!");
         this.ballController = ballController;
     }
 
@@ -86,9 +88,9 @@ public class BallListener extends SimpleListener {
         if (!(event.getRightClicked() instanceof ArmorStand))
             return;
         this.dropBall(event.getPlayer());
-        final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity(event.getRightClicked());
+        final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity((LivingEntity) event.getRightClicked());
         if (optBall.isPresent()) {
-            final Ball ball = optBall.get();
+            final BukkitBall ball = optBall.get();
             if (ball.getMeta().isCarryable() && !ball.isGrabbed()) {
                 ball.grab(event.getPlayer());
             }
@@ -114,10 +116,10 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void onPlayerDamageBallEvent(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof ArmorStand) {
-            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity(event.getEntity());
+            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity((LivingEntity) event.getEntity());
             if (optBall.isPresent()) {
                 final BukkitBall ball = optBall.get();
-                ball.kickByEntity(event.getDamager());
+                ball.kickByEntity((LivingEntity) event.getDamager());
             }
         }
     }
@@ -130,7 +132,7 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void entityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof ArmorStand) {
-            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity(event.getEntity());
+            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity((LivingEntity) event.getEntity());
             if (optBall.isPresent()) {
                 event.setCancelled(true);
             }
@@ -140,31 +142,55 @@ public class BallListener extends SimpleListener {
         }
     }
 
+    /**
+     * Drops the ball on command.
+     * @param event event
+     */
     @EventHandler
     public void onPlayerCommandEvent(PlayerCommandPreprocessEvent event) {
         this.dropBall(event.getPlayer());
     }
 
+    /**
+     * Drops the ball on inventory open.
+     * @param event event
+     */
     @EventHandler
     public void onInventoryOpenEvent(InventoryOpenEvent event) {
         this.dropBall((Player) event.getPlayer());
     }
 
+    /**
+     * Drops the ball on interact.
+     * @param event event
+     */
     @EventHandler
     public void onPlayerEntityEvent(PlayerInteractEntityEvent event) {
         this.dropBall(event.getPlayer());
     }
 
+    /**
+     * Drops the ball on death.
+     * @param event event
+     */
     @EventHandler
     public void onPlayerDeathEvent(PlayerDeathEvent event) {
         this.dropBall(event.getEntity());
     }
 
+    /**
+     * Drops the ball on left.
+     * @param event event
+     */
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         this.dropBall(event.getPlayer());
     }
 
+    /**
+     * Drops the ball on inventory click.
+     * @param event event
+     */
     @EventHandler
     public void onInventoryOpen(InventoryClickEvent event) {
         for (final Ball ball : this.ballController.getAll()) {
@@ -177,16 +203,28 @@ public class BallListener extends SimpleListener {
         }
     }
 
+    /**
+     * Drops the ball on teleport.
+     * @param event event
+     */
     @EventHandler
     public void onTeleportEvent(PlayerTeleportEvent event) {
         this.dropBall(event.getPlayer());
     }
 
+    /**
+     * Drops the ball on item drop.
+     * @param event event
+     */
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         this.dropBall(event.getPlayer());
     }
 
+    /**
+     * Drops the ball on Slot change.
+     * @param event event
+     */
     @EventHandler
     public void onSlotChange(PlayerItemHeldEvent event) {
         this.dropBall(event.getPlayer());
@@ -199,9 +237,11 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void entityLeashEvent(PlayerLeashEntityEvent event) {
-        final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity(event.getEntity());
-        if (optBall.isPresent()) {
-            event.setCancelled(true);
+        if (event instanceof LivingEntity) {
+            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity((LivingEntity) event.getEntity());
+            if (optBall.isPresent()) {
+                event.setCancelled(true);
+            }
         }
     }
 

@@ -1,9 +1,7 @@
 package com.github.shynixn.balls.bukkit.core.nms.v1_12_R1;
 
 import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
-import com.github.shynixn.balls.api.bukkit.business.event.BallDeathEvent;
-import com.github.shynixn.balls.api.bukkit.business.event.BallInteractEvent;
-import com.github.shynixn.balls.api.bukkit.business.event.BallThrowEvent;
+import com.github.shynixn.balls.api.bukkit.business.event.*;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.SkinHelper;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
@@ -14,7 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -30,9 +27,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public final class CustomDesign extends EntityArmorStand implements BukkitBall, ConfigurationSerializable {
+public final class CustomDesign extends EntityArmorStand implements BukkitBall {
     private boolean persistent;
-    private Entity owner;
+    private LivingEntity owner;
 
     private final BallMeta ballMeta;
     private CustomHitbox hitBox;
@@ -41,12 +38,10 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
     private Entity interactionEntity;
 
     private int counter = 20;
-
     boolean revertAnimation;
-
     private final UUID uuid;
 
-    public CustomDesign(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
+    public CustomDesign(Location location, BallMeta ballMeta, boolean persistent, LivingEntity owner) {
         super(((CraftWorld) location.getWorld()).getHandle());
         this.ballMeta = ballMeta;
         this.owner = owner;
@@ -59,7 +54,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
         super(((CraftWorld) Bukkit.getWorld((String) data.get("location.world"))).getHandle());
         this.uuid = UUID.fromString(uuid);
         this.ballMeta = new BallData(((MemorySection) data.get("meta")).getValues(true));
-        Location location = Location.deserialize(((MemorySection) data.get("location")).getValues(true));
+        final Location location = Location.deserialize(((MemorySection) data.get("location")).getValues(true));
         this.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         this.persistent = true;
     }
@@ -87,67 +82,6 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
             }
         } catch (final Exception ex) {
             Bukkit.getLogger().log(Level.WARNING, "Ball moving failed.", ex);
-        }
-    }
-
-    /**
-     * Kicks the ball by the given entity.
-     *
-     * @param entity entity
-     */
-    @Override
-    public void kickByEntity(Entity entity) {
-        if (this.isGrabbed())
-            return;
-        final Vector vector = this.hitBox.getSpigotEntity()
-                .getLocation()
-                .toVector()
-                .subtract(entity.getLocation().toVector())
-                .normalize()
-                .multiply(this.ballMeta.getModifiers().getHorizontalKickStrengthModifier());
-        this.hitBox.yaw = entity.getLocation().getYaw();
-        vector.setY(0.1 * this.ballMeta.getModifiers().getVerticalKickStrengthModifier());
-        this.move(vector.getX(), vector.getY(), vector.getZ());
-    }
-
-    /**
-     * Throws the ball by the given entity.
-     *
-     * @param entity entity
-     */
-    @Override
-    public void throwByEntity(Entity entity) {
-        final LivingEntity livingEntity = (LivingEntity) entity;
-        if (this.isGrabbed() && this.interactionEntity != null && livingEntity.equals(this.interactionEntity)) {
-            this.deGrab();
-            Vector vector = this.getDirection(livingEntity).normalize();
-            final double y = vector.getY();
-            vector = vector.multiply(this.ballMeta.getModifiers().getHorizontalThrowStrengthModifier());
-            vector.setY(y * 2 * this.ballMeta.getModifiers().getVerticalThrowStrengthModifier());
-            final BallThrowEvent event = new BallThrowEvent(this, livingEntity);
-            Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                this.counter = 10;
-                this.move(vector.getX(), vector.getY(), vector.getZ());
-            }
-        }
-    }
-
-    /**
-     * Sets the ball in the hands of the entity.
-     *
-     * @param entity entity
-     */
-    @Override
-    public void grab(Object entity) {
-        if (this.isGrabbed())
-            return;
-        this.interactionEntity = (Entity) entity;
-        final LivingEntity livingEntity = (LivingEntity) this.interactionEntity;
-        if (livingEntity.getEquipment().getItemInHand() == null || livingEntity.getEquipment().getItemInHand().getType() == Material.AIR) {
-            livingEntity.getEquipment().setItemInHand(this.getSpigotEntity().getHelmet().clone());
-            this.setHelmet(null);
-            this.grabbed = true;
         }
     }
 
@@ -194,18 +128,6 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
         SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
         this.setHelmet(itemStack);
         this.hitBox = new CustomHitbox(location, this);
-    }
-
-    private void setHelmet(ItemStack itemStack) {
-        switch (this.ballMeta.getSize()) {
-            case SMALL:
-                this.getSpigotEntity().setSmall(true);
-                this.getSpigotEntity().setHelmet(itemStack);
-                break;
-            case NORMAL:
-                this.getSpigotEntity().setHelmet(itemStack);
-                break;
-        }
     }
 
     /**
@@ -262,7 +184,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
      * @return owner
      */
     @Override
-    public Optional<Entity> getOwner() {
+    public Optional<LivingEntity> getOwner() {
         return Optional.ofNullable(this.owner);
     }
 
@@ -273,6 +195,8 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
      */
     @Override
     public void teleport(Location location) {
+        if(location == null)
+            throw new IllegalArgumentException("Location cannot be null!");
         if (this.isGrabbed())
             return;
         this.hitBox.getSpigotEntity().teleport(location);
@@ -289,13 +213,88 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
     }
 
     /**
+     * Kicks the ball by the given entity.
+     * The calculated velocity can be manipulated by the BallKickEvent.
+     *
+     * @param livingEntity entity
+     */
+    @Override
+    public void kickByEntity(LivingEntity livingEntity) {
+        if(livingEntity == null)
+            throw new IllegalArgumentException("Living entity cannot be null!");
+        if (this.isGrabbed())
+            return;
+        final Vector vector = this.hitBox.getSpigotEntity()
+                .getLocation()
+                .toVector()
+                .subtract(livingEntity.getLocation().toVector())
+                .normalize()
+                .multiply(this.ballMeta.getModifiers().getHorizontalKickStrengthModifier());
+        this.hitBox.yaw = livingEntity.getLocation().getYaw();
+        vector.setY(0.1 * this.ballMeta.getModifiers().getVerticalKickStrengthModifier());
+        final BallKickEvent event = new BallKickEvent(this, livingEntity, vector);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            this.move(vector.getX(), vector.getY(), vector.getZ());
+        }
+    }
+
+    /**
+     * Throws the ball by the given entity.
+     * The calculated velocity can be manipulated by the BallThrowEvent.
+     *
+     * @param livingEntity entity
+     */
+    @Override
+    public void throwByEntity(LivingEntity livingEntity) {
+        if(livingEntity == null)
+            throw new IllegalArgumentException("Living entity cannot be null!");
+        if (this.isGrabbed() && this.interactionEntity != null && livingEntity.equals(this.interactionEntity)) {
+            this.deGrab();
+            Vector vector = this.getDirection(livingEntity).normalize();
+            final double y = vector.getY();
+            vector = vector.multiply(this.ballMeta.getModifiers().getHorizontalThrowStrengthModifier());
+            vector.setY(y * 2 * this.ballMeta.getModifiers().getVerticalThrowStrengthModifier());
+            final BallThrowEvent event = new BallThrowEvent(this, livingEntity, vector);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                this.counter = 10;
+                this.move(vector.getX(), vector.getY(), vector.getZ());
+            }
+        }
+    }
+
+    /**
      * Returns the last entity the ball interacted with. If it is contact, kicking or grabbing.
      *
      * @return entity.
      */
     @Override
-    public Entity getLastInteractionEntity() {
-        return this.interactionEntity;
+    public LivingEntity getLastInteractionEntity() {
+        return (LivingEntity) this.interactionEntity;
+    }
+
+    /**
+     * Sets the ball in the hands of the entity.
+     *
+     * @param livingEntity entity
+     */
+    @Override
+    public void grab(LivingEntity livingEntity) {
+        if(livingEntity == null)
+            throw new IllegalArgumentException("Living entity cannot be null!");
+        if (this.isGrabbed())
+            return;
+        this.interactionEntity = livingEntity;
+        if (livingEntity.getEquipment().getItemInHand() == null || livingEntity.getEquipment().getItemInHand().getType() == Material.AIR) {
+            final BallGrabEvent event = new BallGrabEvent(this, livingEntity);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                livingEntity.getEquipment().setItemInHand(this.getSpigotEntity().getHelmet().clone());
+                this.setHelmet(null);
+                this.grabbed = true;
+            }
+        }
     }
 
     /**
@@ -356,6 +355,19 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
     @Override
     public UUID getUUID() {
         return this.uuid;
+    }
+
+    /**
+     * Serializes the given ball.
+     *
+     * @return serializedContent
+     */
+    @Override
+    public Map<String, Object> serialize() {
+        final Map<String, Object> data = new LinkedHashMap<>();
+        data.put("location", this.getLocation().serialize());
+        data.put("meta", ((BallData) this.ballMeta).serialize());
+        return data;
     }
 
     /**
@@ -461,11 +473,16 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall, 
         }
     }
 
-    @Override
-    public Map<String, Object> serialize() {
-        final Map<String, Object> data = new LinkedHashMap<>();
-        data.put("location", this.getLocation().serialize());
-        data.put("meta", ((BallData) this.ballMeta).serialize());
-        return data;
+    private void setHelmet(ItemStack itemStack) {
+        switch (this.ballMeta.getSize()) {
+            case SMALL:
+                this.getSpigotEntity().setSmall(true);
+                this.getSpigotEntity().setHelmet(itemStack);
+                break;
+            case NORMAL:
+                this.getSpigotEntity().setHelmet(itemStack);
+                break;
+        }
     }
+
 }

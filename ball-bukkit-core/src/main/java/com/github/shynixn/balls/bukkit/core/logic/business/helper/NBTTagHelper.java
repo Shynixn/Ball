@@ -37,7 +37,17 @@ import java.util.logging.Level;
  */
 public class NBTTagHelper {
 
+    /**
+     * Sets the itemStack nbt Tags.
+     * @param itemStack itemStack
+     * @param nbtTags nbtTags
+     * @return itemStack
+     */
     public static ItemStack setItemStackNBTTag(ItemStack itemStack, Map<String, Object> nbtTags) {
+        if(itemStack == null)
+            throw new IllegalArgumentException("Itemstack cannot be null!");
+        if(nbtTags == null)
+            throw new IllegalArgumentException("Nbt tags cannot be null");
         try {
             final Method nmsCopyMethod = createClass("org.bukkit.craftbukkit.VERSION.inventory.CraftItemStack").getDeclaredMethod("asNMSCopy", ItemStack.class);
 
@@ -60,15 +70,18 @@ public class NBTTagHelper {
                 }
 
                 if (value instanceof String) {
-                    nbtSetString.invoke(nbtTag, key, value);
+                    final String data = (String) value;
+                    nbtSetString.invoke(nbtTag, key, data);
                 } else if (value instanceof Integer) {
-                    nbtSetInteger.invoke(nbtTag, key, value);
+                    final int data = (int) value;
+                    nbtSetInteger.invoke(nbtTag, key, data);
                 } else if (value instanceof Boolean) {
-                    nbtSetBoolean.invoke(nbtTag, key, value);
+                    final boolean data = (boolean) value;
+                    nbtSetBoolean.invoke(nbtTag, key, data);
                 }
                 setNBTTag.invoke(nmsItemStack, nbtTag);
-                return (ItemStack) bukkitCopyMethod.invoke(null, nmsItemStack);
             }
+            return (ItemStack) bukkitCopyMethod.invoke(null, nmsItemStack);
         } catch (NoSuchMethodException | ClassNotFoundException | InvocationTargetException | IllegalAccessException | InstantiationException e) {
             Bukkit.getLogger().log(Level.WARNING, "Failed to set nbt tag.", e);
         }

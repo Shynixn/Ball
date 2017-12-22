@@ -11,7 +11,7 @@ import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.plugin.Plugin;
 
 import java.io.Closeable;
@@ -54,14 +54,59 @@ public class BallEntityController implements BukkitBallController {
     private final File file;
 
     public BallEntityController(Plugin plugin) {
+        super();
+        if(plugin == null)
+            throw new IllegalArgumentException("Plugin cannot be null!");
         this.plugin = plugin;
-        this.file = new File(this.plugin.getDataFolder(), "storage.yml");
+        this.file = new File(this.plugin.getDataFolder(), "UnrealBalls");
     }
 
+    /**
+     * Creates a new ball from the given parameters.
+     *
+     * @param location   location
+     * @param ballMeta   ballMeta
+     * @param persistent persistent for restarts
+     * @param owner      entityOwner
+     * @return ball
+     */
+    @Override
+    public BukkitBall create(Location location, BallMeta ballMeta, boolean persistent, LivingEntity owner) {
+        final BukkitBall ball = NMSRegistry.spawnNMSBall(location, ballMeta, persistent, owner);
+        ball.respawn();
+        return ball;
+    }
+
+    /**
+     * Creates a new ball from an uuid and the serialized Ball data.
+     *
+     * @param uuid uuid
+     * @param data data
+     * @return ball
+     */
+    @Override
     public BukkitBall create(UUID uuid, Map<String, Object> data) {
         final BukkitBall ball = NMSRegistry.spawnNMSBall(uuid, data);
         ball.respawn();
         return ball;
+    }
+
+    /**
+     * Returns a ball if the given entity is part of a ball.
+     *
+     * @param entity entity
+     * @return ball
+     */
+    @Override
+    public Optional<BukkitBall> getBallFromEntity(LivingEntity entity) {
+        if(entity == null)
+            throw new IllegalArgumentException("Entity cannot be null!");
+        for (final BukkitBall ball : this.balls) {
+            if (ball.getArmorstand().equals(entity) || ball.getHitBox().equals(entity)) {
+                return Optional.of(ball);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -73,16 +118,12 @@ public class BallEntityController implements BukkitBallController {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
                 synchronized (this.file) {
-                    if (!this.file.exists()) {
-                        if (this.file.createNewFile()) {
-                            this.plugin.getLogger().log(Level.INFO, "Created file " + this.file.getName() + ".");
-                        }
-                    }
+                    File storageFile = this.createFiles(true);
                     final FileConfiguration configuration = new YamlConfiguration();
-                    configuration.load(this.file);
+                    configuration.load(storageFile);
                     final ConfigurationSerializable serializable = (ConfigurationSerializable) ball;
                     configuration.set("balls." + ball.getUUID().toString(), serializable.serialize());
-                    configuration.save(this.file);
+                    configuration.save(storageFile);
                     this.plugin.getLogger().log(Level.INFO, "Saved ball with id " + ball.getUUID().toString() + ".");
                     if (destroy) {
                         this.plugin.getServer().getScheduler().runTask(this.plugin, ball::remove);
@@ -98,10 +139,11 @@ public class BallEntityController implements BukkitBallController {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
                 synchronized (this.file) {
-                    if (!this.file.exists())
+                    final File storageFile = this.createFiles(false);
+                    if (!storageFile.exists())
                         return;
                     final FileConfiguration configuration = new YamlConfiguration();
-                    configuration.load(this.file);
+                    configuration.load(storageFile);
                     final String dataUUID = uuid.toString();
                     final Map<String, Object> balls = ((MemorySection) configuration.get("balls")).getValues(false);
                     if (balls.containsKey(dataUUID)) {
@@ -129,7 +171,7 @@ public class BallEntityController implements BukkitBallController {
         if (item == null)
             throw new IllegalArgumentException("Ball cannot be null!");
         if (item.getOwner().isPresent()) {
-            for (final Ball ball : getAll()) {
+            for (final Ball ball : this.getAll()) {
                 if (ball.getOwner().isPresent() && ball.getOwner().get().equals(item.getOwner().get())) {
                     ball.remove();
                 }
@@ -232,35 +274,18 @@ public class BallEntityController implements BukkitBallController {
         this.balls.clear();
     }
 
-    /**
-     * Creates a new ball from the given parameters.
-     *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
-     */
-    @Override
-    public BukkitBall create(Location location, BallMeta ballMeta, boolean persistent, Entity owner) {
-        final BukkitBall ball = NMSRegistry.spawnNMSBall(location, ballMeta, persistent, owner);
-        ball.respawn();
-        return ball;
-    }
-
-    /**
-     * Returns a ball if the given entity is part of a ball.
-     *
-     * @param entity entity
-     * @return ball
-     */
-    @Override
-    public Optional<BukkitBall> getBallFromEntity(Entity entity) {
-        for (final BukkitBall ball : this.balls) {
-            if (ball.getArmorstand().equals(entity) || ball.getHitBox().equals(entity)) {
-                return Optional.of(ball);
+    private File createFiles(boolean create) throws IOException {
+        final File storageFile = new File(this.file, "storage.yml");
+        if (!this.file.exists()) {
+            if (this.file.mkdir()) {
+                this.plugin.getLogger().log(Level.INFO, "Created folder " + this.file.getName() + ".");
             }
         }
-        return Optional.empty();
+        if (!storageFile.exists()) {
+            if (create && storageFile.createNewFile()) {
+                this.plugin.getLogger().log(Level.INFO, "Created file " + storageFile.getName() + ".");
+            }
+        }
+        return storageFile;
     }
 }

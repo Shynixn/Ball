@@ -12,10 +12,9 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.logging.Level;
 
 /**
- * Created by Shynixn 2017.
+ * Helper class to set and retrieve skins on skull itemstack.
  * <p>
  * Version 1.1
  * <p>
@@ -43,26 +42,36 @@ import java.util.logging.Level;
  */
 public class SkinHelper {
 
-    public static void setItemStackSkin(ItemStack itemStack, String skin) {
+    /**
+     * Sets the skin of the itemStack regardless if it's the name of a player or a skin Url.
+     *
+     * @param itemStack itemStack
+     * @param skin      skin
+     * @throws Exception exception
+     */
+    public static void setItemStackSkin(ItemStack itemStack, String skin) throws Exception {
+        if (itemStack == null)
+            throw new IllegalArgumentException("ItemStack skin cannot be null");
+        if (skin == null)
+            throw new IllegalArgumentException("Skin cannot be null!");
         final ItemMeta meta = itemStack.getItemMeta();
         if (!(meta instanceof SkullMeta)) {
             return;
         }
-
         String newSkin = skin;
         if (newSkin.contains("textures.minecraft.net")) {
             if (!newSkin.startsWith("http://")) {
                 newSkin = "http://" + newSkin;
             }
             try {
-                final Class<?> cls = createClass("org.bukkit.craftbukkit.VERSION.inventory.CraftMetaSkull");
+                final Class<?> cls = createClass();
                 final Object real = cls.cast(meta);
                 final Field field = real.getClass().getDeclaredField("profile");
                 field.setAccessible(true);
                 field.set(real, getNonPlayerProfile(newSkin));
                 itemStack.setItemMeta(SkullMeta.class.cast(real));
             } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | ClassNotFoundException e) {
-                Bukkit.getLogger().log(Level.WARNING, "Failed to set url of itemstack.", e);
+                throw new Exception("Failed to set url of itemStack.", e);
             }
         } else {
             ((SkullMeta) meta).setOwner(skin);
@@ -70,7 +79,16 @@ public class SkinHelper {
         }
     }
 
-    public static Optional<String> getItemStackSkin(ItemStack itemStack) {
+    /**
+     * Retrieves the skin of the itemStack regardless if it's the name of a player or a skin URL.
+     *
+     * @param itemStack itemStack
+     * @return skin
+     * @throws Exception exception
+     */
+    public static Optional<String> getItemStackSkin(ItemStack itemStack) throws Exception {
+        if (itemStack == null)
+            throw new IllegalArgumentException("ItemStack skin cannot be null");
         final ItemMeta meta = itemStack.getItemMeta();
         if (!(meta instanceof SkullMeta)) {
             return Optional.empty();
@@ -80,38 +98,42 @@ public class SkinHelper {
         if (skullMeta.getOwner() != null) {
             return Optional.of(skullMeta.getOwner());
         } else {
-            try {
-                final Class<?> cls = createClass("org.bukkit.craftbukkit.VERSION.inventory.CraftMetaSkull");
-                final Object real = cls.cast(meta);
-                final Field field = real.getClass().getDeclaredField("profile");
-                field.setAccessible(true);
-                final GameProfile profile = (GameProfile) field.get(real);
-                final Collection<Property> props = profile.getProperties().get("textures");
-                for (final Property property : props) {
-                    if (property.getName().equals("textures")) {
-                        final String text = Base64Coder.decodeString(property.getValue());
-                        final StringBuilder s = new StringBuilder();
-                        boolean start = false;
-                        for (int i = 0; i < text.length(); i++) {
-                            if (text.charAt(i) == '"') {
-                                start = !start;
-                            } else if (start) {
-                                s.append(text.charAt(i));
-                            }
+            return obtainSkinFromSkull(meta);
+        }
+    }
+
+    private static Optional<String> obtainSkinFromSkull(ItemMeta meta) throws Exception {
+        try {
+            final Class<?> cls = createClass();
+            final Object real = cls.cast(meta);
+            final Field field = real.getClass().getDeclaredField("profile");
+            field.setAccessible(true);
+            final GameProfile profile = (GameProfile) field.get(real);
+            final Collection<Property> props = profile.getProperties().get("textures");
+            for (final Property property : props) {
+                if (property.getName().equals("textures")) {
+                    final String text = Base64Coder.decodeString(property.getValue());
+                    final StringBuilder s = new StringBuilder();
+                    boolean start = false;
+                    for (int i = 0; i < text.length(); i++) {
+                        if (text.charAt(i) == '"') {
+                            start = !start;
+                        } else if (start) {
+                            s.append(text.charAt(i));
                         }
-                        return Optional.of(s.toString());
                     }
+                    return Optional.of(s.toString());
                 }
-            } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | ClassNotFoundException e) {
-                Bukkit.getLogger().log(Level.WARNING, "Failed to set url of itemstack.", e);
             }
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | ClassNotFoundException e) {
+            throw new Exception("Failed to obtain url of itemStack.", e);
         }
         return Optional.empty();
     }
 
-    private static Class<?> createClass(String path) throws ClassNotFoundException {
+    private static Class<?> createClass() throws ClassNotFoundException {
         final String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-        return Class.forName(path.replace("VERSION", version));
+        return Class.forName("org.bukkit.craftbukkit.VERSION.inventory.CraftMetaSkull".replace("VERSION", version));
     }
 
     private static GameProfile getNonPlayerProfile(String skinUrl) {

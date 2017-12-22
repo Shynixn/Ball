@@ -1,7 +1,6 @@
 package com.github.shynixn.balls.api.bukkit.business.event;
 
 import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
-import com.github.shynixn.balls.api.business.entity.Ball;
 
 /**
  * Event which gets called when a ball gets removed.

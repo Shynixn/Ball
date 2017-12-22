@@ -53,7 +53,7 @@ public interface BallMeta {
      *
      * @return list
      */
-    BounceController getBounceObjectController();
+    <T extends BounceController> T getBounceObjectController();
 
     /**
      * Sets always bouncing back from blocks regardless of bounceController.

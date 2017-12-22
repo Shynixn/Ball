@@ -3,6 +3,7 @@ package com.github.shynixn.balls.api.bukkit.business.event;
 import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import org.bukkit.entity.Entity;
+import org.bukkit.util.Vector;
 
 /**
  * Event which gets called when an entity kicks the ball.
@@ -33,13 +34,26 @@ import org.bukkit.entity.Entity;
  */
 public class BallKickEvent extends BallInteractEvent {
 
+    private final Vector result;
+
     /**
-     * Initializes a new ball kick event with the given entity kicking the ball.
+     * Initializes a new ball kick event with the given entity interacting with the ball.
      *
      * @param ball   ball
      * @param entity entity
+     * @param result resultingVector
      */
-    public BallKickEvent(BukkitBall ball, Entity entity) {
+    public BallKickEvent(BukkitBall ball, Entity entity, Vector result) {
         super(ball, entity);
+        this.result = result;
+    }
+
+    /**
+     * Returns the vector the ball is flying after being kicked.
+     *
+     * @return vector
+     */
+    public Vector getResult() {
+        return this.result;
     }
 }

@@ -76,7 +76,7 @@ public interface Ball<Location, Entity, Armorstand> {
      *
      * @param entity entity
      */
-    void grab(Object entity);
+    void grab(Entity entity);
 
     /**
      * Removes the ball from the hands of an entity.

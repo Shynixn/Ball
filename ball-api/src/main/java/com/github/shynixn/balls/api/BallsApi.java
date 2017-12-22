@@ -6,7 +6,7 @@ import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
 
 /**
- * Created by Shynixn 2017.
+ * Ball Api.
  * <p>
  * Version 1.1
  * <p>
