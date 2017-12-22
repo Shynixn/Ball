@@ -1,6 +1,7 @@
 package com.github.shynixn.balls.bukkit;
 
 import com.github.shynixn.balls.api.BallsApi;
+import com.github.shynixn.balls.api.bukkit.persistence.controller.BukkitBounceController;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.BounceObject;
@@ -87,11 +88,11 @@ public class BallsPlugin extends JavaPlugin {
                 meta.getModifiers().setGravityModifier(0.5);
                 meta.getModifiers().setRollingDistanceModifier(5.0);
 
-                BounceObject dirt = meta.getBounceObjectController().create(Material.DIRT.getId(), 0);
+                BounceObject dirt = meta.<BukkitBounceController>getBounceObjectController().create(Material.DIRT, 0);
                 dirt.setBounceModifier(1.2);
-                meta.getBounceObjectController().store(dirt);
+                meta.<BukkitBounceController>getBounceObjectController().store(dirt);
 
-                BounceObject grass = meta.getBounceObjectController().create(Material.GRASS.getId(), 0);
+                BounceObject grass = meta.<BukkitBounceController>getBounceObjectController().create(Material.GRASS, 0);
                // grass.setBounceModifier(2.0);
 
                 Ball bukkitBall = BallsApi.spawnBall(p.getLocation(), meta);

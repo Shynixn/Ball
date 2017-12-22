@@ -5,6 +5,7 @@ import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BounceInfo;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -99,8 +100,8 @@ public class BounceObjectController implements BukkitBounceController, Configura
      * @return bounceObject
      */
     @Override
-    public BounceObject create(int type, int damage) {
-        final BounceObject object = new BounceInfo(type);
+    public BounceObject create(Material type, int damage) {
+        final BounceObject object = new BounceInfo(type.getId());
         object.setMaterialDamageValue(damage);
         return object;
     }

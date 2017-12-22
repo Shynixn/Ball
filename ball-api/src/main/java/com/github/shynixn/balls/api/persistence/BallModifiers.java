@@ -43,7 +43,7 @@ public interface BallModifiers {
      *
      * @param strength strength
      */
-    void setGravityModifier(double strength);
+    BallModifiers setGravityModifier(double strength);
 
     /**
      * Returns the rolling distance modifier.
@@ -57,7 +57,7 @@ public interface BallModifiers {
      *
      * @param strength strength
      */
-    void setRollingDistanceModifier(double strength);
+    BallModifiers setRollingDistanceModifier(double strength);
 
     /**
      * Returns the modifier value for the horizontal velocity a player touches the ball.
@@ -71,7 +71,7 @@ public interface BallModifiers {
      *
      * @param strength strength
      */
-    void setHorizontalTouchModifier(double strength);
+    BallModifiers setHorizontalTouchModifier(double strength);
 
     /**
      * Returns the modifier value for the vertical velocity a player touches the ball.
@@ -85,7 +85,7 @@ public interface BallModifiers {
      *
      * @param strength strength
      */
-    void setVerticalTouchModifier(double strength);
+    BallModifiers setVerticalTouchModifier(double strength);
 
     /**
      * Returns the modifier value for the horizontal velocity a player kicks the ball.
@@ -99,7 +99,7 @@ public interface BallModifiers {
      *
      * @param strength strength
      */
-    void setHorizontalKickStrengthModifier(double strength);
+    BallModifiers setHorizontalKickStrengthModifier(double strength);
 
     /**
      * Returns the modifier value for the vertical velocity a player kicks the ball.
@@ -113,7 +113,7 @@ public interface BallModifiers {
      *
      * @param strength strength
      */
-    void setVerticalKickStrengthModifier(double strength);
+    BallModifiers setVerticalKickStrengthModifier(double strength);
 
     /**
      * Returns the modifier value for the horizontal velocity a player throws the ball.
@@ -127,7 +127,7 @@ public interface BallModifiers {
      *
      * @param strength strength
      */
-    void setHorizontalThrowStrengthModifier(double strength);
+    BallModifiers setHorizontalThrowStrengthModifier(double strength);
 
     /**
      * Returns the modifier value for the vertical velocity a player throws the ball.
@@ -141,5 +141,5 @@ public interface BallModifiers {
      *
      * @param strength strength
      */
-    void setVerticalThrowStrengthModifier(double strength);
+    BallModifiers setVerticalThrowStrengthModifier(double strength);
 }

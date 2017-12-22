@@ -1,6 +1,7 @@
 package com.github.shynixn.balls.api.bukkit.persistence.controller;
 
 import com.github.shynixn.balls.api.persistence.controller.BounceController;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 
 /**
@@ -30,5 +31,5 @@ import org.bukkit.block.Block;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BukkitBounceController extends BounceController<Block> {
+public interface BukkitBounceController extends BounceController<Block, Material> {
 }

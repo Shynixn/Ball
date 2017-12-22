@@ -31,7 +31,7 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BounceController<Block> extends IController<BounceObject> {
+public interface BounceController<Block, Material> extends IController<BounceObject> {
 
     /**
      * Creates a new bounceObject from the given parameters.
@@ -40,7 +40,7 @@ public interface BounceController<Block> extends IController<BounceObject> {
      * @param damage damage
      * @return bounceObject
      */
-    BounceObject create(int type, int damage);
+    BounceObject create(Material type, int damage);
 
     /**
      * Returns the bounceObject from the given block.

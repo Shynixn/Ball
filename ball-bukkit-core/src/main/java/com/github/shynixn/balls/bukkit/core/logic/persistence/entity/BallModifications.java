@@ -80,8 +80,9 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
      * @param strength strength
      */
     @Override
-    public void setGravityModifier(double strength) {
+    public BallModifications setGravityModifier(double strength) {
         this.gravityStrength = strength;
+        return this;
     }
 
     /**
@@ -100,8 +101,9 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
      * @param strength strength
      */
     @Override
-    public void setRollingDistanceModifier(double strength) {
+    public BallModifications setRollingDistanceModifier(double strength) {
         this.rollingStrength = strength;
+        return this;
     }
 
     /**
@@ -120,8 +122,9 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
      * @param strength strength
      */
     @Override
-    public void setHorizontalTouchModifier(double strength) {
+    public BallModifications setHorizontalTouchModifier(double strength) {
         this.horizontalTouchStrength = strength;
+        return this;
     }
 
     /**
@@ -140,8 +143,9 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
      * @param strength strength
      */
     @Override
-    public void setVerticalTouchModifier(double strength) {
+    public BallModifications setVerticalTouchModifier(double strength) {
         this.verticalTouchStrength = strength;
+        return this;
     }
 
     /**
@@ -160,8 +164,9 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
      * @param strength strength
      */
     @Override
-    public void setHorizontalKickStrengthModifier(double strength) {
+    public BallModifications setHorizontalKickStrengthModifier(double strength) {
         this.horizontalKickStrength = strength;
+        return this;
     }
 
     /**
@@ -180,8 +185,9 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
      * @param strength strength
      */
     @Override
-    public void setVerticalKickStrengthModifier(double strength) {
+    public BallModifications setVerticalKickStrengthModifier(double strength) {
         this.verticalKickStrength = strength;
+        return this;
     }
 
     /**
@@ -200,8 +206,9 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
      * @param strength strength
      */
     @Override
-    public void setHorizontalThrowStrengthModifier(double strength) {
+    public BallModifications setHorizontalThrowStrengthModifier(double strength) {
         this.horizontalThrowStrength = strength;
+        return this;
     }
 
     /**
@@ -220,8 +227,9 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
      * @param strength strength
      */
     @Override
-    public void setVerticalThrowStrengthModifier(double strength) {
+    public BallModifications setVerticalThrowStrengthModifier(double strength) {
         this.verticalThrowStrength = strength;
+        return this;
     }
 
     /**

@@ -95,7 +95,11 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
             livingEntity.getEquipment().setItemInHand(null);
             this.grabbed = false;
             final ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-            SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
+            try {
+                SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
+            } catch (final Exception e1) {
+              Bukkit.getLogger().log(Level.WARNING, "Failed to degrab entity.", e1);
+            }
             this.setHelmet(itemStack);
             final Vector vector = this.getDirection(livingEntity).normalize().multiply(3);
             this.teleport(livingEntity.getLocation().add(vector));
@@ -125,7 +129,11 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
         this.getSpigotEntity().setCustomName("ResourceBallsPlugin");
         this.getSpigotEntity().setCustomNameVisible(false);
         final ItemStack itemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
+        try {
+            SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
+        } catch (final Exception e1) {
+            Bukkit.getLogger().log(Level.WARNING, "Failed to respawn entity.", e1);
+        }
         this.setHelmet(itemStack);
         this.hitBox = new CustomHitbox(location, this);
     }
