@@ -1,9 +1,8 @@
 package com.github.shynixn.balls.bukkit.logic.business.gui;
 
 import com.github.shynixn.balls.api.BallsApi;
-import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BallMeta;
-import com.github.shynixn.balls.bukkit.BallsPlugin;
+import com.github.shynixn.balls.bukkit.BallPlugin;
 import com.github.shynixn.balls.bukkit.logic.business.Permission;
 import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
 import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
@@ -17,9 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -131,7 +127,7 @@ public class GUI implements InventoryHolder, AutoCloseable {
                 if (i % 2 == 0) {
                     scheduleCounter++;
                 }
-                Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(BallsPlugin.class), () -> {
+                Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(BallPlugin.class), () -> {
                     if (this.currentCount == mountBlock) {
                         inventory.setItem(slot, containers.get(containerSlot).generate(this.player, groupPermission));
                     }
@@ -148,18 +144,6 @@ public class GUI implements InventoryHolder, AutoCloseable {
             inventory.setItem(previousPage.getPosition(), previousPage.generate(this.player));
         }
         this.fillEmptySlots(inventory);
-
-
-        List<Ball> ballList = new ArrayList<>();
-
-        for(Ball ball : ballList)
-        {
-            System.out.println(ball);
-        }
-
-
-
-
     }
 
     /**

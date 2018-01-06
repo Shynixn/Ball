@@ -1,6 +1,6 @@
 package com.github.shynixn.balls.bukkit.logic.persistence.configuration;
 
-import com.github.shynixn.balls.bukkit.BallsPlugin;
+import com.github.shynixn.balls.bukkit.BallPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,7 +41,7 @@ public class SimpleConfig {
      * Reloads the config
      */
     public void reload() {
-        this.plugin = JavaPlugin.getPlugin(BallsPlugin.class);
+        this.plugin = JavaPlugin.getPlugin(BallPlugin.class);
         this.plugin.reloadConfig();
     }
 

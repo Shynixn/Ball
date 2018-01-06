@@ -1,19 +1,12 @@
 package com.github.shynixn.balls.bukkit;
 
-import com.github.shynixn.balls.api.BallsApi;
-import com.github.shynixn.balls.api.bukkit.persistence.controller.BukkitBounceController;
-import com.github.shynixn.balls.api.business.entity.Ball;
-import com.github.shynixn.balls.api.persistence.BallMeta;
-import com.github.shynixn.balls.api.persistence.BounceObject;
-import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 import com.github.shynixn.balls.bukkit.core.logic.business.CoreManager;
 import com.github.shynixn.balls.bukkit.core.nms.VersionSupport;
 import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
 import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Level;
@@ -46,7 +39,7 @@ import java.util.logging.Logger;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallsPlugin extends JavaPlugin {
+public class BallPlugin extends JavaPlugin {
     public static final String PREFIX_CONSOLE = ChatColor.YELLOW + "[Balls] ";
     private static final String PLUGIN_NAME = "Balls";
     private static Logger logger;
@@ -63,47 +56,19 @@ public class BallsPlugin extends JavaPlugin {
             this.disabled = true;
             Bukkit.getPluginManager().disablePlugin(this);
         } else {
-            Bukkit.getServer().getConsoleSender().sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Loading Balls ...");
+            if (Config.getInstance().isMetricsEnabled()) {
+                new Metrics(this);
+            }
+            Bukkit.getServer().getConsoleSender().sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Loading Ball ...");
             Config.getInstance().reload();
             try {
-
-
                 this.ballsManager = new BallsManager(this);
                 this.coreManager = new CoreManager(this);
-
-
-
-
-
-
-                Player p = Bukkit.getPlayer("Shynixn");
-
-
-
-                BallMeta meta = BallsApi.getBallMetaController().create("textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14");
-                meta.setSize(BallSize.SMALL);
-
-                meta.setAlwaysBounceBack(true);
-
-                meta.getModifiers().setGravityModifier(0.5);
-                meta.getModifiers().setRollingDistanceModifier(5.0);
-
-                BounceObject dirt = meta.<BukkitBounceController>getBounceObjectController().create(Material.DIRT, 0);
-                dirt.setBounceModifier(1.2);
-                meta.<BukkitBounceController>getBounceObjectController().store(dirt);
-
-                BounceObject grass = meta.<BukkitBounceController>getBounceObjectController().create(Material.GRASS, 0);
-               // grass.setBounceModifier(2.0);
-
-                Ball bukkitBall = BallsApi.spawnBall(p.getLocation(), meta);
-
-
-                Bukkit.getServer().getConsoleSender().sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Enabled Balls " + this.getDescription().getVersion() + " by Shynixn");
+                Bukkit.getServer().getConsoleSender().sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Enabled Ball " + this.getDescription().getVersion() + " by Shynixn");
             } catch (final Exception e) {
                 logger().log(Level.WARNING, "Failed to enable plugin.", e);
             }
         }
-
     }
 
     @Override

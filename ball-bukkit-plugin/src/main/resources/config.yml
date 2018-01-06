@@ -1,30 +1,19 @@
 #######################################################################
-#                          PetBlocks                                  #
+#                          Ball                                       #
 # 		            	   by Shynixn							      #
 #######################################################################
 
 # Permission:
 # LEVEL		 DESCRIPTION									PERMISSION
-# user       Access to the /petblock command 				petblocks.use
-# user       Allows to have all pet engines			        petblocks.pet.type.all
-# user       Allows to have a specific pet engine			petblocks.pet.type.<number>
-# user       Allows to rename your pet 	       			    petblocks.pet.rename
-# user       Allows to ride your pet 	                    petblocks.pet.ride
-# user       Allows to wear your pet 	                    petblocks.pet.wear
-# user       Allows to change the skin name 	            petblocks.pet.skin
-# user       Allows to shoot your pet                       petblocks.pet.cannon
-# user       Allows to use every ordinary costume 	        balls.gui.balls.all
-# user       Allows to use specific ordinary costumes	    balls.gui.balls.<number>
-# admin      Reloads config and lang file 				    petblocks.reload
-# admin 	 Allows to use own skulls ingame 				petblocks.inventory.costume
-# admin 	 Access to the /petblocks command			    petblocks.commands
+# user       Allows to use the /ball command				ball.commands.gui
+# admin      Allows to use the /ballreload command          ball.commands.reload
 
 ############################
 
 # Data-collecting settings
 
-# Settings to send anonymous stats to https://bstats.org/plugin/bukkit/PetBlocks.
-# As this does not have an impact on your PetBlocks experience at all I would like you to set it on true as knowing that my
+# Settings to send anonymous stats to https://bstats.org/plugin/bukkit/Ball.
+# As this does not have an impact on your Ball plugin experience at all I would like you to set it on true as knowing that my
 # plugin gets used by many server helps me focusing on new updates ;)
 
 ############################
@@ -38,18 +27,23 @@ metrics: true
 # Instead of setting the commands inside of the plugin.yml, I believe you should be able to customize
 # the whole command by yourself. Name, description, permission customize it to your needs.
 
-# petblocks-gui: Settings for the command to open the petblock-GUI
-# petblock-configuration: Settings for the command to manage petblock-configuration
-
 ############################
 
-balls:
-  enabled: true
-  command: balls
-  useage: /<command>
-  description: Opens the balls GUI.
-  permission: balls.command
-  permission-message: You don't have permission.
+commands:
+  ball:
+    enabled: true
+    command: ball
+    useage: /<command>
+    description: Opens the ball Api GUI.
+    permission: ball.commands.gui
+    permission-message: You don't have permission.
+  ballreload:
+    enabled: true
+    command: ballreload
+    useage: /<command>
+    description: Reloads the ball configuration.
+    permission: ball.commands.reload
+    permission-message: You don't have permission.
 
 
 ############################
@@ -61,133 +55,22 @@ balls:
 ############################
 
 messages:
-  prefix: '&2[&aPetBlocks&2]&a '
-  gui-title: 'Balls'
+  prefix: '&2[&aBall&2]&a '
+  gui-title: 'Ball'
   perms-ico-yes: '&aYes'
   perms-ico-no: '&cNo'
   no-perms: '&cYou do not have permissions.'
 
+############################
 
+# GUI Balls
 
 ############################
 
-# GUI-settings
 
-# Settings for the petblock-gui
 
-# settings-title: GUI title
-# settings-copy-skin: Should the skin of petblock-engine be applied when being selected?
-# settings-use-only-disable-pet-item: Removes the enable block from the GUI and uses the pet-item instead to spawn the pet.
-# settings-my-pet-position: Position in the GUI to show the currently selected pet
-# settings-my-pet-default-appearance:: Default skin of the petblock if the settings-copy-skin is disabled
 
-# gui enabled: Should the the item be shown in the GUI?
-# gui position: Position of the item in of the GUI
-# gui page: Page of the item in of the GUI (PAGES: MAIN, WARDROBE)
-# gui id: item id in the GUI
-# gui damage: item damage in the the GUI
-# gui skin: item skin in the GUI (Name of the player [Shynixn] or the skin URL [textures.minecraft.net/texture/797884d451dc7b7729de2076cd6c4912865ade70391d1ccec3e95fb39f8c5e1])
-# gui name: item name in the GUI
-# gui unbreakable: item unbreakable tag in the GUI
-# gui lore: item lore in the GUI (Multiple lines support)
 
-############################
-
-gui:
-  settings:
-    title: 'PetBlocks'
-    copy-skin: true
-    use-only-disable-pet-item: false
-    default-engine: 1
-  items:
-    my-pet:
-      position: 4
-    default-appearance:
-      id: 2
-      damage: 0
-      skin: 'textures.minecraft.net/texture/dfab7daeb8f333c7886a70ef30caf4dec4a8cd10493f23802f1516bdd23fcd'
-      unbreakable: false
-    empty-slot:
-      enabled: true
-      id: 160
-      damage: 15
-      skin: 'none'
-      name: 'none'
-      unbreakable: false
-      lore:
-        - 'none'
-    previous-page:
-      enabled: true
-      position: 45
-      id: 397
-      damage: 3
-      skin: 'textures.minecraft.net/texture/3ebf907494a935e955bfcadab81beafb90fb9be49c7026ba97d798d5f1a23'
-      name: '&aPrevious page'
-      unbreakable: false
-      lore:
-        - 'none'
-    next-page:
-      enabled: true
-      position: 53
-      id: 397
-      damage: 3
-      skin: 'textures.minecraft.net/texture/1b6f1a25b6bc199946472aedb370522584ff6f4e83221e5946bd2e41b5ca13b'
-      name: '&aNext page'
-      unbreakable: false
-      lore:
-        - 'none'
-
-############################
-
-# Engines-settings
-
-# Settings for the petblock-engines-category.
-# You can find all sound names at the bottom of this file.
-# [Warning! Sound names have changed between 1.8 and 1.9, select the right one. All default sounds get automatically translated to 1.9]
-# You can add new engines by yourself!
-
-# gui id: item id in the GUI
-# gui damage: item damage in the the GUI
-# gui skin: item skin in the GUI (Name of the player or the skin URL)
-# gui name: item name in the GUI
-# gui unbreakable: item unbreakable tag in the GUI
-# gui lore: item lore in the GUI (Multiple lines support)
-
-# behaviour entity types: RABBIT (HOPPING), ZOMBIE (WALKING)
-
-############################
-
-meta:
-   1:
-    gui:
-       id: 397
-       damage: 3
-       skin: 'http://textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14'
-       name: '&e&lPikachu'
-       unbreakable: false
-       lore:
-        - 'none'
-    ball:
-      skin: 'textures.minecraft.net/texture/f6c5ee57717f561fc12b9f8878fbe0d0d62c72facfad61c0d27cade54e818c14'
-      size: SMALL
-      hitbox-size: 2.0
-      carry-able: true
-      always-bounce: false
-      rotating: true
-      modifiers:
-        horizontal-touch: 1.0
-        vertical-touch: 1.0
-        horizontal-kick: 1.0
-        vertical-kick: 1.0
-        horizontal-throw: 1.0
-        vertical-throw: 1.0
-        rolling-distance: 1.0
-        gravity: 1.0
-      wall-bouncing:
-        '1':
-          id: 3
-          damage: 0
-          modifier: 1.2
 
 #******************
 # Particle list (Color/material particles require the color/material template to work)

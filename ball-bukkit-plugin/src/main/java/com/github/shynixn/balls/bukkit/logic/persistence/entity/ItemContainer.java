@@ -1,6 +1,6 @@
 package com.github.shynixn.balls.bukkit.logic.persistence.entity;
 
-import com.github.shynixn.balls.bukkit.BallsPlugin;
+import com.github.shynixn.balls.bukkit.BallPlugin;
 import com.github.shynixn.balls.bukkit.logic.persistence.configuration.Config;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.NBTTagHelper;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.SkinHelper;
@@ -124,7 +124,7 @@ public class ItemContainer {
             this.updateLore(player, permissions);
             return itemStack;
         } catch (final Exception ex) {
-            BallsPlugin.logger().log(Level.WARNING, "Failed to generate itemStack.", ex);
+            BallPlugin.logger().log(Level.WARNING, "Failed to generate itemStack.", ex);
         }
         return new ItemStack(Material.AIR);
     }

@@ -87,7 +87,7 @@ public class BallsApi {
      * @param location location
      * @param entity   entity
      * @param ballMeta meta
-     * @return
+     * @return ball
      */
     public static Ball spawnPlayerBall(Object location, Object entity, BallMeta ballMeta) {
         if (location == null)

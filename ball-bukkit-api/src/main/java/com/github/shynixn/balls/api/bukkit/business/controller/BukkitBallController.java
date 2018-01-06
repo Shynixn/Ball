@@ -3,7 +3,6 @@ package com.github.shynixn.balls.api.bukkit.business.controller;
 import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.business.controller.BallController;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import java.util.Map;

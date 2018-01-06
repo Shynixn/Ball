@@ -1,21 +1,13 @@
 package com.github.shynixn.balls.bukkit.logic.business.listener;
 
-import com.github.shynixn.balls.bukkit.BallsPlugin;
+import com.github.shynixn.balls.bukkit.BallPlugin;
 import com.github.shynixn.balls.bukkit.core.logic.business.listener.SimpleListener;
 import com.github.shynixn.balls.bukkit.logic.business.gui.GUI;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.util.Vector;
 
 import java.util.logging.Level;
 
@@ -61,9 +53,9 @@ public class GUIListener extends SimpleListener {
         if (event.getInventory().getHolder() instanceof GUI) {
             final GUI gui = (GUI) event.getInventory().getHolder();
             try {
-                //     gui.close();
+               gui.close();
             } catch (final Exception e) {
-                BallsPlugin.logger().log(Level.WARNING, "Failed to close inventory.", e);
+                BallPlugin.logger().log(Level.WARNING, "Failed to close inventory.", e);
             }
         }
     }
@@ -77,7 +69,7 @@ public class GUIListener extends SimpleListener {
                 event.setCancelled(true);
                 ((Player) event.getWhoClicked()).updateInventory();
             } catch (final Exception e) {
-                BallsPlugin.logger().log(Level.WARNING, "Failed to click in inventory.", e);
+                BallPlugin.logger().log(Level.WARNING, "Failed to click in inventory.", e);
             }
         }
     }

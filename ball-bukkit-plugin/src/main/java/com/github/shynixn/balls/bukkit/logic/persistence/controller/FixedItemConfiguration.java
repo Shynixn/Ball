@@ -1,7 +1,7 @@
 package com.github.shynixn.balls.bukkit.logic.persistence.controller;
 
 import com.github.shynixn.balls.api.persistence.controller.IFileController;
-import com.github.shynixn.balls.bukkit.BallsPlugin;
+import com.github.shynixn.balls.bukkit.BallPlugin;
 import com.github.shynixn.balls.bukkit.logic.persistence.entity.ItemContainer;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.inventory.ItemStack;
@@ -120,7 +120,7 @@ public class FixedItemConfiguration implements IFileController<ItemContainer> {
                 final ItemContainer container = new ItemContainer(0, ((MemorySection) data.get(key)).getValues(false));
                 this.items.put(key, container);
             } catch (final Exception e) {
-                BallsPlugin.logger().log(Level.WARNING, "Failed to load guiItem " + key + '.', e);
+                BallPlugin.logger().log(Level.WARNING, "Failed to load guiItem " + key + '.', e);
             }
         }
     }

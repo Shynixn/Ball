@@ -72,4 +72,8 @@ public class Config extends SimpleConfig {
     public String getPermissionIconNo() {
         return this.getData("messages.perms-ico-no");
     }
+
+    public boolean isMetricsEnabled() {
+        return this.getData("metrics");
+    }
 }

@@ -1,10 +1,8 @@
 package com.github.shynixn.balls.bukkit.logic.persistence.controller;
 
 import com.github.shynixn.balls.api.persistence.BallMeta;
-import com.github.shynixn.balls.api.persistence.controller.BallMetaController;
 import com.github.shynixn.balls.api.persistence.controller.IFileController;
-import com.github.shynixn.balls.bukkit.BallsPlugin;
-import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BounceObjectController;
+import com.github.shynixn.balls.bukkit.BallPlugin;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
 import com.github.shynixn.balls.bukkit.logic.persistence.entity.ItemContainer;
 import org.bukkit.configuration.MemorySection;
@@ -66,7 +64,7 @@ public class BallDataFileRepository implements IFileController<ItemContainer> {
                 final BallMeta ballMeta = new BallData(((MemorySection) ((MemorySection) data.get(key)).get("ball")).getValues(true));
                 this.items.put(container, ballMeta);
             } catch (final Exception e) {
-                BallsPlugin.logger().log(Level.WARNING, "Failed to load guiItem " + key + '.', e);
+                BallPlugin.logger().log(Level.WARNING, "Failed to load guiItem " + key + '.', e);
                 return;
             }
         }

@@ -4,7 +4,6 @@ import com.github.shynixn.balls.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.balls.api.bukkit.business.event.BallMoveEvent;
 import com.github.shynixn.balls.api.bukkit.business.event.BallWallCollideEvent;
 import com.github.shynixn.balls.api.bukkit.persistence.controller.BukkitBounceController;
-import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.bukkit.core.logic.business.helper.ReflectionUtils;
 import net.minecraft.server.v1_12_R1.*;
@@ -71,6 +70,7 @@ public final class CustomHitbox extends EntityArmorStand {
         this.a(compound);
         this.getSpigotEntity().setCustomName("ResourceBallsPlugin");
         this.getSpigotEntity().setCustomNameVisible(false);
+
     }
 
     ArmorStand getSpigotEntity() {
