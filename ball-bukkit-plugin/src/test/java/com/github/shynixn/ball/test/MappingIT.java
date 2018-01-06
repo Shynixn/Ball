@@ -1,19 +1,18 @@
-package com.github.shynixn.balls.api.bukkit.persistence.entity;
+package com.github.shynixn.ball.test;
 
-import com.github.shynixn.balls.api.persistence.effect.ParticleEffectMeta;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.entity.Player;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.jupiter.api.Test;
 
 /**
- * Created by Shynixn 2017.
+ * Created by Shynixn 2018.
  * <p>
- * Version 1.1
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2018 by Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,5 +32,22 @@ import org.bukkit.entity.Player;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BukkitParticleEffectMeta extends ParticleEffectMeta<Location, Player, Material,BukkitParticleEffectMeta>, ConfigurationSerializable{
+public class MappingIT {
+
+    @Test
+    public void insertSelectPlayerMetaTest() throws ClassNotFoundException {
+
+        BallData ballData = new BallData("Shynixn");
+
+
+        FileConfiguration configuration = new YamlConfiguration();
+        configuration.set("meta",ballData.serialize());
+
+
+
+
+        System.out.println(configuration.saveToString());
+
+
+    }
 }

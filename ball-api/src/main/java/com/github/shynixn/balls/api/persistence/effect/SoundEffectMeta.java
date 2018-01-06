@@ -32,20 +32,26 @@ import java.util.Collection;
 public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> extends EffectMeta<T> {
 
     /**
-     * Applies the sound at the given location.
+     * Plays the effect at the given location to the given players.
      *
      * @param location location
-     * @throws Exception ex
+     * @param players  players
      */
-    void applyToLocation(Location location) throws Exception;
+    void apply(Location location, Collection<Player> players);
 
     /**
-     * Applies the sound to the given players.
+     * Plays the effect to the given players.
      *
-     * @param players players
-     * @throws Exception ex
+     * @param players  players
      */
-    void applyToPlayers(Collection<Player> players) throws Exception;
+    void apply(Collection<Player> players);
+
+    /**
+     * Plays the effect at the given location to the given players.
+     *
+     * @param location location
+     */
+    void apply(Location location);
 
     /**
      * Returns the name of the sound.
@@ -60,7 +66,7 @@ public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> ex
      * @param name name
      * @return builder
      */
-    <T extends SoundEffectMeta> T setName(String name);
+    T setName(String name);
 
     /**
      * Returns the volume of the sound.
@@ -75,7 +81,7 @@ public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> ex
      * @param volume volume
      * @return builder
      */
-    <T extends SoundEffectMeta> T setVolume(double volume);
+    T setVolume(double volume);
 
     /**
      * Returns the pitch of the sound.
@@ -90,12 +96,12 @@ public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> ex
      * @param pitch pitch
      * @return builder
      */
-    <T extends SoundEffectMeta> T setPitch(double pitch);
+    T setPitch(double pitch);
 
     /**
      * Clones the current object.
      *
      * @return clone
      */
-    SoundEffectMeta clone();
+    SoundEffectMeta copy();
 }

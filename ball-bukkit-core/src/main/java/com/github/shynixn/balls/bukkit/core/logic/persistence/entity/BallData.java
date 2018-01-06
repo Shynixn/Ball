@@ -1,17 +1,17 @@
 package com.github.shynixn.balls.bukkit.core.logic.persistence.entity;
 
-import com.github.shynixn.balls.api.persistence.BallEffects;
+import com.github.shynixn.balls.api.bukkit.persistence.entity.BukkitParticleEffectMeta;
+import com.github.shynixn.balls.api.bukkit.persistence.entity.BukkitSoundEffectMeta;
 import com.github.shynixn.balls.api.persistence.BallMeta;
 import com.github.shynixn.balls.api.persistence.BallModifiers;
-import com.github.shynixn.balls.api.persistence.BounceObject;
 import com.github.shynixn.balls.api.persistence.controller.BounceController;
-import com.github.shynixn.balls.api.persistence.controller.IController;
+import com.github.shynixn.balls.api.persistence.enumeration.ActionEffect;
 import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BounceObjectController;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 
-import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -55,6 +55,9 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     private final BallModifications modifications;
     private final BounceController bounceObjectIController;
 
+    private final Map<ActionEffect, BukkitSoundEffectMeta> soundeffects = new HashMap<>();
+    private final Map<ActionEffect, BukkitParticleEffectMeta> particleEffectMetaMap = new HashMap<>();
+
     /**
      * Deserializes a ballData.
      *
@@ -84,16 +87,38 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         this.skin = skin;
         this.modifications = new BallModifications();
         this.bounceObjectIController = new BounceObjectController();
+
+        for(ActionEffect actionEffect : ActionEffect.values())
+        {
+            this.soundeffects.put(actionEffect, new SoundBuilder().setName("none"));
+            this.particleEffectMetaMap.put(actionEffect, new ParticleEffectData().setEffectName("none"));
+        }
     }
 
     /**
-     * Returns the effect meta of the ball.
+     * Returns the particle effect for the given action.
      *
-     * @return effects
+     * @param effect effect
+     * @return particleEffect
      */
     @Override
-    public BallEffects getEffects() {
-        return null;
+    public BukkitParticleEffectMeta getParticleEffectOf(ActionEffect effect) {
+        if (effect == null)
+            throw new IllegalArgumentException("Effect cannot be null!");
+        return this.particleEffectMetaMap.get(effect);
+    }
+
+    /**
+     * Returns the sound effect for the given action.
+     *
+     * @param effect effect
+     * @return soundEffect
+     */
+    @Override
+    public BukkitSoundEffectMeta getSoundEffectOf(ActionEffect effect) {
+        if (effect == null)
+            throw new IllegalArgumentException("Effect cannot be null!");
+        return this.soundeffects.get(effect);
     }
 
     /**
@@ -253,7 +278,20 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         data.put("always-bounce", this.alwaysBounce);
         data.put("rotating", this.isRotatingEnabled());
         data.put("modifiers", this.modifications.serialize());
+        data.put("particle-effects", this.serializeEffects(this.particleEffectMetaMap));
+        data.put("sound-effects", this.serializeEffects(this.soundeffects));
         data.put("wall-bouncing", ((BounceObjectController) this.bounceObjectIController).serialize());
+        return data;
+    }
+
+    private Map<String, Object> serializeEffects(Map container) {
+        final Map<String, Object> data = new LinkedHashMap<>();
+        int i = 0;
+        for (final Object f : container.keySet()) {
+            final ActionEffect actionEffect = (ActionEffect) f;
+            data.put(actionEffect.name().toLowerCase(), ((ConfigurationSerializable) container.get(actionEffect)).serialize());
+            i++;
+        }
         return data;
     }
 }

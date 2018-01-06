@@ -2,6 +2,7 @@ package com.github.shynixn.balls.api.bukkit.persistence.entity;
 
 import com.github.shynixn.balls.api.persistence.effect.SoundEffectMeta;
 import org.bukkit.Location;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
 /**
@@ -31,5 +32,5 @@ import org.bukkit.entity.Player;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BukkitSoundEffectMeta extends SoundEffectMeta<Location, Player, BukkitSoundEffectMeta> {
+public interface BukkitSoundEffectMeta extends SoundEffectMeta<Location, Player, BukkitSoundEffectMeta>, ConfigurationSerializable {
 }

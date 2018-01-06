@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Shynixn 2017.
@@ -43,17 +44,20 @@ import java.util.logging.Level;
  */
 public class CoreManager {
 
+    private static Logger logger = Logger.getLogger("BallPlugin");
+
     private final BallMetaController metaController;
     private final BukkitBallController ballController;
     private final Plugin plugin;
 
     /**
      * Initializes a new core manager.
+     *
      * @param plugin plugin
      */
     public CoreManager(Plugin plugin) {
         super();
-        if(plugin == null)
+        if (plugin == null)
             throw new IllegalArgumentException("Plugin cannot be null!");
         this.plugin = plugin;
         this.metaController = new BallDataRepository(plugin, "meta.yml");
@@ -76,6 +80,10 @@ public class CoreManager {
         }
     }
 
+    public static Logger getLogger() {
+        return logger;
+    }
+
     /**
      * Returns the plugin which has initialized the core.
      *
@@ -87,6 +95,7 @@ public class CoreManager {
 
     /**
      * Returns the default meta controller.
+     *
      * @return metaController
      */
     public BallMetaController getMetaController() {
@@ -95,6 +104,7 @@ public class CoreManager {
 
     /**
      * Returns the ball controller.
+     *
      * @return controller
      */
     public BallController getBallController() {

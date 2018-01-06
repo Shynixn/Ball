@@ -3,6 +3,9 @@ package com.github.shynixn.balls.api.persistence;
 import com.github.shynixn.balls.api.business.entity.Ball;
 import com.github.shynixn.balls.api.persistence.controller.BounceController;
 import com.github.shynixn.balls.api.persistence.controller.IController;
+import com.github.shynixn.balls.api.persistence.effect.ParticleEffectMeta;
+import com.github.shynixn.balls.api.persistence.effect.SoundEffectMeta;
+import com.github.shynixn.balls.api.persistence.enumeration.ActionEffect;
 import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 
 /**
@@ -35,11 +38,22 @@ import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
 public interface BallMeta {
 
     /**
-     * Returns the effect meta of the ball.
+     * Returns the particle effect for the given action.
      *
-     * @return effects
+     * @param effect effect
+     * @param <T>    type
+     * @return particleEffect
      */
-    BallEffects getEffects();
+    <T extends ParticleEffectMeta> T getParticleEffectOf(ActionEffect effect);
+
+    /**
+     * Returns the sound effect for the given action.
+     *
+     * @param effect effect
+     * @param <T>    type
+     * @return soundEffect
+     */
+    <T extends SoundEffectMeta> T getSoundEffectOf(ActionEffect effect);
 
     /**
      * Returns the modifiers of the ball.
