@@ -74,6 +74,13 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         this.alwaysBounce = (boolean) data.get("always-bounce");
         this.bounceObjectIController = new BounceObjectController(((MemorySection) data.get("wall-bouncing")).getValues(false));
         this.modifications = new BallModifications(((MemorySection) data.get("modifiers")).getValues(false));
+
+        final Map<String, Object> particleMap = ((MemorySection)data.get("particle-effects")).getValues(false);
+        final Map<String, Object> soundMap = ((MemorySection)data.get("sound-effects")).getValues(false);
+        for (final ActionEffect actionEffect : ActionEffect.values()) {
+            this.particleEffectMetaMap.put(actionEffect, new ParticleEffectData(((MemorySection)particleMap.get(actionEffect.name().toLowerCase())).getValues(true)));
+            this.soundeffects.put(actionEffect, new SoundBuilder(((MemorySection) soundMap.get(actionEffect.name().toLowerCase())).getValues(true)));
+        }
     }
 
     /**
@@ -88,8 +95,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         this.modifications = new BallModifications();
         this.bounceObjectIController = new BounceObjectController();
 
-        for(ActionEffect actionEffect : ActionEffect.values())
-        {
+        for (final ActionEffect actionEffect : ActionEffect.values()) {
             this.soundeffects.put(actionEffect, new SoundBuilder().setName("none"));
             this.particleEffectMetaMap.put(actionEffect, new ParticleEffectData().setEffectName("none"));
         }

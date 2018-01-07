@@ -41,8 +41,8 @@ import java.util.Map;
 public class SoundBuilder extends EffectData<BukkitSoundEffectMeta> implements BukkitSoundEffectMeta{
 
     private String text;
-    private float volume;
-    private float pitch;
+    private double volume;
+    private double pitch;
 
     /**
      * Initializes a new soundBuilder
@@ -73,8 +73,8 @@ public class SoundBuilder extends EffectData<BukkitSoundEffectMeta> implements B
     public SoundBuilder(String text, double volume, double pitch) {
         super();
         this.text = text;
-        this.volume = (float) volume;
-        this.pitch = (float) pitch;
+        this.volume = volume;
+        this.pitch =  pitch;
     }
 
     /**
@@ -83,11 +83,11 @@ public class SoundBuilder extends EffectData<BukkitSoundEffectMeta> implements B
      * @param items items
      * @throws Exception exception
      */
-    public SoundBuilder(Map<String, Object> items) throws Exception {
+    public SoundBuilder(Map<String, Object> items)  {
         super(items);
         this.text = (String) items.get("name");
-        this.volume = (float) (double) items.get("volume");
-        this.pitch = (float) (double) items.get("pitch");
+        this.volume = (double) items.get("volume");
+        this.pitch = (double) items.get("pitch");
     }
 
     /**
@@ -99,7 +99,7 @@ public class SoundBuilder extends EffectData<BukkitSoundEffectMeta> implements B
     @Override
     public void apply(Location location, Collection<Player> players) {
         for (final Player player : players) {
-            player.playSound(location, Sound.valueOf(this.text), this.volume, this.pitch);
+            player.playSound(location, Sound.valueOf(this.text),(float) this.volume, (float)this.pitch);
         }
     }
 
@@ -111,7 +111,7 @@ public class SoundBuilder extends EffectData<BukkitSoundEffectMeta> implements B
     @Override
     public void apply(Collection<Player> players) {
         for (final Player player : players) {
-            player.playSound(player.getLocation(), Sound.valueOf(this.text), this.volume, this.pitch);
+            player.playSound(player.getLocation(), Sound.valueOf(this.text), (float)this.volume, (float)this.pitch);
         }
     }
 
@@ -186,7 +186,7 @@ public class SoundBuilder extends EffectData<BukkitSoundEffectMeta> implements B
      */
     @Override
     public SoundBuilder setVolume(double volume) {
-        this.volume = (float) volume;
+        this.volume = volume;
         return this;
     }
 
@@ -208,7 +208,7 @@ public class SoundBuilder extends EffectData<BukkitSoundEffectMeta> implements B
      */
     @Override
     public SoundBuilder setPitch(double pitch) {
-        this.pitch = (float) pitch;
+        this.pitch = pitch;
         return this;
     }
 

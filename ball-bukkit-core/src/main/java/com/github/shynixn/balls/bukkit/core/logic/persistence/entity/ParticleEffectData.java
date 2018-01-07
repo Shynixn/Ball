@@ -6,6 +6,7 @@ import com.github.shynixn.balls.bukkit.core.logic.business.CoreManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.entity.Player;
 
@@ -20,7 +21,7 @@ import java.util.Objects;
 import java.util.logging.Level;
 
 /**
- * Created by Shynixn 2018.
+ * Builder for particleEffects regardless of which minecraft server version.
  * <p>
  * Version 1.2
  * <p>
@@ -58,14 +59,23 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
     private Byte data;
 
     /**
-     * Initializes a new ParticleEffectData
+     * Initializes a new particle Effect.
      */
     public ParticleEffectData() {
         super();
     }
 
     /**
-     * Initializes a new ParticleEffectData with the given params
+     * Initializes the particle Effect with the given type.
+     *
+     * @param type type
+     */
+    public ParticleEffectData(ParticleEffectType type) {
+        this.effect = type.getMinecraftId();
+    }
+
+    /**
+     * Initializes a new particle Effect with the given params.
      *
      * @param effectName effect
      * @param amount     amount
@@ -91,32 +101,33 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
     }
 
     /**
-     * Parses the potioneffect out of the map
+     * Parses the particle Effect out of the map.
      *
      * @param items items
-     * @throws Exception mapParseException
      */
-    public ParticleEffectData(Map<String, Object> items) throws Exception {
+    public ParticleEffectData(Map<String, Object> items) {
         super(items);
         this.effect = (String) items.get("name");
         this.amount = (int) items.get("amount");
         this.speed = (double) items.get("speed");
-        if (items.containsKey("offx"))
-            this.offsetX = (float) (double) items.get("offx");
-        if (items.containsKey("offy"))
-            this.offsetY = (float) (double) items.get("offy");
-        if (items.containsKey("offz"))
-            this.offsetZ = ((float) (double) items.get("offz"));
-        if (items.containsKey("id"))
-            this.material = (Integer) items.get("id");
-        if (items.containsKey("damage"))
-            this.data = (byte) (int) (Integer) items.get("damage");
-        if (items.containsKey("red"))
-            this.setRed((Integer) items.get("red"));
-        if (items.containsKey("green"))
-            this.setGreen((Integer) items.get("green"));
-        if (items.containsKey("blue"))
-            this.setBlue((Integer) items.get("blue"));
+
+        if (items.containsKey("color")) {
+            final Map<String, Object> colorMap = ((MemorySection) items.get("color")).getValues(true);
+            this.setRed((Integer) colorMap.get("red"));
+            this.setBlue((Integer) colorMap.get("blue"));
+            this.setGreen((Integer) colorMap.get("green"));
+            this.amount = 0;
+            this.speed = 1.0;
+        }
+        if (items.containsKey("offset")) {
+            final Map<String, Object> offSetMap = ((MemorySection) items.get("offset")).getValues(true);
+            this.setOffset((double) offSetMap.get("x"), (double) offSetMap.get("y"), (double) offSetMap.get("z"));
+        }
+        if (items.containsKey("block")) {
+            final Map<String, Object> blockMap = ((MemorySection) items.get("block")).getValues(true);
+            this.setMaterial(Material.getMaterial((Integer) blockMap.get("id")));
+            this.setData((Byte) blockMap.get("damage"));
+        }
     }
 
     /**
@@ -267,7 +278,7 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
     public ParticleEffectData setEffectType(ParticleEffectData.ParticleEffectType type) {
         if (type == null)
             throw new IllegalArgumentException("Type cannot be null!");
-        this.effect = type.getSimpleName();
+        this.effect = type.getMinecraftId();
         return this;
     }
 
@@ -486,10 +497,10 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      */
     @Override
     public boolean isColorParticleEffect() {
-        return this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.SPELL_MOB.getSimpleName())
-                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.SPELL_MOB_AMBIENT.getSimpleName())
-                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.REDSTONE.getSimpleName())
-                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.NOTE.getSimpleName());
+        return this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.SPELL_MOB.getMinecraftId())
+                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.SPELL_MOB_AMBIENT.getMinecraftId())
+                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.REDSTONE.getMinecraftId())
+                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.NOTE.getMinecraftId());
     }
 
     /**
@@ -499,7 +510,7 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      */
     @Override
     public boolean isNoteParticleEffect() {
-        return this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.NOTE.getSimpleName());
+        return this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.NOTE.getMinecraftId());
     }
 
     /**
@@ -509,9 +520,9 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      */
     @Override
     public boolean isMaterialParticleEffect() {
-        return this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.BLOCK_CRACK.getSimpleName())
-                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.BLOCK_DUST.getSimpleName())
-                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.ITEM_CRACK.getSimpleName());
+        return this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.BLOCK_CRACK.getMinecraftId())
+                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.BLOCK_DUST.getMinecraftId())
+                || this.effect.equalsIgnoreCase(ParticleEffectData.ParticleEffectType.ITEM_CRACK.getMinecraftId());
     }
 
     /**
@@ -557,7 +568,7 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
             }
             final float speed;
             final int amount;
-            if (this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getSimpleName()) || this.effect.equals(ParticleEffectData.ParticleEffectType.NOTE.getSimpleName())) {
+            if (this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getMinecraftId()) || this.effect.equals(ParticleEffectData.ParticleEffectType.NOTE.getMinecraftId())) {
                 amount = 0;
                 speed = 1.0F;
             } else {
@@ -626,14 +637,18 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
                 && Objects.equals(this.material, that.material) && (this.data != null ? this.data.equals(that.data) : that.data == null);
     }
 
-    /**
-     * Displays the builder as string
-     *
-     * @return string
-     */
     @Override
     public String toString() {
-        return "effect {" + "name " + this.effect + " amound " + this.amount + " speed " + this.speed + '}';
+        return "ParticleEffectData{" +
+                "effect='" + effect + '\'' +
+                ", amount=" + amount +
+                ", speed=" + speed +
+                ", offsetX=" + offsetX +
+                ", offsetY=" + offsetY +
+                ", offsetZ=" + offsetZ +
+                ", material=" + material +
+                ", data=" + data +
+                '}';
     }
 
     /**
@@ -644,17 +659,17 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
     @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> map = super.serialize();
-        map.put("effect", this.effect.toUpperCase());
+        map.put("name", this.effect);
         map.put("amount", this.amount);
         map.put("speed", this.speed);
         final Map<String, Object> tmp3 = new LinkedHashMap<>();
         tmp3.put("x", this.offsetX);
         tmp3.put("y", this.offsetY);
         tmp3.put("z", this.offsetZ);
-        map.put("size", tmp3);
+        map.put("offset", tmp3);
         final Map<String, Object> tmp2 = new LinkedHashMap<>();
         if (this.material != null) {
-            tmp2.put("material", this.material);
+            tmp2.put("id", this.material);
             tmp2.put("damage", this.data);
             map.put("block", tmp2);
         }
@@ -672,7 +687,7 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
             if (builder.length() != 0) {
                 builder.append(", ");
             }
-            builder.append(particleEffect.getSimpleName());
+            builder.append(particleEffect.getMinecraftId());
         }
         return builder.toString();
     }
@@ -685,7 +700,7 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      */
     public static ParticleEffectData.ParticleEffectType getParticleEffectFromName(String name) {
         for (final ParticleEffectData.ParticleEffectType particleEffect : ParticleEffectData.ParticleEffectType.values()) {
-            if (name != null && particleEffect.getSimpleName().equalsIgnoreCase(name))
+            if (name != null && particleEffect.getMinecraftId().equalsIgnoreCase(name))
                 return particleEffect;
         }
         return null;
