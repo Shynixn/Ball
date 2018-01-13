@@ -1,20 +1,15 @@
-package com.github.shynixn.balls.bukkit.logic.persistence.configuration;
+package com.github.shynixn.balls.bukkit.logic.business
 
-import com.github.shynixn.balls.bukkit.BallPlugin;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.entity.Player
 
 /**
- * Copyright 2017 Shynixn
+ * Created by Shynixn 2018.
  * <p>
- * Do not remove this header!
- * <p>
- * Version 1.0
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017
+ * Copyright (c) 2018 by Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,30 +29,18 @@ import org.bukkit.plugin.java.JavaPlugin;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class SimpleConfig {
-    Plugin plugin;
+enum class Permission(val permission: String) {
+    ALLGUIBALLS("balls.gui.balls.all"),
+    SINGLEGUIBALL("balls.gui.balls.$0");
 
     /**
-     * Reloads the config
+     * Returns if the [player] has got the current permission.
      */
-    public void reload() {
-        this.plugin = JavaPlugin.getPlugin(BallPlugin.class);
-        this.plugin.reloadConfig();
-    }
-
-    /**
-     * Returns data
-     *
-     * @param path path
-     * @return data
-     */
-    <T> T getData(String path) {
-        if(this.plugin == null)
-            return null;
-        Object data = this.plugin.getConfig().get(path);
-        if (data instanceof String) {
-            data = ChatColor.translateAlternateColorCodes('&', (String) data);
+    fun hasPermission(player: Player, vararg parameters: String): Boolean {
+        var perm = this.permission
+        for ((i, s) in parameters.withIndex()) {
+            perm = perm.replace("$" + i, s)
         }
-        return (T) data;
+        return player.hasPermission(perm)
     }
 }

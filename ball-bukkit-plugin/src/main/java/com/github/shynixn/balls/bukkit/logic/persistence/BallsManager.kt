@@ -1,15 +1,18 @@
-package com.github.shynixn.balls.bukkit.logic.business;
+package com.github.shynixn.balls.bukkit.logic.persistence
 
-import org.bukkit.entity.Player;
+import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BallDataRepository
+import com.github.shynixn.balls.bukkit.logic.business.commandexecutor.BallsCommandExecutor
+import com.github.shynixn.balls.bukkit.logic.business.listener.GUIListener
+import org.bukkit.plugin.Plugin
 
 /**
- * Created by Shynixn 2017.
+ * Created by Shynixn 2018.
  * <p>
- * Version 1.1
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2018 by Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,33 +32,28 @@ import org.bukkit.entity.Player;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public enum Permission{
+internal class BallsManager(plugin: Plugin) : AutoCloseable {
 
-    ALLGUIBALLS("balls.gui.balls.all"),
-    SINGLEGUIBALL("balls.gui.balls.")
-    ;
-
-    private final String perm;
+    internal val fileRepository: BallDataRepository;
 
     /**
-     * Initializes a new permission.
-     *
-     * @param perm permission
+     * Initializes the ball manager.
      */
-    Permission(String perm) {
-        this.perm = perm;
+    init {
+        GUIListener(plugin)
+        BallsCommandExecutor(this, plugin)
+
+        this.fileRepository = BallDataRepository(plugin, "config.yml")
+        this.fileRepository.reload()
     }
 
     /**
-     * Returns the permission string.
-     *
-     * @return permission
+     * Closes this resource, relinquishing any underlying resources.
+     * This method is invoked automatically on objects managed by the
+     * `try`-with-resources statement.
+     * @throws Exception if this resource cannot be closed
      */
-    public String get() {
-        return this.perm;
-    }
-
-    public boolean hasPermission(Player player) {
-        return player.hasPermission(this.perm);
+    override fun close() {
+        fileRepository.close()
     }
 }

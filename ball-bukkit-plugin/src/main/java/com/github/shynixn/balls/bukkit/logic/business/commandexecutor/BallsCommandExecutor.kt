@@ -1,19 +1,19 @@
-package com.github.shynixn.balls.bukkit.logic.business.commandexecutor;
+package com.github.shynixn.balls.bukkit.logic.business.commandexecutor
 
-import com.github.shynixn.balls.bukkit.logic.business.gui.GUI;
-import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.github.shynixn.balls.bukkit.logic.business.gui.GUI
+import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager
+import org.bukkit.entity.Player
+import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.java.JavaPlugin
 
 /**
- * Created by Shynixn 2017.
+ * Created by Shynixn 2018.
  * <p>
- * Version 1.1
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2018 by Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,29 +33,14 @@ import org.bukkit.plugin.java.JavaPlugin;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallsCommandExecutor extends SimpleCommandExecutor.UnRegistered {
-
-    private final BallsManager ballsManager;
-
-    /**
-     * Initializes a new commandExecutor by using the given config configuration and plugin.
-     *
-     * @param plugin        plugin
-     * @throws Exception exception
-     */
-    public BallsCommandExecutor(BallsManager ballsManager, Plugin plugin) throws Exception {
-        super(plugin.getConfig().get("balls"), (JavaPlugin) plugin);
-        this.ballsManager = ballsManager;
-    }
-
+internal class BallsCommandExecutor(private val ballManager: BallsManager, plugin: Plugin) : SimpleCommandExecutor.UnRegistered(plugin.config.get("balls"), plugin as JavaPlugin) {
     /**
      * Can be overwritten to listen to player executed commands.
      *
      * @param player player
      * @param args   args
      */
-    @Override
-    public void onPlayerExecuteCommand(Player player, String[] args) {
-        new GUI(player, this.ballsManager);
+    override fun onPlayerExecuteCommand(player: Player?, args: Array<out String>?) {
+        GUI(player!!, this.ballManager)
     }
 }
