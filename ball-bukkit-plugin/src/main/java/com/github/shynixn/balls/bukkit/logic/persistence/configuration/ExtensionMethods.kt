@@ -1,7 +1,6 @@
 package com.github.shynixn.balls.bukkit.logic.persistence.configuration
 
 import com.github.shynixn.balls.bukkit.logic.business.Permission
-import com.github.shynixn.balls.bukkit.logic.persistence.controller.FixedGUIItemConfiguration
 import org.bukkit.entity.Player
 
 /**
@@ -31,48 +30,6 @@ import org.bukkit.entity.Player
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-internal object Config : SimpleConfig() {
-
-    val guiTitle: String?
-        get() {
-            return this.getData<String>("messages.gui-title")
-        }
-
-    val prefix: String?
-        get() {
-            return this.getData<String>("messages.prefix")
-        }
-
-    val permissionYes: String?
-        get() {
-            return this.getData<String>("messages.perms-ico-yes")
-        }
-
-    val permissionNo: String?
-        get() {
-            return this.getData<String>("messages.perms-ico-no")
-        }
-
-    val metrics: Boolean?
-        get() {
-            return this.getData<Boolean>("metrics")
-        }
-
-    var fixedGuiItemsController: FixedGUIItemConfiguration? = null
-        get() {
-            if (field == null) {
-                field = FixedGUIItemConfiguration(this.plugin!!)
-            }
-            return field
-        }
-        private set
-
-    /**
-     * Reloads the plugin configuration.
-     */
-    override fun reload() {
-        super.reload()
-        this.plugin?.reloadConfig()
-    }
+internal fun Player.hasPermission(allguiballs: Permission): Boolean {
+    return allguiballs.hasPermission(player)
 }
-
