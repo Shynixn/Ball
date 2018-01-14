@@ -1,10 +1,11 @@
-package com.github.shynixn.balls.bukkit.logic.persistence
+package com.github.shynixn.balls.bukkit.logic.persistence.controller
 
+import com.github.shynixn.balls.bukkit.BallPlugin
 import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BallDataRepository
-import com.github.shynixn.balls.bukkit.logic.business.commandexecutor.BallsCommandExecutor
-import com.github.shynixn.balls.bukkit.logic.business.listener.GUIListener
-import com.github.shynixn.balls.bukkit.logic.persistence.controller.GUIBallConfiguration
+import com.github.shynixn.balls.bukkit.logic.persistence.entity.ItemContainer
+import org.bukkit.configuration.MemorySection
 import org.bukkit.plugin.Plugin
+import java.util.logging.Level
 
 /**
  * Created by Shynixn 2018.
@@ -33,28 +34,32 @@ import org.bukkit.plugin.Plugin
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-internal class BallsManager(plugin: Plugin) : AutoCloseable {
+class GUIBallConfiguration(private val plugin: Plugin, fileName: String?, private val items: MutableMap<Int, ItemContainer> = HashMap()) : BallDataRepository(plugin, fileName) {
 
-    internal val fileRepository: GUIBallConfiguration;
 
     /**
-     * Initializes the ball manager.
+     * Returns the gui items.
      */
-    init {
-        GUIListener(plugin)
-        BallsCommandExecutor(this, plugin)
-
-        this.fileRepository = GUIBallConfiguration(plugin, "config.yml")
-        this.fileRepository.reload()
+    fun getGUIItems(): List<ItemContainer> {
+        return ArrayList(this.items.values)
     }
 
     /**
-     * Closes this resource, relinquishing any underlying resources.
-     * This method is invoked automatically on objects managed by the
-     * `try`-with-resources statement.
-     * @throws Exception if this resource cannot be closed
+     * Reloads the content from the fileSystem.
      */
-    override fun close() {
-        fileRepository.close()
+    override fun reload() {
+        super.reload()
+        this.items.clear()
+        this.plugin.reloadConfig()
+        val data = (this.plugin.config.get("meta") as MemorySection).getValues(false)
+        for (key in data.keys) {
+            try {
+                val any = (data[key] as MemorySection).getValues(false).get("gui")
+                val container = ItemContainer(0, (any as MemorySection).getValues(false))
+                this.items.put(Integer.parseInt(key), container)
+            } catch (e: Exception) {
+                BallPlugin.logger().log(Level.WARNING, "Failed to load guiItem $key.", e)
+            }
+        }
     }
 }

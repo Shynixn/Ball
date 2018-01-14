@@ -67,7 +67,7 @@ public class BallDataRepository implements BallMetaController {
             throw new IllegalArgumentException("FileName cannot be null!");
         this.plugin = plugin;
         this.fileName = fileName;
-        this.file = new File(this.plugin.getDataFolder(), "UnrealBalls");
+        this.file = new File(this.plugin.getDataFolder(), "Ball");
     }
 
     /**

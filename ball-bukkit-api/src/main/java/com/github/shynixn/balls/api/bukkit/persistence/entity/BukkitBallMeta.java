@@ -1,7 +1,7 @@
-package com.github.shynixn.balls.bukkit.logic.persistence.configuration
+package com.github.shynixn.balls.api.bukkit.persistence.entity;
 
-import com.github.shynixn.balls.bukkit.logic.business.Permission
-import org.bukkit.entity.Player
+import com.github.shynixn.balls.api.bukkit.persistence.controller.BukkitBounceController;
+import com.github.shynixn.balls.api.persistence.BallMeta;
 
 /**
  * Created by Shynixn 2018.
@@ -30,6 +30,5 @@ import org.bukkit.entity.Player
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-internal fun Player.hasPermission(allguiballs: Permission): Boolean {
-    return allguiballs.hasPermission(player)
+public interface BukkitBallMeta extends BallMeta<BukkitParticleEffectMeta, BukkitSoundEffectMeta, BukkitBounceController>{
 }

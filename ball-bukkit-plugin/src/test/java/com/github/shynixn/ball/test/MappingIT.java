@@ -184,7 +184,7 @@ public class MappingIT {
         ballData.setAlwaysBounceBack(true);
         ballData.setSize(BallSize.NORMAL);
 
-        BounceObject bounceObject = ballData.getBounceObjectController().create(Material.SKULL, 123);
+        final BounceObject bounceObject = ballData.getBounceObjectController().create(Material.SKULL, 123);
         bounceObject.setBounceModifier(20.2);
         ballData.getBounceObjectController().store(bounceObject);
 
@@ -205,7 +205,7 @@ public class MappingIT {
 
         assertEquals(1, result.getBounceObjectController().size());
 
-        BounceObject bounceObject1 = (BounceObject) result.getBounceObjectController().getAll().get(0);
+        BounceObject bounceObject1 = result.getBounceObjectController().getAll().get(0);
         assertEquals(Material.SKULL.getId(), bounceObject1.getMaterialId());
         assertEquals(123, bounceObject1.getMaterialDamageValue());
         assertEquals(20.2, bounceObject1.getBounceModifier());

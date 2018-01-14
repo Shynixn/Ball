@@ -1,5 +1,6 @@
 package com.github.shynixn.balls.bukkit.core.logic.persistence.entity;
 
+import com.github.shynixn.balls.api.bukkit.persistence.controller.BukkitBounceController;
 import com.github.shynixn.balls.api.bukkit.persistence.entity.BukkitParticleEffectMeta;
 import com.github.shynixn.balls.api.bukkit.persistence.entity.BukkitSoundEffectMeta;
 import com.github.shynixn.balls.api.persistence.BallMeta;
@@ -53,7 +54,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     private BallSize size = BallSize.NORMAL;
 
     private final BallModifications modifications;
-    private final BounceController bounceObjectIController;
+    private final BukkitBounceController bounceObjectIController;
 
     private final Map<ActionEffect, BukkitSoundEffectMeta> soundeffects = new HashMap<>();
     private final Map<ActionEffect, BukkitParticleEffectMeta> particleEffectMetaMap = new HashMap<>();
@@ -143,7 +144,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
      * @return list
      */
     @Override
-    public BounceController getBounceObjectController() {
+    public BukkitBounceController getBounceObjectController() {
         return this.bounceObjectIController;
     }
 

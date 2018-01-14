@@ -1,10 +1,7 @@
-package com.github.shynixn.balls.bukkit.logic.persistence
+package com.github.shynixn.balls.bukkit.logic.business.helper
 
-import com.github.shynixn.balls.bukkit.core.logic.persistence.controller.BallDataRepository
-import com.github.shynixn.balls.bukkit.logic.business.commandexecutor.BallsCommandExecutor
-import com.github.shynixn.balls.bukkit.logic.business.listener.GUIListener
-import com.github.shynixn.balls.bukkit.logic.persistence.controller.GUIBallConfiguration
-import org.bukkit.plugin.Plugin
+import com.github.shynixn.balls.bukkit.logic.business.Permission
+import org.bukkit.entity.Player
 
 /**
  * Created by Shynixn 2018.
@@ -33,28 +30,6 @@ import org.bukkit.plugin.Plugin
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-internal class BallsManager(plugin: Plugin) : AutoCloseable {
-
-    internal val fileRepository: GUIBallConfiguration;
-
-    /**
-     * Initializes the ball manager.
-     */
-    init {
-        GUIListener(plugin)
-        BallsCommandExecutor(this, plugin)
-
-        this.fileRepository = GUIBallConfiguration(plugin, "config.yml")
-        this.fileRepository.reload()
-    }
-
-    /**
-     * Closes this resource, relinquishing any underlying resources.
-     * This method is invoked automatically on objects managed by the
-     * `try`-with-resources statement.
-     * @throws Exception if this resource cannot be closed
-     */
-    override fun close() {
-        fileRepository.close()
-    }
+internal fun Player.hasPermission(allguiballs: Permission): Boolean {
+    return allguiballs.hasPermission(player)
 }
