@@ -3,6 +3,7 @@ package com.github.shynixn.ball.bukkit.logic.business.listener
 import com.github.shynixn.ball.bukkit.BallPlugin
 import com.github.shynixn.ball.bukkit.core.logic.business.listener.SimpleListener
 import com.github.shynixn.ball.bukkit.logic.business.gui.GUI
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -59,7 +60,7 @@ class GUIListener(plugin: Plugin) : SimpleListener(plugin) {
      */
     @EventHandler
     fun onInventoryClickEvent(event: InventoryClickEvent) {
-        if (event.inventory.holder is GUI) {
+        if (event.inventory.holder is GUI && event.currentItem != null && event.currentItem.type != Material.AIR) {
             val gui = event.inventory.holder as GUI
             try {
                 gui.click(event.currentItem, event.slot)

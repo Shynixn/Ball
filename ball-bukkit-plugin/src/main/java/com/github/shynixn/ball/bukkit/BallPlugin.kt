@@ -1,6 +1,7 @@
 package com.github.shynixn.ball.bukkit
 
 import com.github.shynixn.ball.bukkit.core.logic.business.CoreManager
+import com.github.shynixn.ball.bukkit.core.logic.persistence.Factory
 import com.github.shynixn.ball.bukkit.core.nms.VersionSupport
 import com.github.shynixn.ball.bukkit.logic.persistence.BallsManager
 import com.github.shynixn.ball.bukkit.logic.persistence.configuration.Config
@@ -42,13 +43,12 @@ class BallPlugin : JavaPlugin() {
 
     companion object {
         val PREFIX_CONSOLE: String = ChatColor.YELLOW.toString() + "[Balls] "
-        private val PLUGIN_NAME = "Balls"
+        private val PLUGIN_NAME = "Ball"
         fun logger(): Logger = Logger.getLogger("PetBlocks")
     }
 
     private var disabled: Boolean = false
     private var ballsManager: BallsManager? = null
-    private var coreManager: CoreManager? = null
 
     /**
      * Enables the plugin.
@@ -60,13 +60,15 @@ class BallPlugin : JavaPlugin() {
             this.disabled = true
             Bukkit.getPluginManager().disablePlugin(this)
         } else {
+            logger.log(Level.WARNING, "WTF U DOING")
+
             Config.reload()
             if (Config.metrics!!) {
-                Metrics(this)
+           //     Metrics(this)
             }
             try {
                 this.ballsManager = BallsManager(this)
-                this.coreManager = CoreManager(this)
+                Factory.initialize(this, "ball-meta.yml", "ball-storage.yml");
                 Bukkit.getServer().consoleSender.sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Enabled Ball " + this.description.version + " by Shynixn")
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Failed to enable plugin.", e)
@@ -83,7 +85,6 @@ class BallPlugin : JavaPlugin() {
         if (this.disabled)
             return
         try {
-            this.ballsManager?.close()
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Failed to close resources.", e)
         }

@@ -1,10 +1,9 @@
-package com.github.shynixn.ball.bukkit.logic.persistence
+package com.github.shynixn.ball.bukkit.logic.business.commandexecutor
 
-import com.github.shynixn.ball.bukkit.logic.business.commandexecutor.BallReloadCommandExecutor
-import com.github.shynixn.ball.bukkit.logic.business.commandexecutor.BallsCommandExecutor
-import com.github.shynixn.ball.bukkit.logic.business.listener.GUIListener
-import com.github.shynixn.ball.bukkit.logic.persistence.controller.GUIBallConfiguration
+import com.github.shynixn.ball.bukkit.logic.persistence.configuration.Config
+import org.bukkit.command.CommandSender
 import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * Created by Shynixn 2018.
@@ -33,14 +32,15 @@ import org.bukkit.plugin.Plugin
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-internal class BallsManager(plugin: Plugin) {
+class BallReloadCommandExecutor(plugin: Plugin) : SimpleCommandExecutor.UnRegistered(plugin.config.get("commands.ballreload"), plugin as JavaPlugin) {
 
     /**
-     * Initializes the ball manager.
+     * Can be overwritten to listener to all executed commands.
+     *
+     * @param sender sender
+     * @param args   args
      */
-    init {
-        GUIListener(plugin)
-        BallsCommandExecutor(this, plugin)
-        BallReloadCommandExecutor(plugin);
+    override fun onCommandSenderExecuteCommand(sender: CommandSender?, args: Array<out String>?) {
+        Config.reload()
     }
 }

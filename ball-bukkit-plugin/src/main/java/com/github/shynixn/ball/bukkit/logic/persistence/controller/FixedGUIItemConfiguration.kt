@@ -76,6 +76,7 @@ internal class FixedGUIItemConfiguration(private val plugin: Plugin) : IFileCont
      * Reloads the content from the fileSystem.
      */
     override fun reload() {
+        println("RELOADING")
         this.items.clear()
         this.plugin.reloadConfig()
         val data = (this.plugin.config.get("gui.items") as MemorySection).getValues(false)
@@ -87,6 +88,7 @@ internal class FixedGUIItemConfiguration(private val plugin: Plugin) : IFileCont
                 BallPlugin.logger().log(Level.WARNING, "Failed to load guiItem $key.", e)
             }
         }
+        plugin.logger.log(Level.INFO, "Loaded " + this.items.size + " GUI elements.")
     }
 
     /**

@@ -61,5 +61,6 @@ class GUIBallConfiguration(private val plugin: Plugin, fileName: String?, privat
                 BallPlugin.logger().log(Level.WARNING, "Failed to load guiItem $key.", e)
             }
         }
+        plugin.logger.log(Level.INFO, "Loaded " + this.items.size + " balls.")
     }
 }

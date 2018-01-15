@@ -48,19 +48,21 @@ public class CoreManager {
     private final BallMetaController metaController;
     private final BukkitBallController ballController;
     private final Plugin plugin;
+    private String entityStorageFileName;
 
     /**
      * Initializes a new core manager.
      *
      * @param plugin plugin
      */
-    public CoreManager(Plugin plugin) {
+    public CoreManager(Plugin plugin, String metaDataFileName, String entityStorageFileName) {
         super();
         if (plugin == null)
             throw new IllegalArgumentException("Plugin cannot be null!");
         this.plugin = plugin;
-        this.metaController = new BallDataRepository(plugin, "meta.yml");
-        this.ballController = new BallEntityController(plugin);
+        this.metaController = new BallDataRepository(plugin, metaDataFileName);
+        this.ballController = new BallEntityController(plugin, entityStorageFileName);
+        this.entityStorageFileName = entityStorageFileName;
 
         new BallListener(this.ballController, plugin);
         new StorageListener(plugin, (BallEntityController) this.ballController);

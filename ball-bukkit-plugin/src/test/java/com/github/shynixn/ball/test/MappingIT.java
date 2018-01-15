@@ -6,6 +6,7 @@ import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
 import com.github.shynixn.ball.api.persistence.enumeration.ActionEffect;
 import com.github.shynixn.ball.api.persistence.enumeration.BallSize;
 import com.github.shynixn.ball.bukkit.core.logic.persistence.entity.BallData;
+import com.github.shynixn.ball.bukkit.logic.persistence.entity.ItemContainer;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemorySection;
@@ -111,6 +112,9 @@ public class MappingIT {
 
         final FileConfiguration configuration = new YamlConfiguration();
         configuration.set("meta.1.ball", ballData.serialize());
+
+
+
         final String data = configuration.saveToString();
 
         System.out.println(data);
@@ -135,6 +139,7 @@ public class MappingIT {
             assertEquals(213, particleEffectMeta.getOffsetZ());
             assertEquals(0.233, particleEffectMeta.getSpeed());
         }
+
     }
 
     @Test
@@ -173,6 +178,136 @@ public class MappingIT {
             assertEquals(14324.1, soundEffectMeta.getPitch());
             assertEquals(212.3, soundEffectMeta.getVolume());
         }
+
+
+
+        for(int i = 1; i < 100; i++)
+        {
+            String custom = "  'SIEGDAMN':\n" +
+                    "    ball:\n" +
+                    "      skin: 'http://textures.minecraft.net/texture/f45c9acea8da71b4f252cd4deb5943f49e7dbc0764274b25a6a6f5875baea3'\n" +
+                    "      size: NORMAL\n" +
+                    "      hitbox-size: 2.0\n" +
+                    "      carry-able: false\n" +
+                    "      always-bounce: true\n" +
+                    "      rotating: true\n" +
+                    "      modifiers:\n" +
+                    "        horizontal-touch: 1.0\n" +
+                    "        vertical-touch: 1.0\n" +
+                    "        horizontal-kick: 1.0\n" +
+                    "        vertical-kick: 1.0\n" +
+                    "        horizontal-throw: 1.0\n" +
+                    "        vertical-throw: 1.0\n" +
+                    "        rolling-distance: 1.0\n" +
+                    "        gravity: 1.0\n" +
+                    "      particle-effects:\n" +
+                    "        onkick:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          amount: 0\n" +
+                    "          speed: 0.0\n" +
+                    "          offset:\n" +
+                    "            x: 0.0\n" +
+                    "            y: 0.0\n" +
+                    "            z: 0.0\n" +
+                    "        onmove:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          amount: 0\n" +
+                    "          speed: 0.0\n" +
+                    "          offset:\n" +
+                    "            x: 0.0\n" +
+                    "            y: 0.0\n" +
+                    "            z: 0.0\n" +
+                    "        oninteraction:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          amount: 0\n" +
+                    "          speed: 0.0\n" +
+                    "          offset:\n" +
+                    "            x: 0.0\n" +
+                    "            y: 0.0\n" +
+                    "            z: 0.0\n" +
+                    "        ongrab:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          amount: 0\n" +
+                    "          speed: 0.0\n" +
+                    "          offset:\n" +
+                    "            x: 0.0\n" +
+                    "            y: 0.0\n" +
+                    "            z: 0.0\n" +
+                    "        onspawn:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          amount: 0\n" +
+                    "          speed: 0.0\n" +
+                    "          offset:\n" +
+                    "            x: 0.0\n" +
+                    "            y: 0.0\n" +
+                    "            z: 0.0\n" +
+                    "        onthrow:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          amount: 0\n" +
+                    "          speed: 0.0\n" +
+                    "          offset:\n" +
+                    "            x: 0.0\n" +
+                    "            y: 0.0\n" +
+                    "            z: 0.0\n" +
+                    "      sound-effects:\n" +
+                    "        onkick:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          volume: 0.0\n" +
+                    "          pitch: 0.0\n" +
+                    "        onmove:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          volume: 0.0\n" +
+                    "          pitch: 0.0\n" +
+                    "        oninteraction:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          volume: 0.0\n" +
+                    "          pitch: 0.0\n" +
+                    "        ongrab:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          volume: 0.0\n" +
+                    "          pitch: 0.0\n" +
+                    "        onspawn:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          volume: 0.0\n" +
+                    "          pitch: 0.0\n" +
+                    "        onthrow:\n" +
+                    "          effecting: EVERYONE\n" +
+                    "          name: none\n" +
+                    "          volume: 0.0\n" +
+                    "          pitch: 0.0\n" +
+                    "      wall-bouncing: {}\n" +
+                    "    gui:    \n" +
+                    "      enabled: true\n" +
+                    "      id: 397\n" +
+                    "      damage: 3\n" +
+                    "      skin: 'http://textures.minecraft.net/texture/f45c9acea8da71b4f252cd4deb5943f49e7dbc0764274b25a6a6f5875baea3'\n" +
+                    "      name: '&a&lBall 1'\n" +
+                    "      unbreakable: false\n" +
+                    "      lore:\n" +
+                    "        - 'Waterball.' ";
+            custom = custom.replace("SIEGDAMN", String.valueOf(i));
+            System.out.println(custom);
+        }
+
+
+
+
+
+
+
+
+
     }
 
     @Test

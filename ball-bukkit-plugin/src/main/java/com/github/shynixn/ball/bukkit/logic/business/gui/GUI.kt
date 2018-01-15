@@ -59,29 +59,30 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
         }
         this.playerInventory = Bukkit.createInventory(this, 54, Config.guiTitle)
         this.player.openInventory(this.playerInventory)
-    //    val metas = ArrayList<ItemContainer>();
-     //   this.setItems(metas, 1, Permission.SINGLEGUIBALL)
+        this.setItems(Config.ballItemsController?.getGUIItems()!!, 1, Permission.SINGLEGUIBALL)
         return this.playerInventory!!
     }
 
     @Throws(Exception::class)
     fun click(clickedItem: ItemStack, slot: Int) {
         var slot = slot
-       /* if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "next-page")) {
-            val metas = this.ballManager.fileRepository.getAll()
-     //       this.setItems(metas, 1, Permission.SINGLEGUIBALL)
-        } else if (Config.fixedGuiItemsController.isGUIItem(clickedItem, "previous-page")) {
-            val metas = this.ballManager.fileRepository.getAll()
-      //      this.setItems(metas, 2, Permission.SINGLEGUIBALL)
-        } else if (Config.fixedGuiItemsController.isGUIItem(clickedItem, "empty-slot")) {
+        if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "next-page")!!) {
+            this.setItems(Config.ballItemsController?.getGUIItems()!!, 1, Permission.SINGLEGUIBALL)
+        } else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "previous-page")!!) {
+            this.setItems(Config.ballItemsController?.getGUIItems()!!, 2, Permission.SINGLEGUIBALL)
+        }
+        else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "back")!!) {
+            player.closeInventory()
+        }
+        else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "empty-slot")!!) {
             return
         } else if (slot < 45) {
             slot++
             if (Permission.ALLGUIBALLS.hasPermission(this.player) || Permission.SINGLEGUIBALL.hasPermission(this.player, slot.toString())) {
            //     val itemContainer = this.ballManager.fileRepository.getContainerFromPosition(slot)
-                this.selectBall(itemContainer)
+             //   this.selectBall(itemContainer)
             }
-        }*/
+        }
     }
 
     @Throws(Exception::class)
@@ -92,6 +93,7 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
     }
 
     private fun setItems(containers: List<ItemContainer>, type: Int, groupPermission: Permission) {
+        println("SIZE: " + containers.size)
         if (type == 1 && (this.startCount % 45 != 0 || containers.size == this.startCount)) {
             return
         }
@@ -112,7 +114,9 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
         while (i < 45 && i + this.startCount < containers.size) {
             if (inventory.getItem(i) == null || inventory.getItem(i).type == Material.AIR) {
 
+                val slot = i
                 val containerSlot = i + this.startCount
+                println("CONTAINER SLOT: " + containerSlot)
                 val mountBlock = this.currentCount
                 count++
                 if (i % 2 == 0) {
@@ -120,24 +124,41 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
                 }
                 Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(BallPlugin::class.java), {
                     if (this.currentCount == mountBlock) {
-                        inventory.setItem(i, containers[containerSlot].generate(this.player, groupPermission))
+                        println("SET AT POS i")
+                        inventory.setItem(slot, containers[containerSlot].generate(this.player, groupPermission))
                     }
                 }, scheduleCounter.toLong())
             }
             i++
         }
         this.startCount = count
+        println("SETTING")
         if (!(this.startCount % 45 != 0 || containers.size == this.startCount)) {
-        //    val nextPage = Config.fixedGuiItemsController.getGUIItemByName("next-page")
-        //    inventory.setItem(nextPage.getPosition(), nextPage.generate(this.player))
+           val nextPage = Config.fixedGuiItemsController?.getGUIItemByName("next-page")
+            inventory.setItem(nextPage?.position!!, nextPage.generate(this.player))
         }
         if (this.currentCount != 0) {
-        //    val previousPage = Config.fixedGuiItemsController.getGUIItemByName("previous-page")
-       //     inventory.setItem(previousPage.getPosition(), previousPage.generate(this.player))
+            val previousPage = Config.fixedGuiItemsController?.getGUIItemByName("previous-page")
+            inventory.setItem(previousPage?.position!!, previousPage.generate(this.player))
         }
+        this.setCommonItems(inventory)
         this.fillEmptySlots(inventory)
     }
 
+
+    private fun setCommonItems(inventory: Inventory)
+    {
+        println("COMMON")
+        val previousPage = Config.fixedGuiItemsController?.getGUIItemByName("previous-page")
+        val nextPage = Config.fixedGuiItemsController?.getGUIItemByName("next-page")
+        Config.fixedGuiItemsController?.all!!
+                .filter { it != previousPage && it != nextPage }
+                .forEach {
+
+                    println("ITEM GENERATE" + it.position + " ITEM " + it.generate(this.player) )
+                    inventory.setItem(it.position, it.generate(this.player))
+                }
+    }
 
     /**
      * Fills empty slots in the inventory with the default item.
@@ -157,7 +178,6 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
      * @throws Exception if this resource cannot be closed
      */
     override fun close() {
-        this.player.closeInventory()
         this.playerInventory = null
     }
 }

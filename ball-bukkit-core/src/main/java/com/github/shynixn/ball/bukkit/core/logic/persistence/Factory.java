@@ -43,12 +43,12 @@ public final class Factory {
      *
      * @param plugin plugin
      */
-    public static synchronized void initialize(Plugin plugin) throws IllegalArgumentException {
+    public static synchronized void initialize(Plugin plugin, String metaDataFilename, String entityDataFileName) throws IllegalArgumentException {
         if (plugin == null)
             throw new IllegalArgumentException("Plugin cannot be null!");
         if (coreManager != null)
             throw new IllegalArgumentException("Ball core is already initialized. Api can be used!");
-        coreManager = new CoreManager(plugin);
+        coreManager = new CoreManager(plugin, metaDataFilename, entityDataFileName);
     }
 
     /**
@@ -58,10 +58,10 @@ public final class Factory {
      * @param plugin plugin
      * @return bukkitBallController
      */
-    public static BukkitBallController createBallController(Plugin plugin) {
+    public static BukkitBallController createBallController(Plugin plugin, String fileName) {
         if (plugin == null)
             throw new IllegalArgumentException("Plugin cannot be null!");
-        return new BallEntityController(plugin);
+        return new BallEntityController(plugin, fileName);
     }
 
     /**

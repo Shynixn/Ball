@@ -4,12 +4,15 @@ import com.github.shynixn.ball.bukkit.BallPlugin
 import com.github.shynixn.ball.bukkit.core.logic.business.helper.NBTTagHelper
 import com.github.shynixn.ball.bukkit.core.logic.business.helper.SkinHelper
 import com.github.shynixn.ball.bukkit.logic.business.Permission
+import com.github.shynixn.ball.bukkit.logic.persistence.configuration.Config
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
 import java.util.logging.Level
+import kotlin.collections.ArrayList
 
 /**
  * Created by Shynixn 2018.
@@ -38,7 +41,7 @@ import java.util.logging.Level
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-class ItemContainer(val position : Int, data : Map<String, Any>)
+class ItemContainer(var position : Int, data : Map<String, Any>)
 {
     private var cache : ItemStack? = null
 
@@ -51,6 +54,9 @@ class ItemContainer(val position : Int, data : Map<String, Any>)
     var unbreakable: Boolean = false
 
     init {
+        println("MEME")
+        if (data.containsKey("position"))
+            this.position = data["position"] as Int
         if (data.containsKey("id"))
             this.id = data["id"] as Int
         if (data.containsKey("damage"))
@@ -73,6 +79,7 @@ class ItemContainer(val position : Int, data : Map<String, Any>)
                     .filter { it != "none" }
                     .map { ChatColor.translateAlternateColorCodes('&', it.toString()) }
             this.lore = lore.toTypedArray()
+            println("LORE:" + this.lore)
         }
     }
 
@@ -86,7 +93,6 @@ class ItemContainer(val position : Int, data : Map<String, Any>)
      */
     fun generate(player: Player, vararg permissions: Permission): ItemStack {
         if (this.cache != null) {
-            this.updateLore(player, permissions)
             return this.cache!!.clone()
         }
         try {
@@ -99,9 +105,14 @@ class ItemContainer(val position : Int, data : Map<String, Any>)
             itemStack = NBTTagHelper.setItemStackNBTTag(itemStack, data)
             val itemMeta = itemStack!!.itemMeta
             itemMeta.displayName = this.name
+            if(this.lore != null)
+            {
+                var dataValues = ArrayList<String>();
+                dataValues.addAll(this.lore!!);
+                itemMeta.lore = dataValues;
+            }
             itemStack.itemMeta = itemMeta
             this.cache = itemStack
-            this.updateLore(player, permissions)
             return itemStack
         } catch (ex: Exception) {
             BallPlugin.logger().log(Level.WARNING, "Failed to generate itemStack.", ex)
@@ -109,13 +120,6 @@ class ItemContainer(val position : Int, data : Map<String, Any>)
         return ItemStack(Material.AIR)
     }
 
-    private fun updateLore(player: Player, permissions: Array<out Permission>) {
-      //  val lore = this.provideLore(player, permissions)
-        val lore = null;
-        val meta = this.cache?.itemMeta
-      //  meta?.lore = Arrays.asList(lore)
-        this.cache?.itemMeta = meta
-    }
 
     private fun hasPermission(player: Player, vararg permissions: String): Boolean {
         for (permission in permissions) {

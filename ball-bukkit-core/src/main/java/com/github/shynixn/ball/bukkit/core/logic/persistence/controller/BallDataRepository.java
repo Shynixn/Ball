@@ -49,7 +49,6 @@ import java.util.logging.Level;
 public class BallDataRepository implements BallMetaController {
 
     private final Plugin plugin;
-    private final File file;
     private final String fileName;
     private final List<BallMeta> items = new ArrayList<>();
 
@@ -67,7 +66,6 @@ public class BallDataRepository implements BallMetaController {
             throw new IllegalArgumentException("FileName cannot be null!");
         this.plugin = plugin;
         this.fileName = fileName;
-        this.file = new File(this.plugin.getDataFolder(), "Ball");
     }
 
     /**
@@ -117,8 +115,8 @@ public class BallDataRepository implements BallMetaController {
         final BallMeta[] items = this.items.toArray(new BallMeta[this.items.size()]);
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
-                synchronized (this.file) {
-                    final File storage = this.createFiles();
+                synchronized (this.fileName) {
+                    final File storage = new File(this.plugin.getDataFolder(), this.fileName);
                     final FileConfiguration configuration = new YamlConfiguration();
                     configuration.load(storage);
                     for (int i = 0; i < items.length; i++) {
@@ -140,8 +138,8 @@ public class BallDataRepository implements BallMetaController {
     public void reload() {
         this.items.clear();
         try {
-            synchronized (this.file) {
-                final File storage = this.createFiles();
+            synchronized (this.fileName) {
+                final File storage = new File(this.plugin.getDataFolder(), this.fileName);
                 final FileConfiguration configuration = new YamlConfiguration();
                 configuration.load(storage);
                 final Map<String, Object> data = ((MemorySection) configuration.get("meta")).getValues(false);
@@ -235,20 +233,5 @@ public class BallDataRepository implements BallMetaController {
     @Override
     public void close() throws Exception {
         this.items.clear();
-    }
-
-    private File createFiles() throws IOException {
-        final File storageFile = new File(this.file, this.fileName);
-        if (!this.file.exists()) {
-            if (this.file.mkdir()) {
-                this.plugin.getLogger().log(Level.INFO, "Created folder " + this.file.getName() + ".");
-            }
-        }
-        if (!storageFile.exists()) {
-            if (storageFile.createNewFile()) {
-                this.plugin.getLogger().log(Level.INFO, "Created file " + storageFile.getName() + ".");
-            }
-        }
-        return storageFile;
     }
 }

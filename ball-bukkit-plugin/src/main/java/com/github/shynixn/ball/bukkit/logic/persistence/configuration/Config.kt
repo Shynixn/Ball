@@ -2,6 +2,7 @@ package com.github.shynixn.ball.bukkit.logic.persistence.configuration
 
 import com.github.shynixn.ball.bukkit.logic.business.Permission
 import com.github.shynixn.ball.bukkit.logic.persistence.controller.FixedGUIItemConfiguration
+import com.github.shynixn.ball.bukkit.logic.persistence.controller.GUIBallConfiguration
 import org.bukkit.entity.Player
 
 /**
@@ -61,7 +62,16 @@ internal object Config : SimpleConfig() {
     var fixedGuiItemsController: FixedGUIItemConfiguration? = null
         get() {
             if (field == null) {
-                field = FixedGUIItemConfiguration(this.plugin!!)
+                this.fixedGuiItemsController = FixedGUIItemConfiguration(this.plugin!!)
+            }
+            return field
+        }
+        private set
+
+    var ballItemsController: GUIBallConfiguration? = null
+        get() {
+            if (field == null) {
+                this.ballItemsController = GUIBallConfiguration(plugin!!, "config.yml")
             }
             return field
         }
@@ -71,8 +81,13 @@ internal object Config : SimpleConfig() {
      * Reloads the plugin configuration.
      */
     override fun reload() {
+        println("RELOADING")
         super.reload()
+        println("WUT")
         this.plugin?.reloadConfig()
+        println("NOW")
+        this.fixedGuiItemsController?.reload()
+        this.ballItemsController?.reload();
     }
 }
 

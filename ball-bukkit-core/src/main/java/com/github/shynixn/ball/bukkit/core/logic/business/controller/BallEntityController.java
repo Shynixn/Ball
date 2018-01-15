@@ -50,14 +50,14 @@ public class BallEntityController implements BukkitBallController {
 
     private final Set<BukkitBall> balls = new HashSet<>();
     private final Plugin plugin;
-    private final File file;
+    private final String fileName;
 
-    public BallEntityController(Plugin plugin) {
+    public BallEntityController(Plugin plugin, String fileName) {
         super();
         if(plugin == null)
             throw new IllegalArgumentException("Plugin cannot be null!");
         this.plugin = plugin;
-        this.file = new File(this.plugin.getDataFolder(), "Ball");
+        this.fileName = fileName;
     }
 
     /**
@@ -116,8 +116,8 @@ public class BallEntityController implements BukkitBallController {
     public void saveAndDestroy(Ball ball, boolean destroy) {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
-                synchronized (this.file) {
-                    final File storageFile = this.createFiles(true);
+                synchronized (this.fileName) {
+                    final File storageFile = new File(this.plugin.getDataFolder(), this.fileName);
                     final FileConfiguration configuration = new YamlConfiguration();
                     configuration.load(storageFile);
                     final ConfigurationSerializable serializable = (ConfigurationSerializable) ball;
@@ -137,8 +137,8 @@ public class BallEntityController implements BukkitBallController {
     public void loadAndSpawn(UUID uuid) {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
-                synchronized (this.file) {
-                    final File storageFile = this.createFiles(false);
+                synchronized (this.fileName) {
+                    final File storageFile = new File(this.plugin.getDataFolder(), this.fileName);
                     if (!storageFile.exists())
                         return;
                     final FileConfiguration configuration = new YamlConfiguration();
@@ -233,20 +233,5 @@ public class BallEntityController implements BukkitBallController {
     @Override
     public void close() throws Exception {
         this.balls.clear();
-    }
-
-    private File createFiles(boolean create) throws IOException {
-        final File storageFile = new File(this.file, "storage.yml");
-        if (!this.file.exists()) {
-            if (this.file.mkdir()) {
-                this.plugin.getLogger().log(Level.INFO, "Created folder " + this.file.getName() + ".");
-            }
-        }
-        if (!storageFile.exists()) {
-            if (create && storageFile.createNewFile()) {
-                this.plugin.getLogger().log(Level.INFO, "Created file " + storageFile.getName() + ".");
-            }
-        }
-        return storageFile;
     }
 }
