@@ -1,10 +1,4 @@
-package com.github.shynixn.balls.bukkit.logic.business.commandexecutor
-
-import com.github.shynixn.balls.bukkit.logic.business.gui.GUI
-import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager
-import org.bukkit.entity.Player
-import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.java.JavaPlugin
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by Shynixn 2018.
@@ -33,14 +27,11 @@ import org.bukkit.plugin.java.JavaPlugin
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-internal class BallsCommandExecutor(private val ballManager: BallsManager, plugin: Plugin) : SimpleCommandExecutor.UnRegistered(plugin.config.get("commands.ball"), plugin as JavaPlugin) {
-    /**
-     * Can be overwritten to listen to player executed commands.
-     *
-     * @param player player
-     * @param args   args
-     */
-    override fun onPlayerExecuteCommand(player: Player?, args: Array<out String>?) {
-        GUI(player!!, this.ballManager)
+public class InternalTest {
+
+    @Test
+    public void testGenericController()
+    {
+
     }
 }

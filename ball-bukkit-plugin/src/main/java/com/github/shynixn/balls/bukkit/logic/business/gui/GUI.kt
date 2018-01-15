@@ -1,6 +1,5 @@
 package com.github.shynixn.balls.bukkit.logic.business.gui
 
-import com.github.shynixn.balls.api.BallsApi
 import com.github.shynixn.balls.bukkit.BallPlugin
 import com.github.shynixn.balls.bukkit.logic.business.Permission
 import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager

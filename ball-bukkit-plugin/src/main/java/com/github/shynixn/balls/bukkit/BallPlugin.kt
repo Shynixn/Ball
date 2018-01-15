@@ -55,15 +55,15 @@ class BallPlugin : JavaPlugin() {
      */
     override fun onEnable() {
         this.saveDefaultConfig()
+        Bukkit.getServer().consoleSender.sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Loading Ball ...")
         if (!VersionSupport.isServerVersionSupported(PLUGIN_NAME, PREFIX_CONSOLE)) {
             this.disabled = true
             Bukkit.getPluginManager().disablePlugin(this)
         } else {
+            Config.reload()
             if (Config.metrics!!) {
                 Metrics(this)
             }
-            Bukkit.getServer().consoleSender.sendMessage(PREFIX_CONSOLE + ChatColor.GREEN + "Loading Ball ...")
-            Config.reload()
             try {
                 this.ballsManager = BallsManager(this)
                 this.coreManager = CoreManager(this)

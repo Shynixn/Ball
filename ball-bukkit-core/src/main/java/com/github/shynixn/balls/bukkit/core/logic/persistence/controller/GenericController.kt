@@ -1,10 +1,6 @@
-package com.github.shynixn.balls.bukkit.logic.business.commandexecutor
+package com.github.shynixn.balls.bukkit.core.logic.persistence.controller
 
-import com.github.shynixn.balls.bukkit.logic.business.gui.GUI
-import com.github.shynixn.balls.bukkit.logic.persistence.BallsManager
-import org.bukkit.entity.Player
-import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 /**
  * Created by Shynixn 2018.
@@ -30,17 +26,46 @@ import org.bukkit.plugin.java.JavaPlugin
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * OUT OF OR IN CONNECTION WITH THE  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-internal class BallsCommandExecutor(private val ballManager: BallsManager, plugin: Plugin) : SimpleCommandExecutor.UnRegistered(plugin.config.get("commands.ball"), plugin as JavaPlugin) {
+open class GenericController<T>(protected val items: MutableList<T> = ArrayList()) where T : Any {
+
+    /** Returns the amount of items in the controller. */
+    val count: Int
+        get() {
+            return items.size
+        }
+
     /**
-     * Can be overwritten to listen to player executed commands.
-     *
-     * @param player player
-     * @param args   args
+     * Stores the [item] into the collection.
      */
-    override fun onPlayerExecuteCommand(player: Player?, args: Array<out String>?) {
-        GUI(player!!, this.ballManager)
+    fun store(item: T) {
+        if (!this.items.contains(item)) {
+            this.items.add(item)
+        }
+    }
+
+    /**
+     * Creates a new instance of the given [clazz] parameter.
+     */
+    fun create(clazz: Class<T>): T {
+        return clazz.newInstance()
+    }
+
+    /**
+     * Returns all items in an unmodifiable list.
+     */
+    fun getAll(): List<T> {
+        return Collections.unmodifiableList(items)
+    }
+
+    /**
+     * Removes the [item] from the collection.
+     */
+    fun remove(item: T) {
+        if (this.items.contains(item)) {
+            this.items.remove(item)
+        }
     }
 }

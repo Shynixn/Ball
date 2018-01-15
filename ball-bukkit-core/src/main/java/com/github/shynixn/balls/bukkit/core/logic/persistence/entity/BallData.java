@@ -1,6 +1,7 @@
 package com.github.shynixn.balls.bukkit.core.logic.persistence.entity;
 
 import com.github.shynixn.balls.api.bukkit.persistence.controller.BukkitBounceController;
+import com.github.shynixn.balls.api.bukkit.persistence.entity.BukkitBallMeta;
 import com.github.shynixn.balls.api.bukkit.persistence.entity.BukkitParticleEffectMeta;
 import com.github.shynixn.balls.api.bukkit.persistence.entity.BukkitSoundEffectMeta;
 import com.github.shynixn.balls.api.persistence.BallMeta;
@@ -43,7 +44,7 @@ import java.util.Map;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallData implements BallMeta, ConfigurationSerializable {
+public class BallData implements BukkitBallMeta, ConfigurationSerializable {
 
     private String skin;
 

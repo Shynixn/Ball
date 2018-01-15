@@ -68,7 +68,111 @@ messages:
 ############################
 
 
-
+meta:
+  '1':
+    ball:
+      skin: Shynixn2
+      size: NORMAL
+      hitbox-size: 50.2
+      carry-able: false
+      always-bounce: true
+      rotating: true
+      modifiers:
+        horizontal-touch: 1.0
+        vertical-touch: 1.0
+        horizontal-kick: 1.0
+        vertical-kick: 1.0
+        horizontal-throw: 1.0
+        vertical-throw: 1.0
+        rolling-distance: 1.0
+        gravity: 1.0
+      particle-effects:
+        onkick:
+          effecting: EVERYONE
+          name: huge_explosion
+          amount: 200
+          speed: 0.233
+          offset:
+            x: 5.0
+            y: 23.0
+            z: 213.0
+        onmove:
+          effecting: EVERYONE
+          name: huge_explosion
+          amount: 200
+          speed: 0.233
+          offset:
+            x: 5.0
+            y: 23.0
+            z: 213.0
+        oninteraction:
+          effecting: EVERYONE
+          name: huge_explosion
+          amount: 200
+          speed: 0.233
+          offset:
+            x: 5.0
+            y: 23.0
+            z: 213.0
+        ongrab:
+          effecting: EVERYONE
+          name: huge_explosion
+          amount: 200
+          speed: 0.233
+          offset:
+            x: 5.0
+            y: 23.0
+            z: 213.0
+        onspawn:
+          effecting: EVERYONE
+          name: huge_explosion
+          amount: 200
+          speed: 0.233
+          offset:
+            x: 5.0
+            y: 23.0
+            z: 213.0
+        onthrow:
+          effecting: EVERYONE
+          name: huge_explosion
+          amount: 200
+          speed: 0.233
+          offset:
+            x: 5.0
+            y: 23.0
+            z: 213.0
+      sound-effects:
+        onkick:
+          effecting: EVERYONE
+          name: none
+          volume: 0.0
+          pitch: 0.0
+        onmove:
+          effecting: EVERYONE
+          name: none
+          volume: 0.0
+          pitch: 0.0
+        oninteraction:
+          effecting: EVERYONE
+          name: none
+          volume: 0.0
+          pitch: 0.0
+        ongrab:
+          effecting: EVERYONE
+          name: none
+          volume: 0.0
+          pitch: 0.0
+        onspawn:
+          effecting: EVERYONE
+          name: none
+          volume: 0.0
+          pitch: 0.0
+        onthrow:
+          effecting: EVERYONE
+          name: none
+          volume: 0.0
+          pitch: 0.0
+      wall-bouncing: {}
 
 
 

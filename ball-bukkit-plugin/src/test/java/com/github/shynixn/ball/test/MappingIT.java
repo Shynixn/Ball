@@ -110,12 +110,13 @@ public class MappingIT {
         }
 
         final FileConfiguration configuration = new YamlConfiguration();
-        configuration.set("meta", ballData.serialize());
+        configuration.set("meta.1.ball", ballData.serialize());
         final String data = configuration.saveToString();
 
+        System.out.println(data);
         final FileConfiguration resultconf = new YamlConfiguration();
         resultconf.loadFromString(data);
-        final BallData result = new BallData(((MemorySection) resultconf.get("meta")).getValues(true));
+        final BallData result = new BallData(((MemorySection) resultconf.get("meta.1.ball")).getValues(true));
 
         assertEquals("Shynixn2", result.getSkin());
         assertEquals(false, result.isCarryable());
