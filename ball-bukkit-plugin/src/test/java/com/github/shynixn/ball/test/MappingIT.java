@@ -1,11 +1,11 @@
 package com.github.shynixn.ball.test;
 
-import com.github.shynixn.balls.api.persistence.BounceObject;
-import com.github.shynixn.balls.api.persistence.effect.ParticleEffectMeta;
-import com.github.shynixn.balls.api.persistence.effect.SoundEffectMeta;
-import com.github.shynixn.balls.api.persistence.enumeration.ActionEffect;
-import com.github.shynixn.balls.api.persistence.enumeration.BallSize;
-import com.github.shynixn.balls.bukkit.core.logic.persistence.entity.BallData;
+import com.github.shynixn.ball.api.persistence.BounceObject;
+import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
+import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
+import com.github.shynixn.ball.api.persistence.enumeration.ActionEffect;
+import com.github.shynixn.ball.api.persistence.enumeration.BallSize;
+import com.github.shynixn.ball.bukkit.core.logic.persistence.entity.BallData;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemorySection;

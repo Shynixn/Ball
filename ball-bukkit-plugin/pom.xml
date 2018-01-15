@@ -30,6 +30,12 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>RELEASE</version>
@@ -55,8 +61,16 @@
                             <shadedPattern>com.github.shynixn.ball.lib.kotlin</shadedPattern>
                         </relocation>
                         <relocation>
+                            <pattern>org.intellij</pattern>
+                            <shadedPattern>com.github.shynixn.ball.lib.org.intellij</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.jetbrains</pattern>
+                            <shadedPattern>com.github.shynixn.ball.lib.org.jetbrains</shadedPattern>
+                        </relocation>
+                        <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>com.github.shynixn.ball.lib.bstats</shadedPattern>
+                            <shadedPattern>com.github.shynixn.ball.lib.org.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
