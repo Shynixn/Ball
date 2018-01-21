@@ -7,6 +7,7 @@ import com.github.shynixn.ball.api.persistence.enumeration.ActionEffect;
 import com.github.shynixn.ball.api.persistence.enumeration.BallSize;
 import com.github.shynixn.ball.bukkit.core.logic.persistence.entity.BallData;
 import com.github.shynixn.ball.bukkit.logic.persistence.entity.ItemContainer;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.MemorySection;
@@ -14,7 +15,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -178,14 +182,65 @@ public class MappingIT {
             assertEquals(14324.1, soundEffectMeta.getPitch());
             assertEquals(212.3, soundEffectMeta.getVolume());
         }
+    }
 
 
 
-        for(int i = 1; i < 100; i++)
+
+
+
+
+
+
+    @Test
+    public void ballMappingBounceTest() throws ClassNotFoundException, IOException, InvalidConfigurationException {
+
+        final BallData ballData = new BallData("Shynixn2");
+        ballData.setCarryable(false);
+        ballData.setRotatingEnabled(true);
+        ballData.setHitBoxSize(50.2);
+        ballData.setAlwaysBounceBack(true);
+        ballData.setSize(BallSize.NORMAL);
+
+        final BounceObject bounceObject = ballData.getBounceObjectController().create(Material.SKULL, 123);
+        bounceObject.setBounceModifier(20.2);
+        ballData.getBounceObjectController().store(bounceObject);
+
+        final FileConfiguration configuration = new YamlConfiguration();
+        configuration.set("meta", ballData.serialize());
+        final String data = configuration.saveToString();
+
+        final FileConfiguration resultconf = new YamlConfiguration();
+        resultconf.loadFromString(data);
+        final BallData result = new BallData(((MemorySection) resultconf.get("meta")).getValues(true));
+
+        assertEquals("Shynixn2", result.getSkin());
+        assertEquals(false, result.isCarryable());
+        assertEquals(true, result.isRotatingEnabled());
+        assertEquals(true, result.isAlwaysBounceBack());
+        assertEquals(50.2, result.getHitBoxSize());
+        assertEquals(BallSize.NORMAL, result.getSize());
+
+        assertEquals(1, result.getBounceObjectController().size());
+
+        BounceObject bounceObject1 = result.getBounceObjectController().getAll().get(0);
+        assertEquals(Material.SKULL.getId(), bounceObject1.getMaterialId());
+        assertEquals(123, bounceObject1.getMaterialDamageValue());
+        assertEquals(20.2, bounceObject1.getBounceModifier());
+    }
+
+
+    @Test
+    public void bounceParsing() throws IOException {
+        List<String> lines = FileUtils.readLines(new File("ballsource.csv"), "UTF-8");
+
+
+        for(int i = 0; i < lines.size(); i++)
         {
-            String custom = "  'SIEGDAMN':\n" +
+            String[] data = lines.get(i).split(Pattern.quote(";"));
+            String custom = "  'PLACEHOLDER1N':\n" +
                     "    ball:\n" +
-                    "      skin: 'http://textures.minecraft.net/texture/f45c9acea8da71b4f252cd4deb5943f49e7dbc0764274b25a6a6f5875baea3'\n" +
+                    "      skin: 'PLACEHOLDER3'\n" +
                     "      size: NORMAL\n" +
                     "      hitbox-size: 2.0\n" +
                     "      carry-able: false\n" +
@@ -291,59 +346,15 @@ public class MappingIT {
                     "      enabled: true\n" +
                     "      id: 397\n" +
                     "      damage: 3\n" +
-                    "      skin: 'http://textures.minecraft.net/texture/f45c9acea8da71b4f252cd4deb5943f49e7dbc0764274b25a6a6f5875baea3'\n" +
-                    "      name: '&a&lBall 1'\n" +
+                    "      skin: 'PLACEHOLDER3'\n" +
+                    "      name: '&ePLACEHOLDER2'\n" +
                     "      unbreakable: false\n" +
                     "      lore:\n" +
-                    "        - 'Waterball.' ";
-            custom = custom.replace("SIEGDAMN", String.valueOf(i));
+                    "        - 'none' ";
+            custom = custom.replace("PLACEHOLDER1N", String.valueOf(i+1));
+            custom = custom.replace("PLACEHOLDER2", data[0]);
+            custom = custom.replace("PLACEHOLDER3", data[1]);
             System.out.println(custom);
         }
-
-
-
-
-
-
-
-
-
-    }
-
-    @Test
-    public void ballMappingBounceTest() throws ClassNotFoundException, IOException, InvalidConfigurationException {
-
-        final BallData ballData = new BallData("Shynixn2");
-        ballData.setCarryable(false);
-        ballData.setRotatingEnabled(true);
-        ballData.setHitBoxSize(50.2);
-        ballData.setAlwaysBounceBack(true);
-        ballData.setSize(BallSize.NORMAL);
-
-        final BounceObject bounceObject = ballData.getBounceObjectController().create(Material.SKULL, 123);
-        bounceObject.setBounceModifier(20.2);
-        ballData.getBounceObjectController().store(bounceObject);
-
-        final FileConfiguration configuration = new YamlConfiguration();
-        configuration.set("meta", ballData.serialize());
-        final String data = configuration.saveToString();
-
-        final FileConfiguration resultconf = new YamlConfiguration();
-        resultconf.loadFromString(data);
-        final BallData result = new BallData(((MemorySection) resultconf.get("meta")).getValues(true));
-
-        assertEquals("Shynixn2", result.getSkin());
-        assertEquals(false, result.isCarryable());
-        assertEquals(true, result.isRotatingEnabled());
-        assertEquals(true, result.isAlwaysBounceBack());
-        assertEquals(50.2, result.getHitBoxSize());
-        assertEquals(BallSize.NORMAL, result.getSize());
-
-        assertEquals(1, result.getBounceObjectController().size());
-
-        BounceObject bounceObject1 = result.getBounceObjectController().getAll().get(0);
-        assertEquals(Material.SKULL.getId(), bounceObject1.getMaterialId());
-        assertEquals(123, bounceObject1.getMaterialDamageValue());
-        assertEquals(20.2, bounceObject1.getBounceModifier());
     }
 }

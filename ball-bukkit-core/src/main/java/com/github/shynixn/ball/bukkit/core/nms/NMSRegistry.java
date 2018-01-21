@@ -54,7 +54,7 @@ public class NMSRegistry {
         if (ballMeta == null)
             throw new IllegalArgumentException("Ballmeta cannot be null!");
         try {
-            final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
+            final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.ball.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
             return ReflectionUtils.invokeConstructor(clazz, new Class[]{Location.class, BallMeta.class, boolean.class, LivingEntity.class}, new Object[]{location, ballMeta, persistent, owner});
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -74,7 +74,7 @@ public class NMSRegistry {
         if (data == null)
             throw new IllegalArgumentException("Data cannot be null!");
         try {
-            final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.balls.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
+            final Class<?> clazz = ReflectionUtils.invokeClass("com.github.shynixn.ball.bukkit.core.nms.VERSION.CustomDesign".replace("VERSION", VersionSupport.getServerVersion().getVersionText()));
             return ReflectionUtils.invokeConstructor(clazz, new Class[]{String.class, Map.class}, new Object[]{uuid.toString(), data});
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);

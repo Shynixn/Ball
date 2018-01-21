@@ -33,3 +33,7 @@ import org.bukkit.entity.Player
 internal fun Player.hasPermission(allguiballs: Permission): Boolean {
     return allguiballs.hasPermission(player)
 }
+
+internal fun Player.sendMessage(builder: ChatBuilder) {
+    builder.sendMessage(player)
+}

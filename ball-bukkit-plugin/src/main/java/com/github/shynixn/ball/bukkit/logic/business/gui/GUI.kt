@@ -1,11 +1,18 @@
 package com.github.shynixn.ball.bukkit.logic.business.gui
 
+import com.github.shynixn.ball.api.BallsApi
+import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall
+import com.github.shynixn.ball.api.bukkit.persistence.entity.BukkitBallMeta
+import com.github.shynixn.ball.api.persistence.BallMeta
 import com.github.shynixn.ball.bukkit.BallPlugin
 import com.github.shynixn.ball.bukkit.logic.business.Permission
+import com.github.shynixn.ball.bukkit.logic.business.helper.ChatBuilder
+import com.github.shynixn.ball.bukkit.logic.business.helper.sendMessage
 import com.github.shynixn.ball.bukkit.logic.persistence.BallsManager
 import com.github.shynixn.ball.bukkit.logic.persistence.configuration.Config
 import com.github.shynixn.ball.bukkit.logic.persistence.entity.ItemContainer
 import org.bukkit.Bukkit
+import org.bukkit.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -42,9 +49,23 @@ import org.bukkit.plugin.java.JavaPlugin
  */
 internal class GUI(private val player: Player, private val ballManager: BallsManager) : InventoryHolder, AutoCloseable {
 
-    private var playerInventory : Inventory? = null
-    private var startCount : Int = 0
-    private var currentCount : Int = 0
+    private val suggestHeadMessage = ChatBuilder().text(Config.prefix)
+            .text("Click here: ")
+            .component(">>Submit skin<<")
+            .setColor(ChatColor.YELLOW)
+            .setClickAction(ChatBuilder.ClickAction.OPEN_URL, "http://minecraft-heads.com/custom/heads-generator")
+            .setHoverText("Goto the Minecraft-Heads website!")
+            .builder()
+            .text(" ")
+            .component(">>Suggest new ball<<")
+            .setColor(ChatColor.YELLOW)
+            .setClickAction(ChatBuilder.ClickAction.OPEN_URL, "http://minecraft-heads.com/forum/suggesthead")
+            .setHoverText("Goto the Minecraft-Heads website!")
+            .builder()
+
+    private var playerInventory: Inventory? = null
+    private var startCount: Int = 0
+    private var currentCount: Int = 0
 
     init {
         this.inventory
@@ -70,26 +91,28 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
             this.setItems(Config.ballItemsController?.getGUIItems()!!, 1, Permission.SINGLEGUIBALL)
         } else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "previous-page")!!) {
             this.setItems(Config.ballItemsController?.getGUIItems()!!, 2, Permission.SINGLEGUIBALL)
-        }
-        else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "back")!!) {
+        } else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "back")!!) {
             player.closeInventory()
-        }
-        else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "empty-slot")!!) {
+        } else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "suggest-heads")!!) {
+            player.sendMessage(suggestHeadMessage)
+        } else if (Config.fixedGuiItemsController?.isGUIItem(clickedItem, "empty-slot")!!) {
             return
         } else if (slot < 45) {
             slot++
             if (Permission.ALLGUIBALLS.hasPermission(this.player) || Permission.SINGLEGUIBALL.hasPermission(this.player, slot.toString())) {
-           //     val itemContainer = this.ballManager.fileRepository.getContainerFromPosition(slot)
-             //   this.selectBall(itemContainer)
+                var realSlot = slot + currentCount - 1;
+
+                println("REALSLOT: " + realSlot + " " + startCount  + " - " + currentCount)
+                val itemContainer = Config.ballItemsController?.all?.get(realSlot) as BukkitBallMeta;
+                 this.selectBall(itemContainer)
             }
         }
     }
 
     @Throws(Exception::class)
-    private fun selectBall(container: ItemContainer) {
-     //   val ballMeta = this.ballManager.fileRepository.getBallMetaFromContainer(container)
-    //    BallsApi.spawnPlayerBall(this.player.location, this.player, ballMeta)
-        this.close()
+    private fun selectBall(ballMeta: BukkitBallMeta) {
+        BallsApi.spawnPlayerBall(player.location, player, ballMeta)
+        this.player.closeInventory()
     }
 
     private fun setItems(containers: List<ItemContainer>, type: Int, groupPermission: Permission) {
@@ -124,7 +147,6 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
                 }
                 Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(BallPlugin::class.java), {
                     if (this.currentCount == mountBlock) {
-                        println("SET AT POS i")
                         inventory.setItem(slot, containers[containerSlot].generate(this.player, groupPermission))
                     }
                 }, scheduleCounter.toLong())
@@ -132,9 +154,8 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
             i++
         }
         this.startCount = count
-        println("SETTING")
         if (!(this.startCount % 45 != 0 || containers.size == this.startCount)) {
-           val nextPage = Config.fixedGuiItemsController?.getGUIItemByName("next-page")
+            val nextPage = Config.fixedGuiItemsController?.getGUIItemByName("next-page")
             inventory.setItem(nextPage?.position!!, nextPage.generate(this.player))
         }
         if (this.currentCount != 0) {
@@ -146,16 +167,12 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
     }
 
 
-    private fun setCommonItems(inventory: Inventory)
-    {
-        println("COMMON")
+    private fun setCommonItems(inventory: Inventory) {
         val previousPage = Config.fixedGuiItemsController?.getGUIItemByName("previous-page")
         val nextPage = Config.fixedGuiItemsController?.getGUIItemByName("next-page")
         Config.fixedGuiItemsController?.all!!
                 .filter { it != previousPage && it != nextPage }
                 .forEach {
-
-                    println("ITEM GENERATE" + it.position + " ITEM " + it.generate(this.player) )
                     inventory.setItem(it.position, it.generate(this.player))
                 }
     }
