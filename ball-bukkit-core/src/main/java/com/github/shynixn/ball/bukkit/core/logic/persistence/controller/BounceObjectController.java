@@ -1,7 +1,7 @@
 package com.github.shynixn.ball.bukkit.core.logic.persistence.controller;
 
+import com.github.shynixn.ball.api.persistence.controller.BounceController;
 import com.github.shynixn.ball.bukkit.core.logic.persistence.entity.BounceInfo;
-import com.github.shynixn.ball.api.bukkit.persistence.controller.BukkitBounceController;
 import com.github.shynixn.ball.api.persistence.BounceObject;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -38,7 +38,7 @@ import java.util.*;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BounceObjectController implements BukkitBounceController, ConfigurationSerializable {
+public class BounceObjectController implements BounceController<Block, Material>, ConfigurationSerializable {
 
     private final List<BounceObject> bounceObjects = new ArrayList<>();
 

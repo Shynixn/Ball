@@ -4,7 +4,6 @@ import com.github.shynixn.ball.bukkit.core.logic.business.helper.ReflectionUtils
 import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.ball.api.bukkit.business.event.BallMoveEvent;
 import com.github.shynixn.ball.api.bukkit.business.event.BallWallCollideEvent;
-import com.github.shynixn.ball.api.bukkit.persistence.controller.BukkitBounceController;
 import com.github.shynixn.ball.api.persistence.BounceObject;
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.Bukkit;
@@ -93,7 +92,7 @@ public final class CustomHitbox extends EntityArmorStand {
 
     private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block, BlockFace blockFace) {
         if (this.knockBackBumper <= 0) {
-            final Optional<BounceObject> optBounce = this.ball.getMeta().<BukkitBounceController>getBounceObjectController().getBounceObjectFromBlock(block);
+            final Optional<BounceObject> optBounce = this.ball.getMeta().getBounceObjectController().getBounceObjectFromBlock(block);
             if (optBounce.isPresent() || this.ball.getMeta().isAlwaysBounceBack()) {
                 Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n))).multiply(0.75);
                 if (optBounce.isPresent()) {

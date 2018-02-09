@@ -34,7 +34,7 @@ import java.util.Map;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class EffectData<T extends EffectMeta> implements EffectMeta<T>, ConfigurationSerializable{
+public class EffectData implements EffectMeta, ConfigurationSerializable {
 
     private EffectingType effectingType = EffectingType.EVERYONE;
 
@@ -70,7 +70,7 @@ public class EffectData<T extends EffectMeta> implements EffectMeta<T>, Configur
      * @param type type
      */
     @Override
-    public T setEffectingType(EffectingType type) {
+    public <T extends EffectMeta> T setEffectingType(EffectingType type) {
         this.effectingType = type;
         return (T) this;
     }

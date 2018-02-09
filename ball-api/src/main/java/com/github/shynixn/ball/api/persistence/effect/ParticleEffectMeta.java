@@ -29,7 +29,7 @@ import java.util.Collection;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface ParticleEffectMeta<Location, Player, Material, T extends ParticleEffectMeta> extends EffectMeta<T> {
+public interface ParticleEffectMeta<Location, Player, Material> extends EffectMeta {
     /**
      * Sets the RGB colors of the particleEffect.
      *
@@ -38,7 +38,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param blue  blue
      * @return builder
      */
-    T setColor(int red, int green, int blue);
+    <T extends ParticleEffectMeta> T setColor(int red, int green, int blue);
 
     /**
      * Sets the color of the particleEffect.
@@ -46,7 +46,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param particleColor particleColor
      * @return builder
      */
-    T setColor(ParticleColor particleColor);
+    <T extends ParticleEffectMeta> T setColor(ParticleColor particleColor);
 
     /**
      * Sets the color for note particleEffect.
@@ -54,7 +54,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param color color
      * @return builder
      */
-    T setNoteColor(int color);
+    <T extends ParticleEffectMeta> T setNoteColor(int color);
 
     /**
      * Sets the amount of particles of the particleEffect.
@@ -62,7 +62,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param amount amount
      * @return builder
      */
-    T setAmount(int amount);
+    <T extends ParticleEffectMeta> T setAmount(int amount);
 
     /**
      * Sets the speed of the particleEffect.
@@ -70,7 +70,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param speed speed
      * @return builder
      */
-    T setSpeed(double speed);
+    <T extends ParticleEffectMeta> T setSpeed(double speed);
 
     /**
      * Sets the offsetX of the particleEffect.
@@ -78,7 +78,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param offsetX offsetX
      * @return builder
      */
-    T setOffsetX(double offsetX);
+    <T extends ParticleEffectMeta> T setOffsetX(double offsetX);
 
     /**
      * Sets the offsetY of the particleEffect.
@@ -86,7 +86,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param offsetY offsetY
      * @return builder
      */
-    T setOffsetY(double offsetY);
+    <T extends ParticleEffectMeta> T setOffsetY(double offsetY);
 
     /**
      * Sets the offsetZ of the particleEffect.
@@ -94,7 +94,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param offsetZ offsetZ
      * @return builder
      */
-    T setOffsetZ(double offsetZ);
+    <T extends ParticleEffectMeta> T setOffsetZ(double offsetZ);
 
     /**
      * Sets the offset of the particleEffect.
@@ -104,7 +104,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param offsetZ offsetZ
      * @return instance
      */
-    T setOffset(double offsetX, double offsetY, double offsetZ);
+    <T extends ParticleEffectMeta> T setOffset(double offsetX, double offsetY, double offsetZ);
 
     /**
      * Sets the effectType of the particleEffect.
@@ -112,7 +112,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param name name
      * @return builder
      */
-    T setEffectName(String name);
+    <T extends ParticleEffectMeta> T setEffectName(String name);
 
     /**
      * Sets the effectType of the particlEffect.
@@ -120,7 +120,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param type type
      * @return builder
      */
-    T setEffectType(ParticleEffectType type);
+    <T extends ParticleEffectMeta> T setEffectType(ParticleEffectType type);
 
     /**
      * Sets the blue of the RGB color.
@@ -128,7 +128,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param blue blue
      * @return builder
      */
-     T setBlue(int blue);
+    <T extends ParticleEffectMeta> T setBlue(int blue);
 
     /**
      * Sets the red of the RGB color.
@@ -136,7 +136,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param red red
      * @return builder
      */
-    T setRed(int red);
+    <T extends ParticleEffectMeta> T setRed(int red);
 
     /**
      * Sets the green of the RGB color.
@@ -144,7 +144,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param green green
      * @return builder
      */
-    T setGreen(int green);
+    <T extends ParticleEffectMeta> T setGreen(int green);
 
     /**
      * Sets the material of the particleEffect.
@@ -152,7 +152,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param material material
      * @return builder
      */
-    T setMaterial(Material material);
+    <T extends ParticleEffectMeta> T setMaterial(Material material);
 
     /**
      * Sets the data of the material of the particleEffect.
@@ -160,7 +160,7 @@ public interface ParticleEffectMeta<Location, Player, Material, T extends Partic
      * @param data data
      * @return builder
      */
-    T setData(Byte data);
+    <T extends ParticleEffectMeta> T setData(Byte data);
 
     /**
      * Returns the effect of the particleEffect.

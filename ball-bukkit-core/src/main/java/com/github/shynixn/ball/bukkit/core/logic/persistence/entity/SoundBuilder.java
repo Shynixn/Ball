@@ -1,6 +1,5 @@
 package com.github.shynixn.ball.bukkit.core.logic.persistence.entity;
 
-import com.github.shynixn.ball.api.bukkit.persistence.entity.BukkitSoundEffectMeta;
 import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -38,7 +37,7 @@ import java.util.Map;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class SoundBuilder extends EffectData<BukkitSoundEffectMeta> implements BukkitSoundEffectMeta{
+public class SoundBuilder extends EffectData implements SoundEffectMeta<Location, Player>{
 
     private String text;
     private double volume;

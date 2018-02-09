@@ -33,7 +33,7 @@ import com.github.shynixn.ball.api.persistence.enumeration.BallSize;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallMeta<T extends ParticleEffectMeta, F extends SoundEffectMeta, K extends BounceController> {
+public interface BallMeta {
 
     /**
      * Returns the particle effect for the given action.
@@ -41,7 +41,7 @@ public interface BallMeta<T extends ParticleEffectMeta, F extends SoundEffectMet
      * @param effect effect
      * @return particleEffect
      */
-    T getParticleEffectOf(ActionEffect effect);
+    <Location, Player, Material> ParticleEffectMeta<Location, Player, Material> getParticleEffectOf(ActionEffect effect);
 
     /**
      * Returns the sound effect for the given action.
@@ -49,7 +49,7 @@ public interface BallMeta<T extends ParticleEffectMeta, F extends SoundEffectMet
      * @param effect effect
      * @return soundEffect
      */
-    F getSoundEffectOf(ActionEffect effect);
+    <Location, Player> SoundEffectMeta<Location, Player> getSoundEffectOf(ActionEffect effect);
 
     /**
      * Returns the modifiers of the ball.
@@ -63,7 +63,7 @@ public interface BallMeta<T extends ParticleEffectMeta, F extends SoundEffectMet
      *
      * @return list
      */
-    K getBounceObjectController();
+    <Block, Material> BounceController<Block, Material> getBounceObjectController();
 
     /**
      * Sets always bouncing back from blocks regardless of bounceController.

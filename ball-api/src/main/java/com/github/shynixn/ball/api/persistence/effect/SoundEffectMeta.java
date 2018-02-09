@@ -29,7 +29,7 @@ import java.util.Collection;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> extends EffectMeta<T> {
+public interface SoundEffectMeta<Location, Player> extends EffectMeta {
 
     /**
      * Plays the effect at the given location to the given players.
@@ -66,7 +66,7 @@ public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> ex
      * @param name name
      * @return builder
      */
-    T setName(String name);
+    <T extends SoundEffectMeta> T setName(String name);
 
     /**
      * Returns the volume of the sound.
@@ -81,7 +81,7 @@ public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> ex
      * @param volume volume
      * @return builder
      */
-    T setVolume(double volume);
+    <T extends SoundEffectMeta> T setVolume(double volume);
 
     /**
      * Returns the pitch of the sound.
@@ -96,7 +96,7 @@ public interface SoundEffectMeta<Location, Player, T extends SoundEffectMeta> ex
      * @param pitch pitch
      * @return builder
      */
-    T setPitch(double pitch);
+    <T extends SoundEffectMeta> T setPitch(double pitch);
 
     /**
      * Clones the current object.

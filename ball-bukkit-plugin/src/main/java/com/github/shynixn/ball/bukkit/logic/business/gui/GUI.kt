@@ -1,8 +1,6 @@
 package com.github.shynixn.ball.bukkit.logic.business.gui
 
 import com.github.shynixn.ball.api.BallsApi
-import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall
-import com.github.shynixn.ball.api.bukkit.persistence.entity.BukkitBallMeta
 import com.github.shynixn.ball.api.persistence.BallMeta
 import com.github.shynixn.ball.bukkit.BallPlugin
 import com.github.shynixn.ball.bukkit.logic.business.Permission
@@ -103,14 +101,14 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
                 var realSlot = slot + currentCount - 1;
 
                 println("REALSLOT: " + realSlot + " " + startCount  + " - " + currentCount)
-                val itemContainer = Config.ballItemsController?.all?.get(realSlot) as BukkitBallMeta;
+                val itemContainer = Config.ballItemsController?.all?.get(realSlot) as BallMeta;
                  this.selectBall(itemContainer)
             }
         }
     }
 
     @Throws(Exception::class)
-    private fun selectBall(ballMeta: BukkitBallMeta) {
+    private fun selectBall(ballMeta: BallMeta) {
         BallsApi.spawnPlayerBall(player.location, player, ballMeta)
         this.player.closeInventory()
     }

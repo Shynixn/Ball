@@ -29,7 +29,7 @@ import com.github.shynixn.ball.api.persistence.enumeration.EffectingType;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface EffectMeta<K extends EffectMeta> {
+public interface EffectMeta{
 
     /**
      * Returns the effecting type.
@@ -43,5 +43,5 @@ public interface EffectMeta<K extends EffectMeta> {
      *
      * @param type type
      */
-    K setEffectingType(EffectingType type);
+    <K extends EffectMeta> K setEffectingType(EffectingType type);
 }

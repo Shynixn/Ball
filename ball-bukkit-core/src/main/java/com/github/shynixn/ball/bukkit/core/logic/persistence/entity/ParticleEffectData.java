@@ -1,6 +1,5 @@
 package com.github.shynixn.ball.bukkit.core.logic.persistence.entity;
 
-import com.github.shynixn.ball.api.bukkit.persistence.entity.BukkitParticleEffectMeta;
 import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
 import com.github.shynixn.ball.bukkit.core.logic.business.CoreManager;
 import org.bukkit.Bukkit;
@@ -47,7 +46,7 @@ import java.util.logging.Level;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> implements BukkitParticleEffectMeta, ConfigurationSerializable {
+public class ParticleEffectData extends EffectData implements ParticleEffectMeta<Location, Player, Material>, ConfigurationSerializable {
     private String effect;
     private int amount;
     private double speed;
@@ -139,11 +138,11 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setColor(int red, int green, int blue) {
+    public <T extends ParticleEffectMeta> T setColor(int red, int green, int blue) {
         this.setRed(red);
         this.setBlue(blue);
         this.setGreen(green);
-        return this;
+        return (T) this;
     }
 
     /**
@@ -153,11 +152,11 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setColor(ParticleEffectData.ParticleColor particleColor) {
+    public <T extends ParticleEffectMeta> T setColor(ParticleEffectData.ParticleColor particleColor) {
         if (particleColor == null)
             throw new IllegalArgumentException("Color cannot be null!");
         this.setColor(particleColor.getRed(), particleColor.getGreen(), particleColor.getBlue());
-        return this;
+        return (T) this;
     }
 
     /**
@@ -167,13 +166,13 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setNoteColor(int color) {
+    public <T extends ParticleEffectMeta> T setNoteColor(int color) {
         if (color > 20 || color < 0) {
             this.offsetX = 5;
         } else {
             this.offsetX = color;
         }
-        return this;
+        return (T) this;
     }
 
     /**
@@ -183,11 +182,11 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setAmount(int amount) {
+    public <T extends ParticleEffectMeta> T setAmount(int amount) {
         if (amount < 0)
             throw new IllegalArgumentException("Amount cannot be less than 0");
         this.amount = amount;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -197,9 +196,9 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setSpeed(double speed) {
+    public <T extends ParticleEffectMeta> T setSpeed(double speed) {
         this.speed = speed;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -209,9 +208,9 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setOffsetX(double offsetX) {
+    public <T extends ParticleEffectMeta> T setOffsetX(double offsetX) {
         this.offsetX = offsetX;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -221,9 +220,9 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setOffsetY(double offsetY) {
+    public <T extends ParticleEffectMeta> T setOffsetY(double offsetY) {
         this.offsetY = offsetY;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -233,9 +232,9 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setOffsetZ(double offsetZ) {
+    public <T extends ParticleEffectMeta> T setOffsetZ(double offsetZ) {
         this.offsetZ = offsetZ;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -247,11 +246,11 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return instance
      */
     @Override
-    public ParticleEffectData setOffset(double offsetX, double offsetY, double offsetZ) {
+    public <T extends ParticleEffectMeta> T setOffset(double offsetX, double offsetY, double offsetZ) {
         this.setOffsetX(offsetX);
         this.setOffsetY(offsetY);
         this.setOffsetZ(offsetZ);
-        return this;
+        return (T) this;
     }
 
     /**
@@ -261,11 +260,11 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setEffectName(String name) {
+    public <T extends ParticleEffectMeta> T setEffectName(String name) {
         if (name == null)
             throw new IllegalArgumentException("Name cannot be null!");
         this.effect = name;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -275,11 +274,11 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setEffectType(ParticleEffectData.ParticleEffectType type) {
+    public <T extends ParticleEffectMeta> T setEffectType(ParticleEffectData.ParticleEffectType type) {
         if (type == null)
             throw new IllegalArgumentException("Type cannot be null!");
         this.effect = type.getMinecraftId();
-        return this;
+        return (T) this;
     }
 
     /**
@@ -289,9 +288,9 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setBlue(int blue) {
+    public <T extends ParticleEffectMeta> T setBlue(int blue) {
         this.offsetZ = blue / 255.0F;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -301,12 +300,12 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setRed(int red) {
+    public <T extends ParticleEffectMeta> T setRed(int red) {
         this.offsetX = red / 255.0F;
         if (red == 0) {
             this.offsetX = Float.MIN_NORMAL;
         }
-        return this;
+        return (T) this;
     }
 
     /**
@@ -316,9 +315,9 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setGreen(int green) {
+    public <T extends ParticleEffectMeta> T setGreen(int green) {
         this.offsetY = green / 255.0F;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -328,13 +327,13 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public BukkitParticleEffectMeta setMaterial(Material material) {
+    public <T extends ParticleEffectMeta> T setMaterial(Material material) {
         if (material != null) {
             this.material = material.getId();
         } else {
             this.material = null;
         }
-        return this;
+        return (T) this;
     }
 
     /**
@@ -344,9 +343,9 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @return builder
      */
     @Override
-    public ParticleEffectData setData(Byte data) {
+    public <T extends ParticleEffectMeta> T setData(Byte data) {
         this.data = data;
-        return this;
+        return (T) this;
     }
 
     /**
@@ -698,8 +697,8 @@ public class ParticleEffectData extends EffectData<BukkitParticleEffectMeta> imp
      * @param name name
      * @return particleEffectType
      */
-    public static ParticleEffectData.ParticleEffectType getParticleEffectFromName(String name) {
-        for (final ParticleEffectData.ParticleEffectType particleEffect : ParticleEffectData.ParticleEffectType.values()) {
+    public static ParticleEffectMeta.ParticleEffectType getParticleEffectFromName(String name) {
+        for (final ParticleEffectMeta.ParticleEffectType particleEffect : ParticleEffectMeta.ParticleEffectType.values()) {
             if (name != null && particleEffect.getMinecraftId().equalsIgnoreCase(name))
                 return particleEffect;
         }

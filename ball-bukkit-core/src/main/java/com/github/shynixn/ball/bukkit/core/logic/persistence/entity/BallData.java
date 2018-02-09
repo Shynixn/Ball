@@ -1,15 +1,19 @@
 package com.github.shynixn.ball.bukkit.core.logic.persistence.entity;
 
-import com.github.shynixn.ball.api.bukkit.persistence.controller.BukkitBounceController;
-import com.github.shynixn.ball.api.bukkit.persistence.entity.BukkitBallMeta;
-import com.github.shynixn.ball.api.bukkit.persistence.entity.BukkitParticleEffectMeta;
-import com.github.shynixn.ball.api.bukkit.persistence.entity.BukkitSoundEffectMeta;
+import com.github.shynixn.ball.api.persistence.BallMeta;
 import com.github.shynixn.ball.api.persistence.BallModifiers;
+import com.github.shynixn.ball.api.persistence.controller.BounceController;
+import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
+import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
 import com.github.shynixn.ball.api.persistence.enumeration.ActionEffect;
 import com.github.shynixn.ball.api.persistence.enumeration.BallSize;
 import com.github.shynixn.ball.bukkit.core.logic.persistence.controller.BounceObjectController;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -42,7 +46,7 @@ import java.util.Map;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallData implements BukkitBallMeta, ConfigurationSerializable {
+public class BallData implements BallMeta, ConfigurationSerializable {
 
     private String skin;
 
@@ -53,10 +57,10 @@ public class BallData implements BukkitBallMeta, ConfigurationSerializable {
     private BallSize size = BallSize.NORMAL;
 
     private final BallModifications modifications;
-    private final BukkitBounceController bounceObjectIController;
+    private final BounceController<Block, Material> bounceObjectIController;
 
-    private final Map<ActionEffect, BukkitSoundEffectMeta> soundeffects = new HashMap<>();
-    private final Map<ActionEffect, BukkitParticleEffectMeta> particleEffectMetaMap = new HashMap<>();
+    private final Map<ActionEffect, SoundEffectMeta<Location, Player>> soundeffects = new HashMap<>();
+    private final Map<ActionEffect, ParticleEffectMeta<Location, Player, Material>> particleEffectMetaMap = new HashMap<>();
 
     /**
      * Deserializes a ballData.
@@ -108,7 +112,7 @@ public class BallData implements BukkitBallMeta, ConfigurationSerializable {
      * @return particleEffect
      */
     @Override
-    public BukkitParticleEffectMeta getParticleEffectOf(ActionEffect effect) {
+    public ParticleEffectMeta<Location, Player, Material> getParticleEffectOf(ActionEffect effect) {
         if (effect == null)
             throw new IllegalArgumentException("Effect cannot be null!");
         return this.particleEffectMetaMap.get(effect);
@@ -121,7 +125,7 @@ public class BallData implements BukkitBallMeta, ConfigurationSerializable {
      * @return soundEffect
      */
     @Override
-    public BukkitSoundEffectMeta getSoundEffectOf(ActionEffect effect) {
+    public SoundEffectMeta<Location, Player> getSoundEffectOf(ActionEffect effect) {
         if (effect == null)
             throw new IllegalArgumentException("Effect cannot be null!");
         return this.soundeffects.get(effect);
@@ -143,7 +147,7 @@ public class BallData implements BukkitBallMeta, ConfigurationSerializable {
      * @return list
      */
     @Override
-    public BukkitBounceController getBounceObjectController() {
+    public BounceController<Block, Material> getBounceObjectController() {
         return this.bounceObjectIController;
     }
 
