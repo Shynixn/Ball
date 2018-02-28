@@ -1,6 +1,6 @@
 package com.github.shynixn.ball.bukkit.logic.business.gui
 
-import com.github.shynixn.ball.api.BallsApi
+import com.github.shynixn.ball.api.BallApi
 import com.github.shynixn.ball.api.persistence.BallMeta
 import com.github.shynixn.ball.bukkit.BallPlugin
 import com.github.shynixn.ball.bukkit.logic.business.Permission
@@ -109,7 +109,7 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
 
     @Throws(Exception::class)
     private fun selectBall(ballMeta: BallMeta) {
-        BallsApi.spawnPlayerBall(player.location, player, ballMeta)
+        BallApi.spawnPlayerBall(player.location, player, ballMeta)
         this.player.closeInventory()
     }
 

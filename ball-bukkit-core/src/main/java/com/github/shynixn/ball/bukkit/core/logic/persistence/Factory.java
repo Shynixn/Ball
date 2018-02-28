@@ -41,6 +41,8 @@ public final class Factory {
     /**
      * Initializes the api with the given plugin. Throws exception if already initialized.
      *
+     * @param entityDataFileName file
+     * @param metaDataFilename file
      * @param plugin plugin
      */
     public static synchronized void initialize(Plugin plugin, String metaDataFilename, String entityDataFileName) throws IllegalArgumentException {
@@ -55,6 +57,7 @@ public final class Factory {
      * Creates a new ball managing controller for the given plugin. Does not include a listener so the ball does
      * not react to the default events when you add the ball to the default ballcontroller.
      *
+     * @param fileName fileName
      * @param plugin plugin
      * @return bukkitBallController
      */

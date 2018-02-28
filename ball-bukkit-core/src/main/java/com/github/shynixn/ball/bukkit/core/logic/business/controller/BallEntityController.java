@@ -111,6 +111,7 @@ public class BallEntityController implements BukkitBallController {
     /**
      * Saves the current ball and destroys the entity from the server.
      *
+     * @param destroy should ball be destroyed after saving
      * @param ball ball
      */
     public void saveAndDestroy(Ball ball, boolean destroy) {

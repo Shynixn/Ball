@@ -83,7 +83,6 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
      * Initializes a new soundBuilder from serialized Content
      *
      * @param items items
-     * @throws Exception exception
      */
     public SoundBuilder(Map<String, Object> items)  {
         super(items);

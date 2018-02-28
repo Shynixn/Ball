@@ -68,6 +68,8 @@ public class EffectData implements EffectMeta, ConfigurationSerializable {
      * Sets the effecting type.
      *
      * @param type type
+     * @param <T> type of effect
+     * @return effectType
      */
     @Override
     public <T extends EffectMeta> T setEffectingType(EffectingType type) {

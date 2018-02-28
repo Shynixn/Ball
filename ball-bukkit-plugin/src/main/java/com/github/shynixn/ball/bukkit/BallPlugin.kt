@@ -60,7 +60,6 @@ class BallPlugin : JavaPlugin() {
             this.disabled = true
             Bukkit.getPluginManager().disablePlugin(this)
         } else {
-            //INIT
             Config.reload()
             if (Config.metrics!!) {
            //     Metrics(this)

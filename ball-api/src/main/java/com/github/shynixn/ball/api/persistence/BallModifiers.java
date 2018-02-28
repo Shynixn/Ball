@@ -42,6 +42,7 @@ public interface BallModifiers {
      * thrown in to the sky.
      *
      * @param strength strength
+     * @return ballModifiers
      */
     BallModifiers setGravityModifier(double strength);
 
@@ -56,6 +57,7 @@ public interface BallModifiers {
      * Sets the rolling distance modifier
      *
      * @param strength strength
+     * @return ballModifiers
      */
     BallModifiers setRollingDistanceModifier(double strength);
 
@@ -70,6 +72,7 @@ public interface BallModifiers {
      * Sets the modifier value for the horizontal velocity a player touches the ball.
      *
      * @param strength strength
+     * @return ballModifiers
      */
     BallModifiers setHorizontalTouchModifier(double strength);
 
@@ -84,6 +87,7 @@ public interface BallModifiers {
      * Sets the modifier value for the vertical velocity a player touches the ball.
      *
      * @param strength strength
+     * @return ballModifiers
      */
     BallModifiers setVerticalTouchModifier(double strength);
 
@@ -98,6 +102,7 @@ public interface BallModifiers {
      * Sets the modifier value for the horizontal velocity a player kicks the ball.
      *
      * @param strength strength
+     * @return ballModifiers
      */
     BallModifiers setHorizontalKickStrengthModifier(double strength);
 
@@ -112,6 +117,7 @@ public interface BallModifiers {
      * Sets the modifier value for the vertical velocity a player kicksthe ball.
      *
      * @param strength strength
+     * @return ballModifiers
      */
     BallModifiers setVerticalKickStrengthModifier(double strength);
 
@@ -126,6 +132,7 @@ public interface BallModifiers {
      * Sets the modifier value for the horizontal velocity a player throws the ball.
      *
      * @param strength strength
+     * @return ballModifiers
      */
     BallModifiers setHorizontalThrowStrengthModifier(double strength);
 
@@ -140,6 +147,7 @@ public interface BallModifiers {
      * Sets the modifier value for the vertical velocity a player throws the ball.
      *
      * @param strength strength
+     * @return ballModifiers
      */
     BallModifiers setVerticalThrowStrengthModifier(double strength);
 }

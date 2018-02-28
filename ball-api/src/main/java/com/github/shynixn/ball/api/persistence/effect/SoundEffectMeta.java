@@ -63,6 +63,7 @@ public interface SoundEffectMeta<Location, Player> extends EffectMeta {
     /**
      * Sets the name of the sound.
      *
+     * @param <T> type of soundEffectMeta
      * @param name name
      * @return builder
      */
@@ -78,6 +79,7 @@ public interface SoundEffectMeta<Location, Player> extends EffectMeta {
     /**
      * Sets the volume of the sound.
      *
+     * @param <T> type of soundEffectMeta
      * @param volume volume
      * @return builder
      */
@@ -93,6 +95,7 @@ public interface SoundEffectMeta<Location, Player> extends EffectMeta {
     /**
      * Sets the pitch of the sound.
      *
+     * @param <T> type of soundEffectMeta
      * @param pitch pitch
      * @return builder
      */
