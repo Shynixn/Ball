@@ -33,6 +33,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the RGB colors of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param red   red
      * @param green green
      * @param blue  blue
@@ -43,6 +44,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the color of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param particleColor particleColor
      * @return builder
      */
@@ -51,6 +53,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the color for note particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param color color
      * @return builder
      */
@@ -59,6 +62,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the amount of particles of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param amount amount
      * @return builder
      */
@@ -67,6 +71,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the speed of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param speed speed
      * @return builder
      */
@@ -75,6 +80,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the offsetX of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param offsetX offsetX
      * @return builder
      */
@@ -83,6 +89,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the offsetY of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param offsetY offsetY
      * @return builder
      */
@@ -90,6 +97,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
 
     /**
      * Sets the offsetZ of the particleEffect.
+     * @param <T> type of particleMeta
      *
      * @param offsetZ offsetZ
      * @return builder
@@ -99,6 +107,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the offset of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param offsetX offsetX
      * @param offsetY offsetY
      * @param offsetZ offsetZ
@@ -109,6 +118,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the effectType of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param name name
      * @return builder
      */
@@ -117,6 +127,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the effectType of the particlEffect.
      *
+     * @param <T> type of particleMeta
      * @param type type
      * @return builder
      */
@@ -125,6 +136,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the blue of the RGB color.
      *
+     * @param <T> type of particleMeta
      * @param blue blue
      * @return builder
      */
@@ -133,6 +145,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the red of the RGB color.
      *
+     * @param <T> type of particleMeta
      * @param red red
      * @return builder
      */
@@ -141,6 +154,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the green of the RGB color.
      *
+     * @param <T> type of particleMeta
      * @param green green
      * @return builder
      */
@@ -149,6 +163,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the material of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param material material
      * @return builder
      */
@@ -157,6 +172,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the data of the material of the particleEffect.
      *
+     * @param <T> type of particleMeta
      * @param data data
      * @return builder
      */

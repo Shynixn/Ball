@@ -54,6 +54,7 @@ public class StorageListener extends SimpleListener {
     /**
      * Initializes a new listener by plugin.
      *
+     * @param ballController ballController
      * @param plugin plugin
      */
     public StorageListener(Plugin plugin, BallEntityController ballController) {

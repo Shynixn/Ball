@@ -32,7 +32,7 @@ import com.github.shynixn.ball.api.persistence.controller.BallMetaController;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallsApi {
+public class BallApi {
 
     private static BallController ballController;
     private static BallMetaController ballMetaController;
@@ -51,6 +51,8 @@ public class BallsApi {
      * when the chunk is reloaded. Also, the ball is stored for restarts.
      *
      * @param location location
+     * @param ballMeta ballMeta
+     * @param <T>      type of ball
      * @return bal
      */
     public static <T extends Ball> T spawnBall(Object location, BallMeta ballMeta) {
@@ -67,7 +69,9 @@ public class BallsApi {
      * Creates a new managed ball which spawns at the given location and despawns automatically
      * when the chunk is unloaded. Also, the ball gets removed on restarts.
      *
+     * @param <T>      type of ball
      * @param location location
+     * @param ballMeta ballMeta
      * @return ball
      */
     public static <T extends Ball> T spawnTemporaryBall(Object location, BallMeta ballMeta) {
@@ -105,6 +109,7 @@ public class BallsApi {
      * Creates a new unManaged ball which leaves all spawn/despawn and event handling
      * of the ball entity to caller of this method.
      *
+     * @param ballMeta ballMeta
      * @param location location
      * @return ball
      */
