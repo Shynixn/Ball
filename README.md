@@ -7,7 +7,7 @@
 
 ## Description
 
-Ball is a spigot plugin to spawn balls in Minecraft.
+Ball is a spigot library to spawn balls in Minecraft.
 
 ## Licence
 
