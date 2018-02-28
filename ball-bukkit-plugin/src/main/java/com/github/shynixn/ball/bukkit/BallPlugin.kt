@@ -51,7 +51,7 @@ class BallPlugin : JavaPlugin() {
     private var ballsManager: BallsManager? = null
 
     /**
-     * Enables the plugin.
+     * Enables the Ball plugin.
      */
     override fun onEnable() {
         this.saveDefaultConfig()
