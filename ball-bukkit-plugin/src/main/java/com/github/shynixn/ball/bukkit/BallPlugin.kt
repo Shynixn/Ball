@@ -60,8 +60,7 @@ class BallPlugin : JavaPlugin() {
             this.disabled = true
             Bukkit.getPluginManager().disablePlugin(this)
         } else {
-            logger.log(Level.WARNING, "WTF U DOING")
-
+            //INIT
             Config.reload()
             if (Config.metrics!!) {
            //     Metrics(this)

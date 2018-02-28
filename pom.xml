@@ -15,7 +15,7 @@
     </modules>
 
     <name>Ball</name>
-    <description>Spigot plugin to spawn balls in minecraft.</description>
+    <description>Ball is a spigot plugin to spawn balls in Minecraft.</description>
     <url>https://github.com/Shynixn/Ball</url>
     <packaging>pom</packaging>
 
