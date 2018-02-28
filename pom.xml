@@ -20,10 +20,10 @@
     <packaging>pom</packaging>
 
     <properties>
-        <balls.bukkit.test-server-path>D:/Temp/plugins</balls.bukkit.test-server-path>
+        <ball.bukkit.test-server-path>D:/Temp/plugins</ball.bukkit.test-server-path>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <kotlin.version>1.2.10</kotlin.version>
+        <kotlin.version>1.2.21</kotlin.version>
     </properties>
 
     <developers>
@@ -46,13 +46,7 @@
             <version>${kotlin.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>RELEASE</version>
-        </dependency>
     </dependencies>
-
 
     <build>
         <plugins>
@@ -70,7 +64,7 @@
                     </execution>
                 </executions>
             </plugin>
-         <!--   <plugin>
+          <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <dependencies>
@@ -117,8 +111,8 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
-         <!--   <plugin>
+            </plugin>
+           <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.9.1</version>
@@ -138,7 +132,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <groupId>org.jetbrains.kotlin</groupId>
