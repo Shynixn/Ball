@@ -57,7 +57,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     private BallSize size = BallSize.NORMAL;
 
     private final BallModifications modifications;
-    private final BounceController<Block, Material> bounceObjectIController;
+    private final BounceController bounceObjectIController;
 
     private final Map<ActionEffect, SoundEffectMeta<Location, Player>> soundeffects = new HashMap<>();
     private final Map<ActionEffect, ParticleEffectMeta<Location, Player, Material>> particleEffectMetaMap = new HashMap<>();
@@ -112,7 +112,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
      * @return particleEffect
      */
     @Override
-    public ParticleEffectMeta<Location, Player, Material> getParticleEffectOf(ActionEffect effect) {
+    public ParticleEffectMeta getParticleEffectOf(ActionEffect effect) {
         if (effect == null)
             throw new IllegalArgumentException("Effect cannot be null!");
         return this.particleEffectMetaMap.get(effect);
@@ -125,7 +125,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
      * @return soundEffect
      */
     @Override
-    public SoundEffectMeta<Location, Player> getSoundEffectOf(ActionEffect effect) {
+    public SoundEffectMeta getSoundEffectOf(ActionEffect effect) {
         if (effect == null)
             throw new IllegalArgumentException("Effect cannot be null!");
         return this.soundeffects.get(effect);
@@ -147,7 +147,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
      * @return list
      */
     @Override
-    public BounceController<Block, Material> getBounceObjectController() {
+    public BounceController getBounceObjectController() {
         return this.bounceObjectIController;
     }
 

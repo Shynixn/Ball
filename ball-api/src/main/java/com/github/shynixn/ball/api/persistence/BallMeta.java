@@ -41,7 +41,7 @@ public interface BallMeta {
      * @param effect effect
      * @return particleEffect
      */
-    <Location, Player, Material> ParticleEffectMeta<Location, Player, Material> getParticleEffectOf(ActionEffect effect);
+    ParticleEffectMeta getParticleEffectOf(ActionEffect effect);
 
     /**
      * Returns the sound effect for the given action.
@@ -49,7 +49,7 @@ public interface BallMeta {
      * @param effect effect
      * @return soundEffect
      */
-    <Location, Player> SoundEffectMeta<Location, Player> getSoundEffectOf(ActionEffect effect);
+    SoundEffectMeta getSoundEffectOf(ActionEffect effect);
 
     /**
      * Returns the modifiers of the ball.
@@ -63,7 +63,7 @@ public interface BallMeta {
      *
      * @return list
      */
-    <Block, Material> BounceController<Block, Material> getBounceObjectController();
+    BounceController getBounceObjectController();
 
     /**
      * Sets always bouncing back from blocks regardless of bounceController.

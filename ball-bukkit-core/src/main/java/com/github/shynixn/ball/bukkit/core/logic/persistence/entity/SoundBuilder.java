@@ -1,6 +1,7 @@
 package com.github.shynixn.ball.bukkit.core.logic.persistence.entity;
 
 import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
+import com.github.shynixn.ball.bukkit.core.nms.VersionSupport;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -60,6 +61,7 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
         this.text = text;
         this.volume = 1.0F;
         this.pitch = 1.0F;
+        this.convertSounds();
     }
 
     /**
@@ -73,7 +75,8 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
         super();
         this.text = text;
         this.volume = volume;
-        this.pitch =  pitch;
+        this.pitch = pitch;
+        this.convertSounds();
     }
 
     /**
@@ -87,6 +90,7 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
         this.text = (String) items.get("name");
         this.volume = (double) items.get("volume");
         this.pitch = (double) items.get("pitch");
+        this.convertSounds();
     }
 
     /**
@@ -209,6 +213,36 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
     public SoundBuilder setPitch(double pitch) {
         this.pitch = pitch;
         return this;
+    }
+
+    /**
+     * Converts the sounds to 1.9 sounds
+     */
+    private void convertSounds() {
+        if (VersionSupport.getServerVersion() != null
+                && VersionSupport.getServerVersion().isVersionSameOrGreaterThan(VersionSupport.VERSION_1_9_R1)) {
+            switch (this.text) {
+                case "GHAST_FIREBALL": {
+                    this.text = "ENTITY_GHAST_SHOOT";
+                    break;
+                }
+                case "NOTE_PLING": {
+                    this.text = "BLOCK_NOTE_PLING";
+                    break;
+                }
+                case "none": {
+                    this.text = "none";
+                    break;
+                }
+                default: {
+                    if (this.text.contains("WALK")) {
+                        this.text = "ENTITY_" + this.text.toUpperCase().split("_")[0] + "_STEP";
+                    } else if (this.text.contains("IDLE")) {
+                        this.text = "ENTITY_" + this.text.toUpperCase().split("_")[0] + "_AMBIENT";
+                    }
+                }
+            }
+        }
     }
 
     /**
