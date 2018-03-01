@@ -492,5 +492,4 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
                 break;
         }
     }
-
 }

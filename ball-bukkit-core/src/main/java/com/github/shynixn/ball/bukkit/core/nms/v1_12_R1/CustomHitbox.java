@@ -134,6 +134,8 @@ public final class CustomHitbox extends EntityArmorStand {
         if (this.knockBackBumper > 0) {
             this.knockBackBumper--;
         }
+
+
         if (this.noclip) {
             this.a(this.getBoundingBox().d(d0, d1, d2));
             this.recalcPosition();
@@ -152,7 +154,7 @@ public final class CustomHitbox extends EntityArmorStand {
             }
 
             this.world.methodProfiler.a("move");
-            if (this.E) {
+            if (this.E) { //Changing
                 this.E = false;
                 d0 *= 0.25D;
                 d1 *= 0.05000000074505806D;
@@ -238,7 +240,7 @@ public final class CustomHitbox extends EntityArmorStand {
                     d15 = ((AxisAlignedBB) event1.get(k1)).c(axisalignedbb2, d15);
                 }
 
-                axisalignedbb2 = axisalignedbb2.d(0.0D, 0.0D, d15);
+                axisalignedbb2 = axisalignedbb2.d(0.0D, 0.0D, d15);  //Changing
                 AxisAlignedBB var85 = this.getBoundingBox();
                 double d16 = d1;
                 int i2 = 0;
