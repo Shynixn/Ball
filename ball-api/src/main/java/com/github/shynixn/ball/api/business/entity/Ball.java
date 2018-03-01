@@ -121,7 +121,7 @@ public interface Ball<Location, Entity, Armorstand> {
      * @param y y
      * @param z z
      */
-    void move(double x, double y, double z);
+    void moveEntity(double x, double y, double z);
 
     /**
      * Sets if the ball should be stored on the fileSystem.

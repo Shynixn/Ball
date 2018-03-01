@@ -8,7 +8,9 @@ import com.github.shynixn.ball.bukkit.logic.persistence.configuration.Config
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.entity.EntityType
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.util.Vector
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -72,6 +74,14 @@ class BallPlugin : JavaPlugin() {
                 logger.log(Level.WARNING, "Failed to enable plugin.", e)
             }
 
+            var player = Bukkit.getPlayer("Shynixn");
+
+            var armorstand = player.world.spawnEntity(player.location, EntityType.ARMOR_STAND);
+
+            armorstand.velocity = Vector(2.0, 1.0, 0.0);
+
+
+            println("FINISHED")
         }
     }
 

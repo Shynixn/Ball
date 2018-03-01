@@ -1,18 +1,18 @@
-package com.github.shynixn.ball.bukkit.core.nms.v1_11_R1;
+package com.github.shynixn.ball.bukkit.core.nms.v1_10_R1;
 
 import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.ball.api.bukkit.business.event.*;
 import com.github.shynixn.ball.api.persistence.BallMeta;
 import com.github.shynixn.ball.bukkit.core.logic.business.helper.SkinHelper;
 import com.github.shynixn.ball.bukkit.core.logic.persistence.entity.BallData;
-import net.minecraft.server.v1_11_R1.EntityArmorStand;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import net.minecraft.server.v1_11_R1.World;
+import net.minecraft.server.v1_10_R1.EntityArmorStand;
+import net.minecraft.server.v1_10_R1.NBTTagCompound;
+import net.minecraft.server.v1_10_R1.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_10_R1.CraftWorld;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
