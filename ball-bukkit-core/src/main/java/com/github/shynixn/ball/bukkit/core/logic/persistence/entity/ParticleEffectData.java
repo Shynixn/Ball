@@ -1,6 +1,7 @@
 package com.github.shynixn.ball.bukkit.core.logic.persistence.entity;
 
 import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
+import com.github.shynixn.ball.api.persistence.enumeration.EffectingType;
 import com.github.shynixn.ball.bukkit.core.logic.business.CoreManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -46,7 +47,7 @@ import java.util.logging.Level;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class ParticleEffectData extends EffectData implements ParticleEffectMeta<Location, Player, Material>, ConfigurationSerializable {
+public class ParticleEffectData extends EffectData implements ParticleEffectMeta<Location, Player, Material> {
     private String effect;
     private int amount;
     private double speed;
@@ -557,10 +558,10 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
         try {
             if (location == null)
                 throw new IllegalArgumentException("Location cannot be null!");
-            if (this.effect.equals("none"))
+            if (this.effect.equalsIgnoreCase("none") || this.getEffectingType() == EffectingType.NOBODY)
                 return;
             final Player[] playingPlayers;
-            if (players.length == 0) {
+            if (players.length == 0 || this.getEffectingType() == EffectingType.EVERYONE) {
                 playingPlayers = location.getWorld().getPlayers().toArray(new Player[location.getWorld().getPlayers().size()]);
             } else {
                 playingPlayers = players;
@@ -639,14 +640,14 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
     @Override
     public String toString() {
         return "ParticleEffectData{" +
-                "effect='" + effect + '\'' +
-                ", amount=" + amount +
-                ", speed=" + speed +
-                ", offsetX=" + offsetX +
-                ", offsetY=" + offsetY +
-                ", offsetZ=" + offsetZ +
-                ", material=" + material +
-                ", data=" + data +
+                "effect='" + this.effect + '\'' +
+                ", amount=" + this.amount +
+                ", speed=" + this.speed +
+                ", offsetX=" + this.offsetX +
+                ", offsetY=" + this.offsetY +
+                ", offsetZ=" + this.offsetZ +
+                ", material=" + this.material +
+                ", data=" + this.data +
                 '}';
     }
 

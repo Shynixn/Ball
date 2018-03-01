@@ -113,7 +113,14 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
     public void respawn() {
         if (this.isGrabbed())
             return;
+
         final Location location = this.getSpigotEntity().getLocation();
+        final BallSpawnEvent event = new BallSpawnEvent(location, this);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (!this.isDead()) {
             this.remove();
         }

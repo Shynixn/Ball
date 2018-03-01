@@ -2,9 +2,16 @@ package com.github.shynixn.ball.bukkit.core.logic.business.listener;
 
 import com.github.shynixn.ball.api.bukkit.business.controller.BukkitBallController;
 import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
-import com.github.shynixn.ball.api.bukkit.business.event.BallDeathEvent;
+import com.github.shynixn.ball.api.bukkit.business.event.*;
 import com.github.shynixn.ball.api.business.entity.Ball;
+import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
+import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
+import com.github.shynixn.ball.api.persistence.enumeration.ActionEffect;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,7 +24,11 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.logging.Level;
 
 /**
  * Copyright 2017 Shynixn
@@ -144,6 +155,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on command.
+     *
      * @param event event
      */
     @EventHandler
@@ -153,6 +165,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on inventory open.
+     *
      * @param event event
      */
     @EventHandler
@@ -162,6 +175,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on interact.
+     *
      * @param event event
      */
     @EventHandler
@@ -171,6 +185,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on death.
+     *
      * @param event event
      */
     @EventHandler
@@ -180,6 +195,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on left.
+     *
      * @param event event
      */
     @EventHandler
@@ -189,6 +205,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on inventory click.
+     *
      * @param event event
      */
     @EventHandler
@@ -205,6 +222,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on teleport.
+     *
      * @param event event
      */
     @EventHandler
@@ -214,6 +232,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on item drop.
+     *
      * @param event event
      */
     @EventHandler
@@ -223,6 +242,7 @@ public class BallListener extends SimpleListener {
 
     /**
      * Drops the ball on Slot change.
+     *
      * @param event event
      */
     @EventHandler
@@ -242,6 +262,98 @@ public class BallListener extends SimpleListener {
             if (optBall.isPresent()) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    /**
+     * Gets called when a player kicks a ball.
+     *
+     * @param event event
+     */
+    @EventHandler
+    public void ballKickEvent(BallKickEvent event) {
+        this.playEffectsForBall(event.getBall(), event.getEntity(), ActionEffect.ONKICK);
+    }
+
+    /**
+     * Gets called when a player interacts a ball.
+     *
+     * @param event event
+     */
+    @EventHandler
+    public void ballInteractEvent(BallInteractEvent event) {
+        this.playEffectsForBall(event.getBall(), event.getEntity(), ActionEffect.ONINTERACTION);
+    }
+
+    /**
+     * Gets called when a player throws a ball.
+     *
+     * @param event event
+     */
+    @EventHandler
+    public void ballThrowEvent(BallThrowEvent event) {
+        this.playEffectsForBall(event.getBall(), event.getEntity(), ActionEffect.ONTHROW);
+    }
+
+    /**
+     * Gets called when a player grabs a ball.
+     *
+     * @param event event
+     */
+    @EventHandler
+    public void ballGrabEvent(BallGrabEvent event) {
+        this.playEffectsForBall(event.getBall(), event.getEntity(), ActionEffect.ONGRAB);
+    }
+
+    /**
+     * Gets called when the ball spawns.
+     *
+     * @param event event
+     */
+    @EventHandler
+    public void ballSpawnEvent(BallSpawnEvent event) {
+        this.playEffectsForBall(event.getBall(), null, ActionEffect.ONSPAWN);
+    }
+
+    /**
+     * Gets called when a ball moves.
+     *
+     * @param event event
+     */
+    @EventHandler
+    public void ballMoveEvent(BallSpawnEvent event) {
+        this.playEffectsForBall(event.getBall(), null, ActionEffect.ONMOVE);
+    }
+
+    private void playEffectsForBall(BukkitBall ball, Entity cause, ActionEffect actionEffect) {
+        try {
+            final ParticleEffectMeta<Location, Player, Material> particleEffectMeta;
+            if ((particleEffectMeta = ball.getMeta().getParticleEffectOf(actionEffect)) != null) {
+                if (cause != null && cause instanceof Player) {
+                    particleEffectMeta.apply(ball.getLocation(), Collections.singletonList((Player) cause));
+                } else {
+                    particleEffectMeta.apply(ball.getLocation());
+                }
+            }
+        }
+        catch (final NullPointerException ex) {
+        }
+        catch (final Exception ex) {
+            this.plugin.getServer().getLogger().log(Level.WARNING, "Failed to play ball particleEffect " + actionEffect.name() + ".", ex);
+        }
+
+        try {
+            final SoundEffectMeta<Location, Player> soundEffectMeta;
+            if ((soundEffectMeta = ball.getMeta().getSoundEffectOf(actionEffect)) != null) {
+                if (cause != null && cause instanceof Player) {
+                    soundEffectMeta.apply(ball.getLocation(), Collections.singletonList((Player) cause));
+                } else {
+                    soundEffectMeta.apply(ball.getLocation());
+                }
+            }
+        } catch (final NullPointerException ex) {
+        } catch (final Exception ex) {
+            this.plugin.getServer().getLogger().log(Level.WARNING, "Failed to play ball soundEffect " + actionEffect.name() + ".", ex);
         }
     }
 

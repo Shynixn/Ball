@@ -98,7 +98,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
             try {
                 SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
             } catch (final Exception e1) {
-              Bukkit.getLogger().log(Level.WARNING, "Failed to degrab entity.", e1);
+                Bukkit.getLogger().log(Level.WARNING, "Failed to degrab entity.", e1);
             }
             this.setHelmet(itemStack);
             final Vector vector = this.getDirection(livingEntity).normalize().multiply(3);
@@ -113,7 +113,14 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
     public void respawn() {
         if (this.isGrabbed())
             return;
+
         final Location location = this.getSpigotEntity().getLocation();
+        final BallSpawnEvent event = new BallSpawnEvent(location, this);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (!this.isDead()) {
             this.remove();
         }
@@ -203,7 +210,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      */
     @Override
     public void teleport(Location location) {
-        if(location == null)
+        if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (this.isGrabbed())
             return;
@@ -228,7 +235,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      */
     @Override
     public void kickByEntity(LivingEntity livingEntity) {
-        if(livingEntity == null)
+        if (livingEntity == null)
             throw new IllegalArgumentException("Living entity cannot be null!");
         if (this.isGrabbed())
             return;
@@ -255,7 +262,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      */
     @Override
     public void throwByEntity(LivingEntity livingEntity) {
-        if(livingEntity == null)
+        if (livingEntity == null)
             throw new IllegalArgumentException("Living entity cannot be null!");
         if (this.isGrabbed() && this.interactionEntity != null && livingEntity.equals(this.interactionEntity)) {
             this.deGrab();
@@ -289,7 +296,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      */
     @Override
     public void grab(LivingEntity livingEntity) {
-        if(livingEntity == null)
+        if (livingEntity == null)
             throw new IllegalArgumentException("Living entity cannot be null!");
         if (this.isGrabbed())
             return;

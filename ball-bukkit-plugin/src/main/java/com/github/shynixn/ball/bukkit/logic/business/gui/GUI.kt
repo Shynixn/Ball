@@ -99,8 +99,6 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
             slot++
             if (Permission.ALLGUIBALLS.hasPermission(this.player) || Permission.SINGLEGUIBALL.hasPermission(this.player, slot.toString())) {
                 var realSlot = slot + currentCount - 1;
-
-                println("REALSLOT: " + realSlot + " " + startCount  + " - " + currentCount)
                 val itemContainer = Config.ballItemsController?.all?.get(realSlot) as BallMeta;
                  this.selectBall(itemContainer)
             }
@@ -114,7 +112,6 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
     }
 
     private fun setItems(containers: List<ItemContainer>, type: Int, groupPermission: Permission) {
-        println("SIZE: " + containers.size)
         if (type == 1 && (this.startCount % 45 != 0 || containers.size == this.startCount)) {
             return
         }
@@ -137,7 +134,6 @@ internal class GUI(private val player: Player, private val ballManager: BallsMan
 
                 val slot = i
                 val containerSlot = i + this.startCount
-                println("CONTAINER SLOT: " + containerSlot)
                 val mountBlock = this.currentCount
                 count++
                 if (i % 2 == 0) {

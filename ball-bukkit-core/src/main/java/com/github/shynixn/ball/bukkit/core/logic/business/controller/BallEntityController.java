@@ -124,7 +124,6 @@ public class BallEntityController implements BukkitBallController {
                     final ConfigurationSerializable serializable = (ConfigurationSerializable) ball;
                     configuration.set("balls." + ball.getUUID().toString(), serializable.serialize());
                     configuration.save(storageFile);
-                    this.plugin.getLogger().log(Level.INFO, "Saved ball with id " + ball.getUUID().toString() + ".");
                     if (destroy) {
                         this.plugin.getServer().getScheduler().runTask(this.plugin, ball::remove);
                     }
@@ -151,7 +150,6 @@ public class BallEntityController implements BukkitBallController {
                         this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
                             final BukkitBall ball = this.create(uuid, data);
                             this.store(ball);
-                            this.plugin.getLogger().log(Level.INFO, "Loaded ball with id " + ball.getUUID().toString() + ".");
                         });
                     }
                 }
@@ -178,7 +176,6 @@ public class BallEntityController implements BukkitBallController {
             }
         }
         this.balls.add(item);
-        this.plugin.getLogger().log(Level.INFO, "Added managed ball with id " + item.getUUID() + ".");
     }
 
     /**
@@ -192,7 +189,6 @@ public class BallEntityController implements BukkitBallController {
             throw new IllegalArgumentException("Ball cannot be null!");
         if (this.balls.contains(item)) {
             this.balls.remove(item);
-            this.plugin.getLogger().log(Level.INFO, "Removed managed ball with id " + item.getUUID() + ".");
         }
     }
 
