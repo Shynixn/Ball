@@ -1,5 +1,6 @@
 package com.github.shynixn.ball.bukkit
 
+import com.github.shynixn.ball.api.BallApi
 import com.github.shynixn.ball.bukkit.core.logic.business.CoreManager
 import com.github.shynixn.ball.bukkit.core.logic.persistence.Factory
 import com.github.shynixn.ball.bukkit.core.nms.VersionSupport
@@ -64,7 +65,7 @@ class BallPlugin : JavaPlugin() {
         } else {
             Config.reload()
             if (Config.metrics!!) {
-           //     Metrics(this)
+                 Metrics(this)
             }
             try {
                 this.ballsManager = BallsManager(this)
@@ -73,15 +74,6 @@ class BallPlugin : JavaPlugin() {
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Failed to enable plugin.", e)
             }
-
-            var player = Bukkit.getPlayer("Shynixn");
-
-            var armorstand = player.world.spawnEntity(player.location, EntityType.ARMOR_STAND);
-
-            armorstand.velocity = Vector(2.0, 1.0, 0.0);
-
-
-            println("FINISHED")
         }
     }
 
@@ -93,6 +85,7 @@ class BallPlugin : JavaPlugin() {
         if (this.disabled)
             return
         try {
+            Factory.disable(this)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Failed to close resources.", e)
         }

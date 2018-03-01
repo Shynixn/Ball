@@ -42,8 +42,8 @@ public final class Factory {
      * Initializes the api with the given plugin. Throws exception if already initialized.
      *
      * @param entityDataFileName file
-     * @param metaDataFilename file
-     * @param plugin plugin
+     * @param metaDataFilename   file
+     * @param plugin             plugin
      */
     public static synchronized void initialize(Plugin plugin, String metaDataFilename, String entityDataFileName) throws IllegalArgumentException {
         if (plugin == null)
@@ -54,11 +54,24 @@ public final class Factory {
     }
 
     /**
+     * Disables the api of the given plugin.
+     *
+     * @param plugin plugin
+     */
+    public static synchronized void disable(Plugin plugin) {
+        try {
+            coreManager.close();
+        } catch (final Exception e) {
+            throw new RuntimeException("Ball core could not be disabled!");
+        }
+    }
+
+    /**
      * Creates a new ball managing controller for the given plugin. Does not include a listener so the ball does
      * not react to the default events when you add the ball to the default ballcontroller.
      *
      * @param fileName fileName
-     * @param plugin plugin
+     * @param plugin   plugin
      * @return bukkitBallController
      */
     public static BukkitBallController createBallController(Plugin plugin, String fileName) {
