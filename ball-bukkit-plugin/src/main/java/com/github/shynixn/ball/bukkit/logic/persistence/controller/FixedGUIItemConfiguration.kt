@@ -76,7 +76,6 @@ internal class FixedGUIItemConfiguration(private val plugin: Plugin) : IFileCont
      * Reloads the content from the fileSystem.
      */
     override fun reload() {
-        println("RELOADING")
         this.items.clear()
         this.plugin.reloadConfig()
         val data = (this.plugin.config.get("gui.items") as MemorySection).getValues(false)

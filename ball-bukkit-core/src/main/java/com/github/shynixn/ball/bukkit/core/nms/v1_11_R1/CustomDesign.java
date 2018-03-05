@@ -1,18 +1,18 @@
-package com.github.shynixn.ball.bukkit.core.nms.v1_12_R1;
+package com.github.shynixn.ball.bukkit.core.nms.v1_11_R1;
 
 import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.ball.api.bukkit.business.event.*;
 import com.github.shynixn.ball.api.persistence.BallMeta;
 import com.github.shynixn.ball.bukkit.core.logic.business.helper.SkinHelper;
 import com.github.shynixn.ball.bukkit.core.logic.persistence.entity.BallData;
-import net.minecraft.server.v1_12_R1.EntityArmorStand;
-import net.minecraft.server.v1_12_R1.NBTTagCompound;
-import net.minecraft.server.v1_12_R1.World;
+import net.minecraft.server.v1_11_R1.EntityArmorStand;
+import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import net.minecraft.server.v1_11_R1.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -98,7 +98,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
             try {
                 SkinHelper.setItemStackSkin(itemStack, this.ballMeta.getSkin());
             } catch (final Exception e1) {
-                Bukkit.getLogger().log(Level.WARNING, "Failed to degrab entity.", e1);
+              Bukkit.getLogger().log(Level.WARNING, "Failed to degrab entity.", e1);
             }
             this.setHelmet(itemStack);
             final Vector vector = this.getDirection(livingEntity).normalize().multiply(3);
@@ -210,7 +210,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      */
     @Override
     public void teleport(Location location) {
-        if (location == null)
+        if(location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (this.isGrabbed())
             return;
@@ -235,7 +235,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      */
     @Override
     public void kickByEntity(LivingEntity livingEntity) {
-        if (livingEntity == null)
+        if(livingEntity == null)
             throw new IllegalArgumentException("Living entity cannot be null!");
         if (this.isGrabbed())
             return;
@@ -262,7 +262,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      */
     @Override
     public void throwByEntity(LivingEntity livingEntity) {
-        if (livingEntity == null)
+        if(livingEntity == null)
             throw new IllegalArgumentException("Living entity cannot be null!");
         if (this.isGrabbed() && this.interactionEntity != null && livingEntity.equals(this.interactionEntity)) {
             this.deGrab();
@@ -296,7 +296,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      */
     @Override
     public void grab(LivingEntity livingEntity) {
-        if (livingEntity == null)
+        if(livingEntity == null)
             throw new IllegalArgumentException("Living entity cannot be null!");
         if (this.isGrabbed())
             return;

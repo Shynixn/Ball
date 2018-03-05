@@ -81,11 +81,8 @@ internal object Config : SimpleConfig() {
      * Reloads the plugin configuration.
      */
     override fun reload() {
-        println("RELOADING")
         super.reload()
-        println("WUT")
         this.plugin?.reloadConfig()
-        println("NOW")
         this.fixedGuiItemsController?.reload()
         this.ballItemsController?.reload();
     }

@@ -113,7 +113,14 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
     public void respawn() {
         if (this.isGrabbed())
             return;
+
         final Location location = this.getSpigotEntity().getLocation();
+        final BallSpawnEvent event = new BallSpawnEvent(location, this);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return;
+        }
+
         if (!this.isDead()) {
             this.remove();
         }
@@ -157,7 +164,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
      * @param z z
      */
     @Override
-    public void move(double x, double y, double z) {
+    public void moveEntity(double x, double y, double z) {
         if (this.isGrabbed())
             return;
         this.revertAnimation = false;
@@ -243,7 +250,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
         final BallKickEvent event = new BallKickEvent(this, livingEntity, vector);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            this.move(vector.getX(), vector.getY(), vector.getZ());
+            this.moveEntity(vector.getX(), vector.getY(), vector.getZ());
         }
     }
 
@@ -267,7 +274,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 this.counter = 10;
-                this.move(vector.getX(), vector.getY(), vector.getZ());
+                this.moveEntity(vector.getX(), vector.getY(), vector.getZ());
             }
         }
     }
@@ -472,7 +479,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
                             .normalize().multiply(this.ballMeta.getModifiers().getHorizontalTouchModifier());
                     vector.setY(0.1 * this.ballMeta.getModifiers().getVerticalTouchModifier());
                     this.hitBox.yaw = entity.getLocation().getYaw();
-                    this.move(vector.getX(), vector.getY(), vector.getZ());
+                    this.moveEntity(vector.getX(), vector.getY(), vector.getZ());
                     return;
                 }
             }
@@ -492,5 +499,4 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
                 break;
         }
     }
-
 }

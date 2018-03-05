@@ -54,7 +54,7 @@ public class BallEntityController implements BukkitBallController {
 
     public BallEntityController(Plugin plugin, String fileName) {
         super();
-        if(plugin == null)
+        if (plugin == null)
             throw new IllegalArgumentException("Plugin cannot be null!");
         this.plugin = plugin;
         this.fileName = fileName;
@@ -98,7 +98,7 @@ public class BallEntityController implements BukkitBallController {
      */
     @Override
     public Optional<BukkitBall> getBallFromEntity(LivingEntity entity) {
-        if(entity == null)
+        if (entity == null)
             throw new IllegalArgumentException("Entity cannot be null!");
         for (final BukkitBall ball : this.balls) {
             if (ball.getArmorstand().equals(entity) || ball.getHitBox().equals(entity)) {
@@ -112,7 +112,7 @@ public class BallEntityController implements BukkitBallController {
      * Saves the current ball and destroys the entity from the server.
      *
      * @param destroy should ball be destroyed after saving
-     * @param ball ball
+     * @param ball    ball
      */
     public void saveAndDestroy(Ball ball, boolean destroy) {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
@@ -124,7 +124,6 @@ public class BallEntityController implements BukkitBallController {
                     final ConfigurationSerializable serializable = (ConfigurationSerializable) ball;
                     configuration.set("balls." + ball.getUUID().toString(), serializable.serialize());
                     configuration.save(storageFile);
-                    this.plugin.getLogger().log(Level.INFO, "Saved ball with id " + ball.getUUID().toString() + ".");
                     if (destroy) {
                         this.plugin.getServer().getScheduler().runTask(this.plugin, ball::remove);
                     }
@@ -151,7 +150,6 @@ public class BallEntityController implements BukkitBallController {
                         this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
                             final BukkitBall ball = this.create(uuid, data);
                             this.store(ball);
-                            this.plugin.getLogger().log(Level.INFO, "Loaded ball with id " + ball.getUUID().toString() + ".");
                         });
                     }
                 }
@@ -178,7 +176,6 @@ public class BallEntityController implements BukkitBallController {
             }
         }
         this.balls.add(item);
-        this.plugin.getLogger().log(Level.INFO, "Added managed ball with id " + item.getUUID() + ".");
     }
 
     /**
@@ -192,7 +189,6 @@ public class BallEntityController implements BukkitBallController {
             throw new IllegalArgumentException("Ball cannot be null!");
         if (this.balls.contains(item)) {
             this.balls.remove(item);
-            this.plugin.getLogger().log(Level.INFO, "Removed managed ball with id " + item.getUUID() + ".");
         }
     }
 
@@ -229,10 +225,14 @@ public class BallEntityController implements BukkitBallController {
      * This method is invoked automatically on objects managed by the
      * {@code try}-with-resources statement.
      * <p>
+     *
      * @throws Exception if this resource cannot be closed
      */
     @Override
     public void close() throws Exception {
+        for (final Ball ball : this.balls.toArray(new Ball[this.balls.size()])) {
+            ball.remove();
+        }
         this.balls.clear();
     }
 }

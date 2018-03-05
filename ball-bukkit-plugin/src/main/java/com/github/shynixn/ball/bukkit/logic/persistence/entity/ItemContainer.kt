@@ -54,7 +54,6 @@ class ItemContainer(var position : Int, data : Map<String, Any>)
     var unbreakable: Boolean = false
 
     init {
-        println("MEME")
         if (data.containsKey("position"))
             this.position = data["position"] as Int
         if (data.containsKey("id"))
@@ -79,7 +78,6 @@ class ItemContainer(var position : Int, data : Map<String, Any>)
                     .filter { it != "none" }
                     .map { ChatColor.translateAlternateColorCodes('&', it.toString()) }
             this.lore = lore.toTypedArray()
-            println("LORE:" + this.lore)
         }
     }
 

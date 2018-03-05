@@ -1,5 +1,6 @@
 package com.github.shynixn.ball.bukkit
 
+import com.github.shynixn.ball.api.BallApi
 import com.github.shynixn.ball.bukkit.core.logic.business.CoreManager
 import com.github.shynixn.ball.bukkit.core.logic.persistence.Factory
 import com.github.shynixn.ball.bukkit.core.nms.VersionSupport
@@ -8,7 +9,9 @@ import com.github.shynixn.ball.bukkit.logic.persistence.configuration.Config
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.entity.EntityType
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.util.Vector
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -62,7 +65,7 @@ class BallPlugin : JavaPlugin() {
         } else {
             Config.reload()
             if (Config.metrics!!) {
-           //     Metrics(this)
+                 Metrics(this)
             }
             try {
                 this.ballsManager = BallsManager(this)
@@ -71,7 +74,6 @@ class BallPlugin : JavaPlugin() {
             } catch (e: Exception) {
                 logger.log(Level.WARNING, "Failed to enable plugin.", e)
             }
-
         }
     }
 
@@ -83,6 +85,7 @@ class BallPlugin : JavaPlugin() {
         if (this.disabled)
             return
         try {
+            Factory.disable(this)
         } catch (e: Exception) {
             logger.log(Level.WARNING, "Failed to close resources.", e)
         }

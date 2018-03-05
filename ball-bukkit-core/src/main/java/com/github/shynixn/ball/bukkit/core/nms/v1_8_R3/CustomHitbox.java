@@ -15,6 +15,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -134,15 +135,16 @@ public final class CustomHitbox extends EntityArmorStand {
         if (this.knockBackBumper > 0) {
             this.knockBackBumper--;
         }
+
         if (this.noclip) {
             this.a(this.getBoundingBox().c(d0, d1, d2));
             this.recalcPosition();
         } else {
             try {
                 this.checkBlockCollisions();
-            } catch (final Throwable var79) {
-                final CrashReport crashreport = CrashReport.a(var79, "Checking entity block collision");
-                final CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity being checked for collision");
+            } catch (Throwable var84) {
+                CrashReport crashreport = CrashReport.a(var84, "Checking entity block collision");
+                CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Entity being checked for collision");
                 this.appendEntityCrashDetails(crashreportsystemdetails);
                 throw new ReportedException(crashreport);
             }
@@ -152,8 +154,11 @@ public final class CustomHitbox extends EntityArmorStand {
             }
 
             this.world.methodProfiler.a("move");
-            if (this.E) {
-                this.E = false;
+            double d3 = this.locX;
+            double d4 = this.locY;
+            double d5 = this.locZ;
+            if (this.H) {
+                this.H = false;
                 d0 *= 0.25D;
                 d1 *= 0.05000000074505806D;
                 d2 *= 0.25D;
@@ -163,133 +168,159 @@ public final class CustomHitbox extends EntityArmorStand {
             }
 
             double d6 = d0;
-            final double d7 = d1;
+            double d7 = d1;
             double d8 = d2;
-            final List list = this.world.getCubes(this, this.getBoundingBox().c(d0, d1, d2));
-            final AxisAlignedBB axisalignedbb = this.getBoundingBox();
-            int i;
-            int j;
-            if (d1 != 0.0D) {
-                i = 0;
-
-                for (j = list.size(); i < j; ++i) {
-                    d1 = ((AxisAlignedBB) list.get(i)).b(this.getBoundingBox(), d1);
+            boolean flag = this.onGround && this.isSneaking() && false;
+            if (flag) {
+                double d9;
+                for(d9 = 0.05D; d0 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(d0, -1.0D, 0.0D)).isEmpty(); d6 = d0) {
+                    if (d0 < d9 && d0 >= -d9) {
+                        d0 = 0.0D;
+                    } else if (d0 > 0.0D) {
+                        d0 -= d9;
+                    } else {
+                        d0 += d9;
+                    }
                 }
 
-                this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
+                for(; d2 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(0.0D, -1.0D, d2)).isEmpty(); d8 = d2) {
+                    if (d2 < d9 && d2 >= -d9) {
+                        d2 = 0.0D;
+                    } else if (d2 > 0.0D) {
+                        d2 -= d9;
+                    } else {
+                        d2 += d9;
+                    }
+                }
+
+                for(; d0 != 0.0D && d2 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(d0, -1.0D, d2)).isEmpty(); d8 = d2) {
+                    if (d0 < d9 && d0 >= -d9) {
+                        d0 = 0.0D;
+                    } else if (d0 > 0.0D) {
+                        d0 -= d9;
+                    } else {
+                        d0 += d9;
+                    }
+
+                    d6 = d0;
+                    if (d2 < d9 && d2 >= -d9) {
+                        d2 = 0.0D;
+                    } else if (d2 > 0.0D) {
+                        d2 -= d9;
+                    } else {
+                        d2 += d9;
+                    }
+                }
             }
 
-            if (d0 != 0.0D) {
-                i = 0;
+            List list = this.world.getCubes(this, this.getBoundingBox().a(d0, d1, d2));
+            AxisAlignedBB axisalignedbb = this.getBoundingBox();
 
-                for (j = list.size(); i < j; ++i) {
-                    d0 = ((AxisAlignedBB) list.get(i)).a(this.getBoundingBox(), d0);
-                }
-
-                if (d0 != 0.0D) {
-                    this.a(this.getBoundingBox().c(d0, 0.0D, 0.0D));
-                }
+            AxisAlignedBB axisalignedbb1;
+            for(Iterator iterator = list.iterator(); iterator.hasNext(); d1 = axisalignedbb1.b(this.getBoundingBox(), d1)) {
+                axisalignedbb1 = (AxisAlignedBB)iterator.next();
             }
 
-            if (d2 != 0.0D) {
-                i = 0;
+            this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
+            boolean flag1 = this.onGround || d7 != d1 && d7 < 0.0D;
 
-                for (j = list.size(); i < j; ++i) {
-                    d2 = ((AxisAlignedBB) list.get(i)).c(this.getBoundingBox(), d2);
-                }
-
-                if (d2 != 0.0D) {
-                    this.a(this.getBoundingBox().c(0.0D, 0.0D, d2));
-                }
+            Iterator iterator1;
+            AxisAlignedBB axisalignedbb2;
+            for(iterator1 = list.iterator(); iterator1.hasNext(); d0 = axisalignedbb2.a(this.getBoundingBox(), d0)) {
+                axisalignedbb2 = (AxisAlignedBB)iterator1.next();
             }
 
-            final boolean flag1 = this.onGround || d1 != d7 && d1 < 0.0D;
-            double d10;
-            if (this.P > 0.0F && flag1 && (d6 != d0 || d8 != d2)) {
-                final double d11 = d0;
-                final double d12 = d1;
-                final double d13 = d2;
-                final AxisAlignedBB event = this.getBoundingBox();
+            this.a(this.getBoundingBox().c(d0, 0.0D, 0.0D));
+
+            for(iterator1 = list.iterator(); iterator1.hasNext(); d2 = axisalignedbb2.c(this.getBoundingBox(), d2)) {
+                axisalignedbb2 = (AxisAlignedBB)iterator1.next();
+            }
+
+            this.a(this.getBoundingBox().c(0.0D, 0.0D, d2));
+            if (this.S > 0.0F && flag1 && (d6 != d0 || d8 != d2)) {
+                double d10 = d0;
+                double d11 = d1;
+                double d12 = d2;
+                AxisAlignedBB axisalignedbb3 = this.getBoundingBox();
                 this.a(axisalignedbb);
-                d1 = (double) this.P;
-                final List event1 = this.world.getCubes(this, this.getBoundingBox().c(d6, d1, d8));
-                AxisAlignedBB axisalignedbb2 = this.getBoundingBox();
-                final AxisAlignedBB f = axisalignedbb2.c(d6, 0.0D, d8);
-                d10 = d1;
-                int k = 0;
+                d1 = (double)this.S;
+                List list1 = this.world.getCubes(this, this.getBoundingBox().a(d6, d1, d8));
+                AxisAlignedBB axisalignedbb4 = this.getBoundingBox();
+                AxisAlignedBB axisalignedbb5 = axisalignedbb4.a(d6, 0.0D, d8);
+                double d13 = d1;
 
-                for (final int l = event1.size(); k < l; ++k) {
-                    d10 = ((AxisAlignedBB) event1.get(k)).b(f, d10);
+                AxisAlignedBB axisalignedbb6;
+                for(Iterator iterator2 = list1.iterator(); iterator2.hasNext(); d13 = axisalignedbb6.b(axisalignedbb5, d13)) {
+                    axisalignedbb6 = (AxisAlignedBB)iterator2.next();
                 }
 
-                axisalignedbb2 = axisalignedbb2.c(0.0D, d10, 0.0D);
+                axisalignedbb4 = axisalignedbb4.c(0.0D, d13, 0.0D);
                 double d14 = d6;
-                int i1 = 0;
 
-                for (final int j1 = event1.size(); i1 < j1; ++i1) {
-                    d14 = ((AxisAlignedBB) event1.get(i1)).a(axisalignedbb2, d14);
+                AxisAlignedBB axisalignedbb7;
+                for(Iterator iterator3 = list1.iterator(); iterator3.hasNext(); d14 = axisalignedbb7.a(axisalignedbb4, d14)) {
+                    axisalignedbb7 = (AxisAlignedBB)iterator3.next();
                 }
 
-                axisalignedbb2 = axisalignedbb2.c(d14, 0.0D, 0.0D);
+                axisalignedbb4 = axisalignedbb4.c(d14, 0.0D, 0.0D);
                 double d15 = d8;
-                int k1 = 0;
 
-                for (final int axisalignedbb4 = event1.size(); k1 < axisalignedbb4; ++k1) {
-                    d15 = ((AxisAlignedBB) event1.get(k1)).c(axisalignedbb2, d15);
+                AxisAlignedBB axisalignedbb8;
+                for(Iterator iterator4 = list1.iterator(); iterator4.hasNext(); d15 = axisalignedbb8.c(axisalignedbb4, d15)) {
+                    axisalignedbb8 = (AxisAlignedBB)iterator4.next();
                 }
 
-                axisalignedbb2 = axisalignedbb2.c(0.0D, 0.0D, d15);
-                AxisAlignedBB var85 = this.getBoundingBox();
+                axisalignedbb4 = axisalignedbb4.c(0.0D, 0.0D, d15);
+                AxisAlignedBB axisalignedbb9 = this.getBoundingBox();
                 double d16 = d1;
-                int i2 = 0;
 
-                for (final int j2 = event1.size(); i2 < j2; ++i2) {
-                    d16 = ((AxisAlignedBB) event1.get(i2)).b(var85, d16);
+                AxisAlignedBB axisalignedbb10;
+                for(Iterator iterator5 = list1.iterator(); iterator5.hasNext(); d16 = axisalignedbb10.b(axisalignedbb9, d16)) {
+                    axisalignedbb10 = (AxisAlignedBB)iterator5.next();
                 }
 
-                var85 = var85.c(0.0D, d16, 0.0D);
+                axisalignedbb9 = axisalignedbb9.c(0.0D, d16, 0.0D);
                 double d17 = d6;
-                int k2 = 0;
 
-                for (final int l2 = event1.size(); k2 < l2; ++k2) {
-                    d17 = ((AxisAlignedBB) event1.get(k2)).a(var85, d17);
+                AxisAlignedBB axisalignedbb11;
+                for(Iterator iterator6 = list1.iterator(); iterator6.hasNext(); d17 = axisalignedbb11.a(axisalignedbb9, d17)) {
+                    axisalignedbb11 = (AxisAlignedBB)iterator6.next();
                 }
 
-                var85 = var85.c(d17, 0.0D, 0.0D);
+                axisalignedbb9 = axisalignedbb9.c(d17, 0.0D, 0.0D);
                 double d18 = d8;
-                int i3 = 0;
 
-                for (final int j3 = event1.size(); i3 < j3; ++i3) {
-                    d18 = ((AxisAlignedBB) event1.get(i3)).c(var85, d18);
+                AxisAlignedBB axisalignedbb12;
+                for(Iterator iterator7 = list1.iterator(); iterator7.hasNext(); d18 = axisalignedbb12.c(axisalignedbb9, d18)) {
+                    axisalignedbb12 = (AxisAlignedBB)iterator7.next();
                 }
 
-                var85 = var85.c(0.0D, 0.0D, d18);
-                final double d19 = d14 * d14 + d15 * d15;
-                final double d20 = d17 * d17 + d18 * d18;
+                axisalignedbb9 = axisalignedbb9.c(0.0D, 0.0D, d18);
+                double d19 = d14 * d14 + d15 * d15;
+                double d20 = d17 * d17 + d18 * d18;
                 if (d19 > d20) {
                     d0 = d14;
                     d2 = d15;
-                    d1 = -d10;
-                    this.a(axisalignedbb2);
+                    d1 = -d13;
+                    this.a(axisalignedbb4);
                 } else {
                     d0 = d17;
                     d2 = d18;
                     d1 = -d16;
-                    this.a(var85);
+                    this.a(axisalignedbb9);
                 }
 
-                int k3 = 0;
-
-                for (final int l3 = event1.size(); k3 < l3; ++k3) {
-                    d1 = ((AxisAlignedBB) event1.get(k3)).b(this.getBoundingBox(), d1);
+                AxisAlignedBB axisalignedbb13;
+                for(Iterator iterator8 = list1.iterator(); iterator8.hasNext(); d1 = axisalignedbb13.b(this.getBoundingBox(), d1)) {
+                    axisalignedbb13 = (AxisAlignedBB)iterator8.next();
                 }
 
                 this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
-                if (d11 * d11 + d13 * d13 >= d0 * d0 + d2 * d2) {
-                    d0 = d11;
-                    d1 = d12;
-                    d2 = d13;
-                    this.a(event);
+                if (d10 * d10 + d12 * d12 >= d0 * d0 + d2 * d2) {
+                    d0 = d10;
+                    d1 = d11;
+                    d2 = d12;
+                    this.a(axisalignedbb3);
                 }
             }
 
@@ -297,25 +328,23 @@ public final class CustomHitbox extends EntityArmorStand {
             this.world.methodProfiler.a("rest");
             this.recalcPosition();
             this.positionChanged = d6 != d0 || d8 != d2;
-            this.E = d1 != d7;
+            this.E = d7 != d1;
             this.onGround = this.E && d7 < 0.0D;
             this.F = this.positionChanged || this.E;
-            j = MathHelper.floor(this.locX);
-            final int i4 = MathHelper.floor(this.locY - 0.20000000298023224D);
-            final int j4 = MathHelper.floor(this.locZ);
-            BlockPosition blockposition = new BlockPosition(j, i4, j4);
-            IBlockData iblockdata = this.world.getType(blockposition);
-            if (iblockdata.getBlock().getMaterial() == Material.AIR) {
-                final BlockPosition block1 = blockposition.down();
-                final IBlockData flag2 = this.world.getType(block1);
-                final Block var80 = flag2.getBlock();
-                if (var80 instanceof BlockFence || var80 instanceof BlockCobbleWall || var80 instanceof BlockFenceGate) {
-                    iblockdata = flag2;
-                    blockposition = block1;
+            int i = MathHelper.floor(this.locX);
+            int j = MathHelper.floor(this.locY - 0.20000000298023224D);
+            int k = MathHelper.floor(this.locZ);
+            BlockPosition blockposition = new BlockPosition(i, j, k);
+            net.minecraft.server.v1_8_R3.Block block = this.world.getType(blockposition).getBlock();
+            if (block.getMaterial() == Material.AIR) {
+                net.minecraft.server.v1_8_R3.Block block1 = this.world.getType(blockposition.down()).getBlock();
+                if (block1 instanceof BlockFence || block1 instanceof BlockCobbleWall || block1 instanceof BlockFenceGate) {
+                    block = block1;
+                    blockposition = blockposition.down();
                 }
             }
 
-            this.a(d1, this.onGround, iblockdata.getBlock(), blockposition);
+            this.a(d1, this.onGround, block, blockposition);
             if (d6 != d0) {
                 this.motX = 0.0D;
             }
@@ -324,9 +353,8 @@ public final class CustomHitbox extends EntityArmorStand {
                 this.motZ = 0.0D;
             }
 
-            final Block var86 = iblockdata.getBlock();
             if (d7 != d1) {
-                var86.a(this.world, this);
+                block.a(this.world, this);
             }
 
             try {
@@ -355,13 +383,14 @@ public final class CustomHitbox extends EntityArmorStand {
                 Bukkit.getLogger().log(Level.WARNING, "Critical exception.", ex);
             }
         }
+
         this.spigotTimings(false);
     }
 
     private void spigotTimings(boolean started) {
         Class<?> clazz = null;
         try {
-            clazz = Class.forName("org.bukkit.craftbukkit.v1_12_R1.SpigotTimings");
+            clazz = Class.forName("org.bukkit.craftbukkit.v1_8_R3.SpigotTimings");
         } catch (final ClassNotFoundException ignored) {
 
         }

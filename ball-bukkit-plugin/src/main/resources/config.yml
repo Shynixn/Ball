@@ -87,13 +87,13 @@ meta:
       particle-effects:
         onkick:
           effecting: EVERYONE
-          name: none
-          amount: 0
-          speed: 0.0
+          name: explosion
+          amount: 4
+          speed: 2.0E-4
           offset:
-            x: 0.0
-            y: 0.0
-            z: 0.0
+            x: 2.0
+            y: 2.0
+            z: 2.0
         onmove:
           effecting: EVERYONE
           name: none
@@ -142,9 +142,9 @@ meta:
       sound-effects:
         onkick:
           effecting: EVERYONE
-          name: none
-          volume: 0.0
-          pitch: 0.0
+          name: ENTITY_GHAST_SHOOT
+          volume: 100.0
+          pitch: 1.0
         onmove:
           effecting: EVERYONE
           name: none

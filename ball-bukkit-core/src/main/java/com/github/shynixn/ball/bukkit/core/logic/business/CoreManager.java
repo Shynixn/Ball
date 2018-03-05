@@ -10,6 +10,7 @@ import com.github.shynixn.ball.api.persistence.controller.BallMetaController;
 import com.github.shynixn.ball.bukkit.core.logic.business.listener.StorageListener;
 import org.bukkit.plugin.Plugin;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +42,7 @@ import java.util.logging.Logger;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class CoreManager {
+public class CoreManager implements AutoCloseable {
 
     private static Logger logger = Logger.getLogger("BallPlugin");
 
@@ -54,8 +55,8 @@ public class CoreManager {
      * Initializes a new core manager.
      *
      * @param entityStorageFileName storagefilename
-     * @param metaDataFileName filename
-     * @param plugin plugin
+     * @param metaDataFileName      filename
+     * @param plugin                plugin
      */
     public CoreManager(Plugin plugin, String metaDataFileName, String entityStorageFileName) {
         super();
@@ -112,5 +113,23 @@ public class CoreManager {
      */
     public BallController getBallController() {
         return this.ballController;
+    }
+
+    /**
+     * Closes this stream and releases any system resources associated
+     * with it. If the stream is already closed then invoking this
+     * method has no effect.
+     * <p>
+     * <p> As noted in {@link AutoCloseable#close()}, cases where the
+     * close may fail require careful attention. It is strongly advised
+     * to relinquish the underlying resources and to internally
+     * <em>mark</em> the {@code Closeable} as closed, prior to throwing
+     * the {@code IOException}.
+     *
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    public void close() throws Exception {
+        this.ballController.close();
     }
 }

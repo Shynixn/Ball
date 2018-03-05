@@ -1,6 +1,7 @@
 package com.github.shynixn.ball.bukkit.core.logic.persistence.entity;
 
 import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
+import com.github.shynixn.ball.api.persistence.enumeration.EffectingType;
 import com.github.shynixn.ball.bukkit.core.nms.VersionSupport;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -38,7 +39,7 @@ import java.util.Map;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class SoundBuilder extends EffectData implements SoundEffectMeta<Location, Player>{
+public class SoundBuilder extends EffectData implements SoundEffectMeta<Location, Player> {
 
     private String text;
     private double volume;
@@ -84,7 +85,7 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
      *
      * @param items items
      */
-    public SoundBuilder(Map<String, Object> items)  {
+    public SoundBuilder(Map<String, Object> items) {
         super(items);
         this.text = (String) items.get("name");
         this.volume = (double) items.get("volume");
@@ -100,8 +101,18 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
      */
     @Override
     public void apply(Location location, Collection<Player> players) {
-        for (final Player player : players) {
-            player.playSound(location, Sound.valueOf(this.text),(float) this.volume, (float)this.pitch);
+        if (this.text.equalsIgnoreCase("none") || this.getEffectingType() == EffectingType.NOBODY) {
+            return;
+        }
+
+        if (this.getEffectingType() == EffectingType.EVERYONE) {
+            for (final Player player : location.getWorld().getPlayers()) {
+                player.playSound(location, Sound.valueOf(this.text), (float) this.volume, (float) this.pitch);
+            }
+        } else {
+            for (final Player player : players) {
+                player.playSound(location, Sound.valueOf(this.text), (float) this.volume, (float) this.pitch);
+            }
         }
     }
 
@@ -112,8 +123,12 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
      */
     @Override
     public void apply(Collection<Player> players) {
+        if (this.text.equalsIgnoreCase("none") || this.getEffectingType() == EffectingType.NOBODY) {
+            return;
+        }
+
         for (final Player player : players) {
-            player.playSound(player.getLocation(), Sound.valueOf(this.text), (float)this.volume, (float)this.pitch);
+            player.playSound(player.getLocation(), Sound.valueOf(this.text), (float) this.volume, (float) this.pitch);
         }
     }
 
@@ -124,7 +139,7 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
      */
     @Override
     public void apply(Location location) {
-        this.apply(location,location.getWorld().getPlayers());
+        this.apply(location, location.getWorld().getPlayers());
     }
 
     /**
@@ -146,6 +161,7 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
     @Override
     public SoundBuilder setName(String name) {
         this.text = name;
+        this.convertSounds();
         return this;
     }
 
@@ -229,6 +245,10 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
                     this.text = "BLOCK_NOTE_PLING";
                     break;
                 }
+                case "ZOMBIE_WOOD": {
+                    this.text = "ENTITY_ZOMBIE_ATTACK_DOOR_WOOD";
+                    break;
+                }
                 case "none": {
                     this.text = "none";
                     break;
@@ -263,6 +283,7 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
      *
      * @return serializedContent
      */
+    @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> items = super.serialize();
         items.put("name", this.text);
