@@ -412,7 +412,7 @@ public final class CustomHitbox extends EntityArmorStand {
     private void recalcPosition() {
         final AxisAlignedBB axisalignedbb = this.getBoundingBox();
         this.locX = (axisalignedbb.a + axisalignedbb.d) / 2.0D;
-        this.locY = axisalignedbb.b;
+        this.locY = axisalignedbb.b + this.ball.getMeta().getHitBoxRelocationDistance();
         this.locZ = (axisalignedbb.c + axisalignedbb.f) / 2.0D;
     }
 }
