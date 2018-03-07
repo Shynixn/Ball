@@ -115,6 +115,20 @@ public interface BallMeta {
     double getHitBoxSize();
 
     /**
+     * Sets the hitbox relocation distance the hitbox of the ball is in reality.
+     *
+     * @param distance distance
+     */
+    void setHitBoxRelocationDistance(double distance);
+
+    /**
+     * Returns the hitbox relocation distance.
+     *
+     * @return distance
+     */
+    double getHitBoxRelocationDistance();
+
+    /**
      * Returns if the ball displays a rotation animation when being kicked or thrown.
      *
      * @return enabled

@@ -135,7 +135,6 @@ public final class CustomHitbox extends EntityArmorStand {
             this.knockBackBumper--;
         }
 
-
         if (this.noclip) {
             this.a(this.getBoundingBox().d(d0, d1, d2));
             this.recalcPosition();
@@ -341,16 +340,16 @@ public final class CustomHitbox extends EntityArmorStand {
                     } else if (d6 < d0) {
                         var81 = var81.getRelative(BlockFace.WEST);
                         final Vector n = new Vector(1, 0, 0);
-                        this.applyKnockBack(starter, n,var81, (BlockFace.WEST));
+                        this.applyKnockBack(starter, n, var81, (BlockFace.WEST));
                     } else if (d8 > d2) {
                         var81 = var81.getRelative(BlockFace.SOUTH);
                         final Vector n = new Vector(0, 0, -1);
-                        this.applyKnockBack(starter, n,var81, BlockFace.SOUTH);
+                        this.applyKnockBack(starter, n, var81, BlockFace.SOUTH);
 
                     } else if (d8 < d2) {
                         var81 = var81.getRelative(BlockFace.NORTH);
                         final Vector n = new Vector(0, 0, 1);
-                        this.applyKnockBack(starter, n, var81,BlockFace.NORTH);
+                        this.applyKnockBack(starter, n, var81, BlockFace.NORTH);
                     }
                 }
             } catch (final Exception ex) {
@@ -386,7 +385,7 @@ public final class CustomHitbox extends EntityArmorStand {
     public void recalcPosition() {
         final AxisAlignedBB axisalignedbb = this.getBoundingBox();
         this.locX = (axisalignedbb.a + axisalignedbb.d) / 2.0D;
-        this.locY = axisalignedbb.b;
+        this.locY = axisalignedbb.b + this.ball.getMeta().getHitBoxRelocationDistance();
         this.locZ = (axisalignedbb.c + axisalignedbb.f) / 2.0D;
     }
 }

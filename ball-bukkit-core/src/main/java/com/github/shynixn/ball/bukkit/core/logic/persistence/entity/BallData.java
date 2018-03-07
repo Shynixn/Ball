@@ -54,6 +54,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     private boolean rotating = true;
     private double hitbox = 2.0;
     private boolean alwaysBounce;
+    private double relocationDistance = 0.0;
     private BallSize size = BallSize.NORMAL;
 
     private final BallModifications modifications;
@@ -79,10 +80,14 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         this.bounceObjectIController = new BounceObjectController(((MemorySection) data.get("wall-bouncing")).getValues(false));
         this.modifications = new BallModifications(((MemorySection) data.get("modifiers")).getValues(false));
 
-        final Map<String, Object> particleMap = ((MemorySection)data.get("particle-effects")).getValues(false);
-        final Map<String, Object> soundMap = ((MemorySection)data.get("sound-effects")).getValues(false);
+        if (data.containsKey("hitbox-relocation")) {
+            this.relocationDistance = (double) data.get("hitbox-relocation");
+        }
+
+        final Map<String, Object> particleMap = ((MemorySection) data.get("particle-effects")).getValues(false);
+        final Map<String, Object> soundMap = ((MemorySection) data.get("sound-effects")).getValues(false);
         for (final ActionEffect actionEffect : ActionEffect.values()) {
-            this.particleEffectMetaMap.put(actionEffect, new ParticleEffectData(((MemorySection)particleMap.get(actionEffect.name().toLowerCase())).getValues(true)));
+            this.particleEffectMetaMap.put(actionEffect, new ParticleEffectData(((MemorySection) particleMap.get(actionEffect.name().toLowerCase())).getValues(true)));
             this.soundeffects.put(actionEffect, new SoundBuilder(((MemorySection) soundMap.get(actionEffect.name().toLowerCase())).getValues(true)));
         }
     }
@@ -222,6 +227,26 @@ public class BallData implements BallMeta, ConfigurationSerializable {
     }
 
     /**
+     * Sets the hitbox relocation distance the hitbox of the ball is in reality.
+     *
+     * @param distance distance
+     */
+    @Override
+    public void setHitBoxRelocationDistance(double distance) {
+        this.relocationDistance = distance;
+    }
+
+    /**
+     * Returns the hitbox relocation distance.
+     *
+     * @return distance
+     */
+    @Override
+    public double getHitBoxRelocationDistance() {
+        return this.relocationDistance;
+    }
+
+    /**
      * Returns if the ball displays a rotation animation when being kicked or thrown.
      *
      * @return enabled
@@ -284,6 +309,7 @@ public class BallData implements BallMeta, ConfigurationSerializable {
         data.put("skin", this.getSkin());
         data.put("size", this.getSize().name().toUpperCase());
         data.put("hitbox-size", this.getHitBoxSize());
+        data.put("hitbox-relocation", this.relocationDistance);
         data.put("carry-able", this.isCarryable());
         data.put("always-bounce", this.alwaysBounce);
         data.put("rotating", this.isRotatingEnabled());

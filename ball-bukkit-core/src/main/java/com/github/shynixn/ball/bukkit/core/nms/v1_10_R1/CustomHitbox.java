@@ -171,7 +171,7 @@ public final class CustomHitbox extends EntityArmorStand {
             double d8 = d2;
             boolean flag = this.onGround && this.isSneaking() && false;
             if (flag) {
-                for(; d0 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(d0, -1.0D, 0.0D)).isEmpty(); d6 = d0) {
+                for (; d0 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(d0, -1.0D, 0.0D)).isEmpty(); d6 = d0) {
                     if (d0 < 0.05D && d0 >= -0.05D) {
                         d0 = 0.0D;
                     } else if (d0 > 0.0D) {
@@ -181,7 +181,7 @@ public final class CustomHitbox extends EntityArmorStand {
                     }
                 }
 
-                for(; d2 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(0.0D, -1.0D, d2)).isEmpty(); d8 = d2) {
+                for (; d2 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(0.0D, -1.0D, d2)).isEmpty(); d8 = d2) {
                     if (d2 < 0.05D && d2 >= -0.05D) {
                         d2 = 0.0D;
                     } else if (d2 > 0.0D) {
@@ -191,7 +191,7 @@ public final class CustomHitbox extends EntityArmorStand {
                     }
                 }
 
-                for(; d0 != 0.0D && d2 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(d0, -1.0D, d2)).isEmpty(); d8 = d2) {
+                for (; d0 != 0.0D && d2 != 0.0D && this.world.getCubes(this, this.getBoundingBox().c(d0, -1.0D, d2)).isEmpty(); d8 = d2) {
                     if (d0 < 0.05D && d0 >= -0.05D) {
                         d0 = 0.0D;
                     } else if (d0 > 0.0D) {
@@ -216,8 +216,8 @@ public final class CustomHitbox extends EntityArmorStand {
             int i = 0;
 
             int j;
-            for(j = list.size(); i < j; ++i) {
-                d1 = ((AxisAlignedBB)list.get(i)).b(this.getBoundingBox(), d1);
+            for (j = list.size(); i < j; ++i) {
+                d1 = ((AxisAlignedBB) list.get(i)).b(this.getBoundingBox(), d1);
             }
 
             this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
@@ -225,15 +225,15 @@ public final class CustomHitbox extends EntityArmorStand {
             j = 0;
 
             int k;
-            for(k = list.size(); j < k; ++j) {
-                d0 = ((AxisAlignedBB)list.get(j)).a(this.getBoundingBox(), d0);
+            for (k = list.size(); j < k; ++j) {
+                d0 = ((AxisAlignedBB) list.get(j)).a(this.getBoundingBox(), d0);
             }
 
             this.a(this.getBoundingBox().c(d0, 0.0D, 0.0D));
             j = 0;
 
-            for(k = list.size(); j < k; ++j) {
-                d2 = ((AxisAlignedBB)list.get(j)).c(this.getBoundingBox(), d2);
+            for (k = list.size(); j < k; ++j) {
+                d2 = ((AxisAlignedBB) list.get(j)).c(this.getBoundingBox(), d2);
             }
 
             this.a(this.getBoundingBox().c(0.0D, 0.0D, d2));
@@ -245,31 +245,31 @@ public final class CustomHitbox extends EntityArmorStand {
                 d13 = d2;
                 AxisAlignedBB axisalignedbb1 = this.getBoundingBox();
                 this.a(axisalignedbb);
-                d1 = (double)this.P;
+                d1 = (double) this.P;
                 List list1 = this.world.getCubes(this, this.getBoundingBox().a(d6, d1, d8));
                 AxisAlignedBB axisalignedbb2 = this.getBoundingBox();
                 AxisAlignedBB axisalignedbb3 = axisalignedbb2.a(d6, 0.0D, d8);
                 d10 = d1;
                 int l = 0;
 
-                for(int i1 = list1.size(); l < i1; ++l) {
-                    d10 = ((AxisAlignedBB)list1.get(l)).b(axisalignedbb3, d10);
+                for (int i1 = list1.size(); l < i1; ++l) {
+                    d10 = ((AxisAlignedBB) list1.get(l)).b(axisalignedbb3, d10);
                 }
 
                 axisalignedbb2 = axisalignedbb2.c(0.0D, d10, 0.0D);
                 double d14 = d6;
                 int j1 = 0;
 
-                for(int k1 = list1.size(); j1 < k1; ++j1) {
-                    d14 = ((AxisAlignedBB)list1.get(j1)).a(axisalignedbb2, d14);
+                for (int k1 = list1.size(); j1 < k1; ++j1) {
+                    d14 = ((AxisAlignedBB) list1.get(j1)).a(axisalignedbb2, d14);
                 }
 
                 axisalignedbb2 = axisalignedbb2.c(d14, 0.0D, 0.0D);
                 double d15 = d8;
                 int l1 = 0;
 
-                for(int i2 = list1.size(); l1 < i2; ++l1) {
-                    d15 = ((AxisAlignedBB)list1.get(l1)).c(axisalignedbb2, d15);
+                for (int i2 = list1.size(); l1 < i2; ++l1) {
+                    d15 = ((AxisAlignedBB) list1.get(l1)).c(axisalignedbb2, d15);
                 }
 
                 axisalignedbb2 = axisalignedbb2.c(0.0D, 0.0D, d15);
@@ -277,24 +277,24 @@ public final class CustomHitbox extends EntityArmorStand {
                 double d16 = d1;
                 int j2 = 0;
 
-                for(int k2 = list1.size(); j2 < k2; ++j2) {
-                    d16 = ((AxisAlignedBB)list1.get(j2)).b(axisalignedbb4, d16);
+                for (int k2 = list1.size(); j2 < k2; ++j2) {
+                    d16 = ((AxisAlignedBB) list1.get(j2)).b(axisalignedbb4, d16);
                 }
 
                 axisalignedbb4 = axisalignedbb4.c(0.0D, d16, 0.0D);
                 double d17 = d6;
                 int l2 = 0;
 
-                for(int i3 = list1.size(); l2 < i3; ++l2) {
-                    d17 = ((AxisAlignedBB)list1.get(l2)).a(axisalignedbb4, d17);
+                for (int i3 = list1.size(); l2 < i3; ++l2) {
+                    d17 = ((AxisAlignedBB) list1.get(l2)).a(axisalignedbb4, d17);
                 }
 
                 axisalignedbb4 = axisalignedbb4.c(d17, 0.0D, 0.0D);
                 double d18 = d8;
                 int j3 = 0;
 
-                for(int k3 = list1.size(); j3 < k3; ++j3) {
-                    d18 = ((AxisAlignedBB)list1.get(j3)).c(axisalignedbb4, d18);
+                for (int k3 = list1.size(); j3 < k3; ++j3) {
+                    d18 = ((AxisAlignedBB) list1.get(j3)).c(axisalignedbb4, d18);
                 }
 
                 axisalignedbb4 = axisalignedbb4.c(0.0D, 0.0D, d18);
@@ -314,8 +314,8 @@ public final class CustomHitbox extends EntityArmorStand {
 
                 int l3 = 0;
 
-                for(int i4 = list1.size(); l3 < i4; ++l3) {
-                    d1 = ((AxisAlignedBB)list1.get(l3)).b(this.getBoundingBox(), d1);
+                for (int i4 = list1.size(); l3 < i4; ++l3) {
+                    d1 = ((AxisAlignedBB) list1.get(l3)).b(this.getBoundingBox(), d1);
                 }
 
                 this.a(this.getBoundingBox().c(0.0D, d1, 0.0D));
@@ -373,16 +373,16 @@ public final class CustomHitbox extends EntityArmorStand {
                     } else if (d6 < d0) {
                         var81 = var81.getRelative(BlockFace.WEST);
                         final Vector n = new Vector(1, 0, 0);
-                        this.applyKnockBack(starter, n,var81, (BlockFace.WEST));
+                        this.applyKnockBack(starter, n, var81, (BlockFace.WEST));
                     } else if (d8 > d2) {
                         var81 = var81.getRelative(BlockFace.SOUTH);
                         final Vector n = new Vector(0, 0, -1);
-                        this.applyKnockBack(starter, n,var81, BlockFace.SOUTH);
+                        this.applyKnockBack(starter, n, var81, BlockFace.SOUTH);
 
                     } else if (d8 < d2) {
                         var81 = var81.getRelative(BlockFace.NORTH);
                         final Vector n = new Vector(0, 0, 1);
-                        this.applyKnockBack(starter, n, var81,BlockFace.NORTH);
+                        this.applyKnockBack(starter, n, var81, BlockFace.NORTH);
                     }
                 }
             } catch (final Exception ex) {
@@ -419,7 +419,7 @@ public final class CustomHitbox extends EntityArmorStand {
     public void recalcPosition() {
         final AxisAlignedBB axisalignedbb = this.getBoundingBox();
         this.locX = (axisalignedbb.a + axisalignedbb.d) / 2.0D;
-        this.locY = axisalignedbb.b;
+        this.locY = axisalignedbb.b + this.ball.getMeta().getHitBoxRelocationDistance();
         this.locZ = (axisalignedbb.c + axisalignedbb.f) / 2.0D;
     }
 }

@@ -85,6 +85,7 @@ public class BallListener extends SimpleListener {
         for (final BukkitBall ball : this.ballController.getAll()) {
             if (ball.getLastInteractionEntity() != null && ball.getLastInteractionEntity().equals(event.getPlayer())) {
                 ball.throwByEntity(event.getPlayer());
+                event.setCancelled(true);
             }
         }
     }
