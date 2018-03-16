@@ -95,6 +95,10 @@ public final class CustomHitbox extends EntityArmorStand {
     }
 
     private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block, BlockFace blockFace) {
+        if (block == null || block.getType() == org.bukkit.Material.AIR) {
+            return;
+        }
+
         if (this.knockBackBumper <= 0) {
             final Optional<BounceObject> optBounce = this.ball.getMeta().getBounceObjectController().getBounceObjectFromBlock(block);
             if (optBounce.isPresent() || this.ball.getMeta().isAlwaysBounceBack()) {

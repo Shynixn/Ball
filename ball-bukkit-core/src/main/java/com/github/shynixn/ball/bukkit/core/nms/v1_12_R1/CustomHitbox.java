@@ -91,6 +91,10 @@ public final class CustomHitbox extends EntityArmorStand {
     }
 
     private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block, BlockFace blockFace) {
+        if (block == null || block.getType() == org.bukkit.Material.AIR) {
+            return;
+        }
+
         if (this.knockBackBumper <= 0) {
             final Optional<BounceObject> optBounce = this.ball.getMeta().getBounceObjectController().getBounceObjectFromBlock(block);
             if (optBounce.isPresent() || this.ball.getMeta().isAlwaysBounceBack()) {
@@ -333,6 +337,7 @@ public final class CustomHitbox extends EntityArmorStand {
             try {
                 if (this.positionChanged) {
                     org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
+
                     if (d6 > d0) {
                         var81 = var81.getRelative(BlockFace.EAST);
                         final Vector n = new Vector(-1, 0, 0);
