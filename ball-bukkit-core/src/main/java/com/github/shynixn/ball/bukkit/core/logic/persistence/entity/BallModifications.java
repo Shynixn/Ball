@@ -43,6 +43,7 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
     private double verticalThrowStrength = 1.0;
     private double horizontalTouchStrength = 1.0;
     private double verticalTouchStrength = 1.0;
+    private double bouncingStrength = 1.0;
 
     public BallModifications() {
         super();
@@ -60,6 +61,30 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
         this.verticalTouchStrength = (double) data.get("vertical-touch");
         this.rollingStrength = (double) data.get("rolling-distance");
         this.gravityStrength = (double) data.get("gravity");
+
+        if (data.containsKey("bouncing")) {
+            this.bouncingStrength = (double) data.get("bouncing");
+        }
+    }
+
+    /**
+     * Returns the bounce modifier how fast a ball bounces of any block if he has got always-bounce enabled.
+     *
+     * @return strength
+     */
+    @Override
+    public double getBounceModifier() {
+        return this.bouncingStrength;
+    }
+
+    /**
+     * Sets the bounce modifier how fast a ball bounces of any block if he has got always-bounce enabled.
+     *
+     * @param strength strength
+     */
+    @Override
+    public void setBounceModifier(double strength) {
+        this.bouncingStrength = strength;
     }
 
     /**
@@ -240,6 +265,7 @@ public class BallModifications implements BallModifiers, ConfigurationSerializab
     @Override
     public Map<String, Object> serialize() {
         final Map<String, Object> data = new LinkedHashMap<>();
+        data.put("bouncing", this.getBounceModifier());
         data.put("horizontal-touch", this.getHorizontalTouchModifier());
         data.put("vertical-touch", this.getVerticalTouchModifier());
         data.put("horizontal-kick", this.getHorizontalKickStrengthModifier());

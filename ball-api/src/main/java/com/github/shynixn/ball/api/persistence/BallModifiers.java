@@ -30,6 +30,20 @@ package com.github.shynixn.ball.api.persistence;
 public interface BallModifiers {
 
     /**
+     * Returns the bounce modifier how fast a ball bounces of any block if he has got always-bounce enabled.
+     *
+     * @return strength
+     */
+    double getBounceModifier();
+
+    /**
+     * Sets the bounce modifier how fast a ball bounces of any block if he has got always-bounce enabled.
+     *
+     * @param strength strength
+     */
+    void setBounceModifier(double strength);
+
+    /**
      * Returns the gravity modifier how fast a ball falls to the ground after being kicked or
      * thrown in to the sky.
      *

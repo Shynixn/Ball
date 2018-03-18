@@ -91,12 +91,19 @@ public final class CustomHitbox extends EntityArmorStand {
     }
 
     private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block, BlockFace blockFace) {
+        if (block == null || block.getType() == org.bukkit.Material.AIR) {
+            return;
+        }
+
         if (this.knockBackBumper <= 0) {
             final Optional<BounceObject> optBounce = this.ball.getMeta().getBounceObjectController().getBounceObjectFromBlock(block);
             if (optBounce.isPresent() || this.ball.getMeta().isAlwaysBounceBack()) {
                 Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n))).multiply(0.75);
                 if (optBounce.isPresent()) {
                     r = r.multiply(optBounce.get().getBounceModifier());
+                }
+                else {
+                    r = r.multiply(this.ball.getMeta().getModifiers().getBounceModifier());
                 }
                 final BallWallCollideEvent event = new BallWallCollideEvent(this.ball, block, blockFace, r.clone(), starter.clone());
                 Bukkit.getPluginManager().callEvent(event);
@@ -333,6 +340,7 @@ public final class CustomHitbox extends EntityArmorStand {
             try {
                 if (this.positionChanged) {
                     org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
+
                     if (d6 > d0) {
                         var81 = var81.getRelative(BlockFace.EAST);
                         final Vector n = new Vector(-1, 0, 0);
