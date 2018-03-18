@@ -102,6 +102,8 @@ public final class CustomHitbox extends EntityArmorStand {
                 Vector r = starter.clone().subtract(n.multiply(2 * starter.dot(n))).multiply(0.75);
                 if (optBounce.isPresent()) {
                     r = r.multiply(optBounce.get().getBounceModifier());
+                } else {
+                    r = r.multiply(this.ball.getMeta().getModifiers().getBounceModifier());
                 }
                 final BallWallCollideEvent event = new BallWallCollideEvent(this.ball, block, blockFace, r.clone(), starter.clone());
                 Bukkit.getPluginManager().callEvent(event);
