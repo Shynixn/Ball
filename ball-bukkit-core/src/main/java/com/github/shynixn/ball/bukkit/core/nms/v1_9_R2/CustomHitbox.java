@@ -51,6 +51,7 @@ import java.util.logging.Level;
  * SOFTWARE.
  */
 public final class CustomHitbox extends EntityArmorStand {
+    private static final int[] excludedRelativeItems = new int[]{85,101,102,107,113,139,160,183,184,185,186,187,188,189,190,191,192};
 
     private final BukkitBall ball;
 
@@ -379,22 +380,33 @@ public final class CustomHitbox extends EntityArmorStand {
                 if (this.positionChanged) {
                     org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
                     if (d6 > d0) {
-                        var81 = var81.getRelative(BlockFace.EAST);
+                        if (this.isValidKnockBackBlock(var81)) {
+                            var81 = var81.getRelative(BlockFace.EAST);
+                        }
+
                         final Vector n = new Vector(-1, 0, 0);
                         this.applyKnockBack(starter, n, var81, BlockFace.EAST);
                     } else if (d6 < d0) {
-                        var81 = var81.getRelative(BlockFace.WEST);
-                        final Vector n = new Vector(1, 0, 0);
-                        this.applyKnockBack(starter, n,var81, (BlockFace.WEST));
-                    } else if (d8 > d2) {
-                        var81 = var81.getRelative(BlockFace.SOUTH);
-                        final Vector n = new Vector(0, 0, -1);
-                        this.applyKnockBack(starter, n,var81, BlockFace.SOUTH);
+                        if (this.isValidKnockBackBlock(var81)) {
+                            var81 = var81.getRelative(BlockFace.WEST);
+                        }
 
+                        final Vector n = new Vector(1, 0, 0);
+                        this.applyKnockBack(starter, n, var81, (BlockFace.WEST));
+                    } else if (d8 > d2) {
+                        if (this.isValidKnockBackBlock(var81)) {
+                            var81 = var81.getRelative(BlockFace.SOUTH);
+                        }
+
+                        final Vector n = new Vector(0, 0, -1);
+                        this.applyKnockBack(starter, n, var81, BlockFace.SOUTH);
                     } else if (d8 < d2) {
-                        var81 = var81.getRelative(BlockFace.NORTH);
+                        if (this.isValidKnockBackBlock(var81)) {
+                            var81 = var81.getRelative(BlockFace.NORTH);
+                        }
+
                         final Vector n = new Vector(0, 0, 1);
-                        this.applyKnockBack(starter, n, var81,BlockFace.NORTH);
+                        this.applyKnockBack(starter, n, var81, BlockFace.NORTH);
                     }
                 }
             } catch (final Exception ex) {
@@ -402,6 +414,17 @@ public final class CustomHitbox extends EntityArmorStand {
             }
         }
        spigotTimings(false);
+    }
+
+    private boolean isValidKnockBackBlock(org.bukkit.block.Block block) {
+        final int id = block.getTypeId();
+        for (final int i : excludedRelativeItems) {
+            if (i == id) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void spigotTimings(boolean started) {
