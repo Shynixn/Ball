@@ -7,7 +7,6 @@ import com.github.shynixn.ball.api.business.entity.Ball;
 import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
 import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
 import com.github.shynixn.ball.api.persistence.enumeration.ActionEffect;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -24,8 +23,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -273,7 +270,7 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void ballKickEvent(BallKickEvent event) {
-        this.playEffectsForBall(event.getBall(), event.getEntity(), ActionEffect.ONKICK);
+        this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), event.getEntity(), ActionEffect.ONKICK);
     }
 
     /**
@@ -283,7 +280,7 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void ballInteractEvent(BallInteractEvent event) {
-        this.playEffectsForBall(event.getBall(), event.getEntity(), ActionEffect.ONINTERACTION);
+        this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), event.getEntity(), ActionEffect.ONINTERACTION);
     }
 
     /**
@@ -293,7 +290,7 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void ballThrowEvent(BallThrowEvent event) {
-        this.playEffectsForBall(event.getBall(), event.getEntity(), ActionEffect.ONTHROW);
+        this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), event.getEntity(), ActionEffect.ONTHROW);
     }
 
     /**
@@ -303,7 +300,7 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void ballGrabEvent(BallGrabEvent event) {
-        this.playEffectsForBall(event.getBall(), event.getEntity(), ActionEffect.ONGRAB);
+        this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), event.getEntity(), ActionEffect.ONGRAB);
     }
 
     /**
@@ -313,7 +310,7 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void ballSpawnEvent(BallSpawnEvent event) {
-        this.playEffectsForBall(event.getBall(), null, ActionEffect.ONSPAWN);
+        this.playEffectsForBall(event.getBall(), event.getSpawnLocation(), null, ActionEffect.ONSPAWN);
     }
 
     /**
@@ -322,24 +319,24 @@ public class BallListener extends SimpleListener {
      * @param event event
      */
     @EventHandler
-    public void ballMoveEvent(BallSpawnEvent event) {
-        this.playEffectsForBall(event.getBall(), null, ActionEffect.ONMOVE);
+    public void ballMoveEvent(BallMoveEvent event) {
+        if (!event.getBall().isDead()) {
+            this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), null, ActionEffect.ONMOVE);
+        }
     }
 
-    private void playEffectsForBall(BukkitBall ball, Entity cause, ActionEffect actionEffect) {
+    private void playEffectsForBall(BukkitBall ball, Location location, Entity cause, ActionEffect actionEffect) {
         try {
             final ParticleEffectMeta<Location, Player, Material> particleEffectMeta;
             if ((particleEffectMeta = ball.getMeta().getParticleEffectOf(actionEffect)) != null) {
                 if (cause != null && cause instanceof Player) {
-                    particleEffectMeta.apply(ball.getLocation(), Collections.singletonList((Player) cause));
+                    particleEffectMeta.apply(location, Collections.singletonList((Player) cause));
                 } else {
-                    particleEffectMeta.apply(ball.getLocation());
+                    particleEffectMeta.apply(location);
                 }
             }
-        }
-        catch (final NullPointerException ex) {
-        }
-        catch (final Exception ex) {
+        } catch (final NullPointerException ex) {
+        } catch (final Exception ex) {
             this.plugin.getServer().getLogger().log(Level.WARNING, "Failed to play ball particleEffect " + actionEffect.name() + ".", ex);
         }
 
@@ -347,9 +344,9 @@ public class BallListener extends SimpleListener {
             final SoundEffectMeta<Location, Player> soundEffectMeta;
             if ((soundEffectMeta = ball.getMeta().getSoundEffectOf(actionEffect)) != null) {
                 if (cause != null && cause instanceof Player) {
-                    soundEffectMeta.apply(ball.getLocation(), Collections.singletonList((Player) cause));
+                    soundEffectMeta.apply(location, Collections.singletonList((Player) cause));
                 } else {
-                    soundEffectMeta.apply(ball.getLocation());
+                    soundEffectMeta.apply(location);
                 }
             }
         } catch (final NullPointerException ex) {
