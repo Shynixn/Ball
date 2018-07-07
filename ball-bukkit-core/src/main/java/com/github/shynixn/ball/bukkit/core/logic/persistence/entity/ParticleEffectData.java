@@ -568,7 +568,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
             }
             final float speed;
             final int amount;
-            if (this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getMinecraftId()) || this.effect.equals(ParticleEffectData.ParticleEffectType.NOTE.getMinecraftId())) {
+            if (this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getMinecraftId()) || this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getSimpleName()) || this.effect.equals(ParticleEffectData.ParticleEffectType.NOTE.getMinecraftId())) {
                 amount = 0;
                 speed = 1.0F;
             } else {
@@ -700,7 +700,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      */
     public static ParticleEffectMeta.ParticleEffectType getParticleEffectFromName(String name) {
         for (final ParticleEffectMeta.ParticleEffectType particleEffect : ParticleEffectMeta.ParticleEffectType.values()) {
-            if (name != null && particleEffect.getMinecraftId().equalsIgnoreCase(name))
+            if (name != null && (particleEffect.getMinecraftId().equalsIgnoreCase(name) || particleEffect.getSimpleName().equalsIgnoreCase(name)))
                 return particleEffect;
         }
         return null;
