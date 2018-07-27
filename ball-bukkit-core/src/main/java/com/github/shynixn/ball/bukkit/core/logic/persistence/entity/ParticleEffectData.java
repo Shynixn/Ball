@@ -2,13 +2,19 @@ package com.github.shynixn.ball.bukkit.core.logic.persistence.entity;
 
 import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
 import com.github.shynixn.ball.api.persistence.enumeration.EffectingType;
-import com.github.shynixn.ball.bukkit.core.logic.business.CoreManager;
+import com.github.shynixn.ball.bukkit.core.nms.VersionSupport;
+import com.github.shynixn.ball.bukkit.core.nms.v1_13_R1.MaterialCompatibility13;
+import net.minecraft.server.v1_13_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.MemorySection;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.craftbukkit.v1_13_R1.block.CraftBlockState;
+import org.bukkit.craftbukkit.v1_13_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R1.util.CraftMagicNumbers;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -18,7 +24,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Level;
 
 /**
  * Builder for particleEffects regardless of which minecraft server version.
@@ -48,6 +53,8 @@ import java.util.logging.Level;
  * SOFTWARE.
  */
 public class ParticleEffectData extends EffectData implements ParticleEffectMeta<Location, Player, Material> {
+    private final VersionSupport version = VersionSupport.getServerVersion();
+
     private String effect;
     private int amount;
     private double speed;
@@ -111,14 +118,12 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
         this.amount = (int) items.get("amount");
         this.speed = (double) items.get("speed");
 
-        if (items.containsKey("color")) {
-            final Map<String, Object> colorMap = ((MemorySection) items.get("color")).getValues(true);
-            this.setRed((Integer) colorMap.get("red"));
-            this.setBlue((Integer) colorMap.get("blue"));
-            this.setGreen((Integer) colorMap.get("green"));
-            this.amount = 0;
-            this.speed = 1.0;
+        if (items.containsKey("red")) {
+            this.setRed((Integer) items.get("red"));
+            this.setBlue((Integer) items.get("blue"));
+            this.setGreen((Integer) items.get("green"));
         }
+
         if (items.containsKey("offset")) {
             final Map<String, Object> offSetMap = ((MemorySection) items.get("offset")).getValues(true);
             this.setOffset((double) offSetMap.get("x"), (double) offSetMap.get("y"), (double) offSetMap.get("z"));
@@ -168,11 +173,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      */
     @Override
     public <T extends ParticleEffectMeta> T setNoteColor(int color) {
-        if (color > 20 || color < 0) {
-            this.offsetX = 5;
-        } else {
-            this.offsetX = color;
-        }
+        this.offsetX = color;
         return (T) this;
     }
 
@@ -290,7 +291,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      */
     @Override
     public <T extends ParticleEffectMeta> T setBlue(int blue) {
-        this.offsetZ = blue / 255.0F;
+        this.offsetZ = blue;
         return (T) this;
     }
 
@@ -302,10 +303,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      */
     @Override
     public <T extends ParticleEffectMeta> T setRed(int red) {
-        this.offsetX = red / 255.0F;
-        if (red == 0) {
-            this.offsetX = Float.MIN_NORMAL;
-        }
+        this.offsetX = red;
         return (T) this;
     }
 
@@ -317,7 +315,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      */
     @Override
     public <T extends ParticleEffectMeta> T setGreen(int green) {
-        this.offsetY = green / 255.0F;
+        this.offsetY = green;
         return (T) this;
     }
 
@@ -426,7 +424,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      */
     @Override
     public int getBlue() {
-        return (int) this.offsetZ * 255;
+        return (int) this.offsetZ;
     }
 
     /**
@@ -436,7 +434,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      */
     @Override
     public int getRed() {
-        return (int) this.offsetX * 255;
+        return (int) this.offsetX;
     }
 
     /**
@@ -446,7 +444,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      */
     @Override
     public int getGreen() {
-        return (int) this.offsetY * 255;
+        return (int) this.offsetY;
     }
 
     /**
@@ -555,65 +553,91 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
      * @param players  players
      */
     private void applyTo(Location location, Player... players) {
-        try {
-            if (location == null)
-                throw new IllegalArgumentException("Location cannot be null!");
-            if (this.effect.equalsIgnoreCase("none") || this.getEffectingType() == EffectingType.NOBODY)
-                return;
-            final Player[] playingPlayers;
-            if (players.length == 0 || this.getEffectingType() == EffectingType.EVERYONE) {
-                playingPlayers = location.getWorld().getPlayers().toArray(new Player[location.getWorld().getPlayers().size()]);
-            } else {
-                playingPlayers = players;
+        if (location == null) {
+            throw new IllegalArgumentException("Location cannot be null!");
+        }
+
+        if (this.effect.equalsIgnoreCase("none") || this.getEffectingType() == EffectingType.NOBODY) {
+            return;
+        }
+
+        final Player[] playingPlayers;
+        if (players.length == 0 || this.getEffectingType() == EffectingType.EVERYONE) {
+            playingPlayers = location.getWorld().getPlayers().toArray(new Player[location.getWorld().getPlayers().size()]);
+        } else {
+            playingPlayers = players;
+        }
+
+        final float speed;
+        final int amount;
+        if (this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getMinecraftId()) || this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getSimpleName()) || this.effect.equals(ParticleEffectData.ParticleEffectType.NOTE.getMinecraftId())) {
+            amount = 0;
+            speed = 1.0F;
+        } else {
+            amount = this.getAmount();
+            speed = (float) this.getSpeed();
+        }
+
+        Object internalParticleType = this.getInternalEnumValue(this.getEffectType());
+        Object packet;
+
+        if (this.version.isVersionSameOrGreaterThan(VersionSupport.VERSION_1_13_R1)) {
+            if (internalParticleType == ItemStack.class) {
+                net.minecraft.server.v1_13_R1.ItemStack itemStack = CraftItemStack.asNMSCopy(new ItemStack(MaterialCompatibility13.getMaterialFromId(this.material), 1, this.data));
+                internalParticleType = new ParticleParamItem((Particle<ParticleParamItem>) internalParticleType, itemStack);
+            } else if (internalParticleType == MaterialData.class) {
+                MaterialData data = new MaterialData(MaterialCompatibility13.getMaterialFromId(this.material), this.getData());
+                internalParticleType = new ParticleParamBlock((Particle<ParticleParamBlock>) internalParticleType, CraftMagicNumbers.getBlock(data));
+            } else if (this.getEffectType() == ParticleEffectType.BLOCK_DUST || this.getEffectType() == ParticleEffectType.BLOCK_CRACK) {
+                CraftBlockState data = new CraftBlockState(MaterialCompatibility13.getMaterialFromId(this.material));
+                data.setRawData(this.getData());
+                internalParticleType = new ParticleParamBlock((Particle<ParticleParamBlock>) internalParticleType, data.getHandle());
+            } else if (this.getEffectType() == ParticleEffectType.REDSTONE) {
+                internalParticleType = new ParticleParamRedstone((float) this.getRed() / 255.0f, this.getGreen() / 255.0f, this.getBlue() / 255.0f, 1.0F);
             }
-            final float speed;
-            final int amount;
-            if (this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getMinecraftId()) || this.effect.equals(ParticleEffectData.ParticleEffectType.REDSTONE.getSimpleName()) || this.effect.equals(ParticleEffectData.ParticleEffectType.NOTE.getMinecraftId())) {
-                amount = 0;
-                speed = 1.0F;
-            } else {
-                amount = this.getAmount();
-                speed = (float) this.getSpeed();
-            }
-            final Object enumParticle = invokeMethod(null, findClass("net.minecraft.server.VERSION.EnumParticle"), "valueOf", new Class[]{String.class}, new Object[]{this.getEffectType().name().toUpperCase()});
-            int[] additionalInfo = null;
-            if (this.getMaterial() != null) {
-                if (this.getEffectType() == ParticleEffectData.ParticleEffectType.ITEM_CRACK) {
-                    additionalInfo = new int[]{this.material, this.getData()};
+
+            packet = new PacketPlayOutWorldParticles((ParticleParam) internalParticleType, isLongDistance(location, playingPlayers), (float) location.getX(), (float) location.getY(), (float) location.getZ(), (float) this.getOffsetX(), (float) this.getOffsetY(), (float) this.getOffsetZ(), (float) this.getSpeed(), amount);
+        } else {
+            Integer[] payload = null;
+
+            if (this.material != null) {
+                if (this.getEffectType() == ParticleEffectType.ITEM_CRACK) {
+                    payload = new Integer[]{this.material, this.getData().intValue()};
                 } else {
-                    additionalInfo = new int[]{this.material, this.getData() << 12};
+                    payload = new Integer[]{this.material, 12 << this.getData()};
                 }
             }
-            final Object packet = invokeConstructor(findClass("net.minecraft.server.VERSION.PacketPlayOutWorldParticles"), new Class[]{
-                    enumParticle.getClass(),
-                    boolean.class,
-                    float.class,
-                    float.class,
-                    float.class,
-                    float.class,
-                    float.class,
-                    float.class,
-                    float.class,
-                    int.class,
-                    int[].class
-            }, new Object[]{
-                    enumParticle,
-                    isLongDistance(location, players),
-                    (float) location.getX(),
-                    (float) location.getY(),
-                    (float) location.getZ(),
-                    (float) this.getOffsetX(),
-                    (float) this.getOffsetY(),
-                    (float) this.getOffsetZ(),
-                    speed,
-                    amount,
-                    additionalInfo
-            });
-            for (final Player player : playingPlayers) {
+
+            if (getEffectType() == ParticleEffectType.REDSTONE) {
+                float red = (float) getRed() / 255.0F;
+                if (red <= 0) {
+                    red = Float.MIN_VALUE;
+                }
+
+                try {
+                    Constructor constructor = Class.forName("net.minecraft.server.VERSION.PacketPlayOutWorldParticles".replace("VERSION", this.version.getVersionText()))
+                            .getDeclaredConstructor(internalParticleType.getClass(), boolean.class, float.class, float.class, float.class, float.class, float.class, int.class, int[].class);
+                    packet = constructor.newInstance(internalParticleType, isLongDistance(location, playingPlayers), (float) location.getX(), (float) location.getY(), (float) location.getZ(), (float) this.getOffsetX(), (float) this.getOffsetY() / 255.0F, (float) this.getOffsetZ() / 255.0F, (float) this.getSpeed(), amount, payload);
+                } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                try {
+                    Constructor constructor = Class.forName("net.minecraft.server.VERSION.PacketPlayOutWorldParticles".replace("VERSION", this.version.getVersionText()))
+                            .getDeclaredConstructor(internalParticleType.getClass(), boolean.class, float.class, float.class, float.class, float.class, float.class, int.class, int[].class);
+                    packet = constructor.newInstance(internalParticleType, isLongDistance(location, playingPlayers), (float) location.getX(), (float) location.getY(), (float) location.getZ(), (float) this.getOffsetX(), (float) this.getOffsetY(), (float) this.getOffsetZ(), (float) this.getSpeed(), amount, payload);
+                } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        try {
+            for (Player player : playingPlayers) {
                 sendPacket(player, packet);
             }
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
-            CoreManager.getLogger().log(Level.WARNING, "Failed to send packet.", e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -792,5 +816,20 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
             }
         }
         return false;
+    }
+
+    private Object getInternalEnumValue(ParticleEffectType particleEffectType) {
+        try {
+            if (this.version.isVersionLowerThan(VersionSupport.VERSION_1_13_R1)) {
+                final Class<?> clazz = Class.forName("net.minecraft.server.VERSION.EnumParticle".replace("VERSION", this.version.getVersionText()));
+                final Method method = clazz.getDeclaredMethod("valueOf", String.class);
+                return method.invoke(null, particleEffectType.name());
+            } else {
+                final MinecraftKey minecraftKey = new MinecraftKey(this.getEffectType().getGameId113());
+                return net.minecraft.server.v1_13_R1.Particle.REGISTRY.get(minecraftKey);
+            }
+        } catch (final Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -33,7 +33,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the RGB colors of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>   type of particleMeta
      * @param red   red
      * @param green green
      * @param blue  blue
@@ -44,7 +44,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the color of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>           type of particleMeta
      * @param particleColor particleColor
      * @return builder
      */
@@ -53,7 +53,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the color for note particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>   type of particleMeta
      * @param color color
      * @return builder
      */
@@ -62,7 +62,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the amount of particles of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>    type of particleMeta
      * @param amount amount
      * @return builder
      */
@@ -71,7 +71,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the speed of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>   type of particleMeta
      * @param speed speed
      * @return builder
      */
@@ -80,7 +80,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the offsetX of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>     type of particleMeta
      * @param offsetX offsetX
      * @return builder
      */
@@ -89,7 +89,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the offsetY of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>     type of particleMeta
      * @param offsetY offsetY
      * @return builder
      */
@@ -97,8 +97,8 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
 
     /**
      * Sets the offsetZ of the particleEffect.
-     * @param <T> type of particleMeta
      *
+     * @param <T>     type of particleMeta
      * @param offsetZ offsetZ
      * @return builder
      */
@@ -107,7 +107,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the offset of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>     type of particleMeta
      * @param offsetX offsetX
      * @param offsetY offsetY
      * @param offsetZ offsetZ
@@ -118,7 +118,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the effectType of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>  type of particleMeta
      * @param name name
      * @return builder
      */
@@ -127,7 +127,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the effectType of the particlEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>  type of particleMeta
      * @param type type
      * @return builder
      */
@@ -136,7 +136,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the blue of the RGB color.
      *
-     * @param <T> type of particleMeta
+     * @param <T>  type of particleMeta
      * @param blue blue
      * @return builder
      */
@@ -154,7 +154,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the green of the RGB color.
      *
-     * @param <T> type of particleMeta
+     * @param <T>   type of particleMeta
      * @param green green
      * @return builder
      */
@@ -163,7 +163,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the material of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>      type of particleMeta
      * @param material material
      * @return builder
      */
@@ -172,7 +172,7 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
     /**
      * Sets the data of the material of the particleEffect.
      *
-     * @param <T> type of particleMeta
+     * @param <T>  type of particleMeta
      * @param data data
      * @return builder
      */
@@ -375,70 +375,239 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
      * ParticleEffectTypes
      */
     enum ParticleEffectType {
-        EXPLOSION_NORMAL("explode", 0, "explosion"),
-        EXPLOSION_LARGE("largeexplode", 1, "large_explosion"),
-        EXPLOSION_HUGE("hugeexplosion", 2, "huge_explosion"),
-        FIREWORKS_SPARK("fireworksSpark", 3, "fireworks_spark"),
-        WATER_BUBBLE("bubble", 4, "water_bubble"),
-        WATER_SPLASH("splash", 5, "water_splash"),
-        WATER_WAKE("wake", 6, "water_wake"),
-        SUSPENDED("suspended", 7, "suspended"),
-        SUSPENDED_DEPTH("depthsuspend", 8, "suspended_depth"),
-        CRIT("crit", 9, "critical_hit"),
-        CRIT_MAGIC("magicCrit", 10, "magic_critical_hit"),
-        SMOKE_NORMAL("smoke", 11, "smoke"),
-        SMOKE_LARGE("largesmoke", 12, "large_smoke"),
-        SPELL("spell", 13, "spell"),
-        SPELL_INSTANT("instantSpell", 14, "instant_spell"),
-        SPELL_MOB("mobSpell", 15, "instant_spell"),
-        SPELL_MOB_AMBIENT("mobSpellAmbient", 16, "mob_spell"),
-        SPELL_WITCH("witchMagic", 17, "witch_spell"),
-        DRIP_WATER("dripWater", 18, "drip_water"),
-        DRIP_LAVA("dripLava", 19, "drip_lava"),
-        VILLAGER_ANGRY("angryVillager", 20, "angry_villager"),
-        VILLAGER_HAPPY("happyVillager", 21, "happy_villager"),
-        TOWN_AURA("townaura", 22, "town_aura"),
-        NOTE("note", 23, "note"),
-        PORTAL("portal", 24, "portal"),
-        ENCHANTMENT_TABLE("enchantmenttable", 25, "enchanting_glyphs"),
-        FLAME("flame", 26, "flame"),
-        LAVA("lava", 27, "lava"),
-        FOOTSTEP("footstep", 28, "footstep"),
-        CLOUD("cloud", 29, "cloud"),
-        REDSTONE("reddust", 30, "redstone_dust"),
-        SNOWBALL("snowballpoof", 31, "snowball"),
-        SNOW_SHOVEL("snowshovel", 32, "snow_shovel"),
-        SLIME("slime", 33, "slime"),
-        HEART("heart", 34, "heart"),
-        BARRIER("barrier", 35, "barrier"),
-        ITEM_CRACK("iconcrack", 36, "item_crack"),
-        BLOCK_CRACK("blockcrack", 37, "block_crack"),
-        BLOCK_DUST("blockdust", 38, "block_dust"),
-        WATER_DROP("droplet", 39, "water_drop"),
-        ITEM_TAKE("take", 40, "instant_spell"),
-        MOB_APPEARANCE("mobappearance", 41, "guardian_appearance"),
-        DRAGON_BREATH("dragonbreath", 42, "dragon_breath"),
-        END_ROD("endRod", 43, "end_rod"),
-        DAMAGE_INDICATOR("damageIndicator", 44, "damage_indicator"),
-        SWEEP_ATTACK("sweepAttack", 45, "sweep_attack"),
-        FALLING_DUST("fallingdust", 46, "falling_dust"),
-        TOTEM("totem", 47, "instant_spell"),
-        NONE("none", 102, "none"),
-        SPIT("spit", 48, "instant_spell");
+        /**
+         * No Particle.
+         */
+        NONE("none", "none", "none"),
+        /**
+         * Explosion.
+         */
+        EXPLOSION_NORMAL("explode", "poof", "explosion"),
+        /**
+         * Large explosion.
+         */
+        EXPLOSION_LARGE("largeexplode", "explosion", "large_explosion"),
+        /**
+         * Huge explosion.
+         */
+        EXPLOSION_HUGE("hugeexplosion", "explosion_emitter", "huge_explosion"),
+        /**
+         * Firework.
+         */
+        FIREWORKS_SPARK("fireworksSpark", "firework", "fireworks_spark"),
+        /**
+         * Water Bubble simple.
+         */
+        WATER_BUBBLE("bubble", "bubble", "water_bubble"),
+        /**
+         * Water Bubble up.
+         */
+        WATER_BUBBLE_UP("bubble_column_up", "bubble_column_up", "bubble_column_up"),
+        /**
+         * Water Bubble pop.
+         */
+        WATER_BUBBLE_POP("bubble_pop", "bubble_pop", "bubble_pop"),
+        /**
+         * Water Splash.
+         */
+        WATER_SPLASH("splash", "splash", "water_splash"),
+        /**
+         * Fishing effect.
+         */
+        WATER_WAKE("wake", "fishing", "water_wake"),
+        /**
+         * Underwater bubbles.
+         */
+        SUSPENDED("suspended", "underwater", "suspended"),
+        /**
+         * Unused effect.
+         */
+        SUSPENDED_DEPTH("depthsuspend", "depthsuspend", "suspended_depth"),
+        /**
+         * Critical damage.
+         */
+        CRIT("crit", "crit", "critical_hit"),
+        /**
+         * Critical magical damage.
+         */
+        CRIT_MAGIC("magicCrit", "enchanted_hit", "magic_critical_hit"),
+        /**
+         * Water effect.
+         */
+        CURRENTDOWN("current_down", "current_down", "current_down"),
+        /**
+         * Smoke.
+         */
+        SMOKE_NORMAL("smoke", "smoke", "smoke"),
+        /**
+         * Large Smoke.
+         */
+        SMOKE_LARGE("largesmoke", "large_smoke", "large_smoke"),
+        /**
+         * Spell.
+         */
+        SPELL("spell", "effect", "spell"),
+        /**
+         * Instant Spell.
+         */
+        SPELL_INSTANT("instantSpell", "instant_effect", "instant_spell"),
+        /**
+         * Mob Spell.
+         */
+        SPELL_MOB("mobSpell", "entity_effect", "instant_spell"),
+        /**
+         * Mob Ambient Spell.
+         */
+        SPELL_MOB_AMBIENT("mobSpellAmbient", "mob_spell", "mob_spell"),
+        /**
+         * Witch Spell.
+         */
+        SPELL_WITCH("witchMagic", "witch", "witch_spell"),
+        /**
+         * Drip water.
+         */
+        DRIP_WATER("dripWater", "dripping_water", "drip_water"),
+        /**
+         * Drip lava.
+         */
+        DRIP_LAVA("dripLava", "dripping_lava", "drip_lava"),
+        /**
+         * Angry villager.
+         */
+        VILLAGER_ANGRY("angryVillager", "angry_villager", "angry_villager"),
+        /**
+         * Happy villager.
+         */
+        VILLAGER_HAPPY("happyVillager", "happy_villager", "happy_villager"),
+        /**
+         * Mycelium.
+         */
+        TOWN_AURA("townaura", "mycelium", "town_aura"),
+        /**
+         * Note..
+         */
+        NOTE("note", "note", "note"),
+        /**
+         * Portal.
+         */
+        PORTAL("portal", "portal", "portal"),
+        /**
+         * Nautilus.
+         */
+        NAUTILUS("nautilus", "nautilus", "nautilus"),
+        /**
+         * Enchantment.
+         */
+        ENCHANTMENT_TABLE("enchantmenttable", "enchant", "enchanting_glyphs"),
+        /**
+         * Flame.
+         */
+        FLAME("flame", "flame", "flame"),
+        /**
+         * Lava.
+         */
+        LAVA("lava", "lava", "lava"),
+        /**
+         * Squid.
+         */
+        SQUID_INK("squid_ink", "squid_ink", "squid_ink"),
+        /**
+         * Footstep.
+         */
+        FOOTSTEP("footstep", "footstep", "footstep"),
+        /**
+         * Cloud.
+         */
+        CLOUD("cloud", "cloud", "cloud"),
+        /**
+         * Redstone.
+         */
+        REDSTONE("reddust", "dust", "redstone_dust"),
+        /**
+         * Snowball.
+         */
+        SNOWBALL("snowballpoof", "item_snowball", "snowball"),
+        /**
+         * Snowshovel.
+         */
+        SNOW_SHOVEL("snowshovel", "snowshovel", "snow_shovel"),
+        /**
+         * Slime.
+         */
+        SLIME("slime", "item_slime", "slime"),
+        /**
+         * Heart.
+         */
+        HEART("heart", "heart", "heart"),
+        /**
+         * Barrier.
+         */
+        BARRIER("barrier", "barrier", "barrier"),
+        /**
+         * ItemCrack.
+         */
+        ITEM_CRACK("iconcrack", "item", "item_crack"),
+        /**
+         * BlockCrack.
+         */
+        BLOCK_CRACK("blockcrack", "block", "block_crack"),
+        /**
+         * Blockdust.
+         */
+        BLOCK_DUST("blockdust", "block", "block_dust"),
+        /**
+         * Rain.
+         */
+        WATER_DROP("droplet", "rain", "water_drop"),
+        /**
+         * Unknown.
+         */
+        TEM_TAKE("take", "take", "instant_spell"),
+        /**
+         * Guardian scare.
+         */
+        MOB_APPEARANCE("mobappearance", "elder_guardian", "guardian_appearance"),
+        /**
+         * Dragon Breath.
+         */
+        DRAGON_BREATH("dragonbreath", "dragon_breath", "dragon_breath"),
+        /**
+         * End rod.
+         */
+        END_ROD("endRod", "end_rod", "end_rod"),
+        /**
+         * Damage Indicator.
+         */
+        DAMAGE_INDICATOR("damageIndicator", "damage_indicator", "damage_indicator"),
+        /**
+         * Sweep Attack.
+         */
+        SWEEP_ATTACK("sweepAttack", "sweep_attack", "sweep_attack"),
+        /**
+         * Falling Dust.
+         */
+        FALLING_DUST("fallingdust", "falling_dust", "falling_dust"),
+        /**
+         * Totem.
+         */
+        TOTEM("totem", "totem_of_undying", "instant_spell"),
+        /**
+         * Spit.
+         */
+        SPIT("spit", "spit", "instant_spell");
 
         private final String simpleName;
-        private final int id;
+        private final String gameId113;
         private String minecraftId;
 
         /**
          * Initializes a new particleEffectType.
          *
          * @param name name
-         * @param id   id
          */
-        ParticleEffectType(String name, int id, String minecraftId) {
+        ParticleEffectType(String name, String gameId113, String minecraftId) {
             this.simpleName = name;
-            this.id = id;
+            this.gameId113 = gameId113;
             this.minecraftId = minecraftId;
         }
 
@@ -452,12 +621,12 @@ public interface ParticleEffectMeta<Location, Player, Material> extends EffectMe
         }
 
         /**
-         * Returns the id of the particleEffectType.
+         * Returns the gameid 1.13.
          *
          * @return id
          */
-        public int getId() {
-            return this.id;
+        public String getGameId113() {
+            return this.gameId113;
         }
 
         /**
