@@ -5,6 +5,7 @@ import com.github.shynixn.ball.api.persistence.enumeration.EffectingType;
 import com.github.shynixn.ball.bukkit.core.nms.VersionSupport;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_13_R1.CraftSound;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -105,6 +106,10 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
             return;
         }
 
+        if (VersionSupport.getServerVersion().isVersionSameOrGreaterThan(VersionSupport.VERSION_1_13_R1) && text.equalsIgnoreCase("ENTITY_ZOMBIE_ATTACK_DOOR_WOOD")) {
+            this.text = "ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR";
+        }
+
         if (this.getEffectingType() == EffectingType.EVERYONE) {
             for (final Player player : location.getWorld().getPlayers()) {
                 player.playSound(location, Sound.valueOf(this.text), (float) this.volume, (float) this.pitch);
@@ -125,6 +130,10 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
     public void apply(Collection<Player> players) {
         if (this.text.equalsIgnoreCase("none") || this.getEffectingType() == EffectingType.NOBODY) {
             return;
+        }
+
+        if (VersionSupport.getServerVersion().isVersionSameOrGreaterThan(VersionSupport.VERSION_1_13_R1) && text.equalsIgnoreCase("ENTITY_ZOMBIE_ATTACK_DOOR_WOOD")) {
+            this.text = "ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR";
         }
 
         for (final Player player : players) {
@@ -234,8 +243,35 @@ public class SoundBuilder extends EffectData implements SoundEffectMeta<Location
      * Converts the sounds to 1.9 sounds
      */
     private void convertSounds() {
-        if (VersionSupport.getServerVersion() != null
-                && VersionSupport.getServerVersion().isVersionSameOrGreaterThan(VersionSupport.VERSION_1_9_R1)) {
+        VersionSupport versionSupport = VersionSupport.getServerVersion();
+
+        if (versionSupport.isVersionSameOrGreaterThan(VersionSupport.VERSION_1_13_R1)) {
+            switch (this.text) {
+                case "GHAST_FIREBALL": {
+                    this.text = "ENTITY_GHAST_SHOOT";
+                    break;
+                }
+                case "NOTE_PLING": {
+                    this.text = "BLOCK_NOTE_PLING";
+                    break;
+                }
+                case "ZOMBIE_WOOD": {
+                    this.text = "ENTITY_ZOMBIE_ATTACK_WOODEN_DOOR";
+                    break;
+                }
+                case "none": {
+                    this.text = "none";
+                    break;
+                }
+                default: {
+                    if (this.text.contains("WALK")) {
+                        this.text = "ENTITY_" + this.text.toUpperCase().split("_")[0] + "_STEP";
+                    } else if (this.text.contains("IDLE")) {
+                        this.text = "ENTITY_" + this.text.toUpperCase().split("_")[0] + "_AMBIENT";
+                    }
+                }
+            }
+        } else if (versionSupport.isVersionSameOrGreaterThan(VersionSupport.VERSION_1_9_R1)) {
             switch (this.text) {
                 case "GHAST_FIREBALL": {
                     this.text = "ENTITY_GHAST_SHOOT";
