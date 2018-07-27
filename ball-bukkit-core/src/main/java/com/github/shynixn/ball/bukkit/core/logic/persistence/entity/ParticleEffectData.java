@@ -616,7 +616,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
 
                 try {
                     Constructor constructor = Class.forName("net.minecraft.server.VERSION.PacketPlayOutWorldParticles".replace("VERSION", this.version.getVersionText()))
-                            .getDeclaredConstructor(internalParticleType.getClass(), boolean.class, float.class, float.class, float.class, float.class, float.class, int.class, int[].class);
+                            .getDeclaredConstructor(internalParticleType.getClass(), boolean.class, float.class, float.class, float.class, float.class, float.class, float.class, float.class, int.class, int[].class);
                     packet = constructor.newInstance(internalParticleType, isLongDistance(location, playingPlayers), (float) location.getX(), (float) location.getY(), (float) location.getZ(), (float) this.getOffsetX(), (float) this.getOffsetY() / 255.0F, (float) this.getOffsetZ() / 255.0F, (float) this.getSpeed(), amount, payload);
                 } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                     throw new RuntimeException(e);
@@ -624,7 +624,7 @@ public class ParticleEffectData extends EffectData implements ParticleEffectMeta
             } else {
                 try {
                     Constructor constructor = Class.forName("net.minecraft.server.VERSION.PacketPlayOutWorldParticles".replace("VERSION", this.version.getVersionText()))
-                            .getDeclaredConstructor(internalParticleType.getClass(), boolean.class, float.class, float.class, float.class, float.class, float.class, int.class, int[].class);
+                            .getDeclaredConstructor(internalParticleType.getClass(), boolean.class, float.class, float.class, float.class, float.class, float.class, float.class, float.class, int.class, int[].class);
                     packet = constructor.newInstance(internalParticleType, isLongDistance(location, playingPlayers), (float) location.getX(), (float) location.getY(), (float) location.getZ(), (float) this.getOffsetX(), (float) this.getOffsetY(), (float) this.getOffsetZ(), (float) this.getSpeed(), amount, payload);
                 } catch (NoSuchMethodException | ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                     throw new RuntimeException(e);
