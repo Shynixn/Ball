@@ -250,6 +250,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
         final BallKickEvent event = new BallKickEvent(this, livingEntity, vector);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
+            this.counter = 2;
             this.moveEntity(vector.getX(), vector.getY(), vector.getZ());
         }
     }
@@ -469,6 +470,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
                 if (!entity.equals(this.hitBox.getSpigotEntity()) &&
                         !entity.equals(this.getSpigotEntity()) &&
                         entity.getLocation().distance(hitBoxLocation) < this.ballMeta.getHitBoxSize()) {
+                    // TODO review this ball contact condition
                     final BallInteractEvent event = new BallInteractEvent(this, entity);
                     Bukkit.getPluginManager().callEvent(event);
                     if (event.isCancelled())
