@@ -127,7 +127,7 @@
                             <shadedPattern>com.github.shynixn.ball.lib.org.bstats</shadedPattern>
                         </relocation>
                     </relocations>
-                    <outputFile>D:/Temp/plugins/Ball.jar</outputFile>
+                    <outputFile>target/Ball.jar</outputFile>
                 </configuration>
                 <executions>
                     <execution>
