@@ -73,7 +73,7 @@ public final class CustomHitbox extends EntityArmorStand {
     private Vector reduceVector;
     private Vector originVector;
     private int times;
-    private float spinModifier;
+    private float spinForce;
     private boolean clockwise;
 
     CustomHitbox(Location location, BukkitBall ball) {
@@ -100,7 +100,7 @@ public final class CustomHitbox extends EntityArmorStand {
     void setVelocity(Vector velocity) {
         try {
             this.times = (int) (50 * this.ball.getMeta().getModifiers().getRollingDistanceModifier());
-            this.spinModifier = 0F;
+            this.spinForce = 0F;
             this.getSpigotEntity().setVelocity(velocity);
             final Vector normalized = velocity.clone().normalize();
             this.originVector = velocity.clone();
@@ -130,22 +130,21 @@ public final class CustomHitbox extends EntityArmorStand {
             BallSpinEvent event = new BallSpinEvent(this.ball, angle, modifier);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                this.spinModifier = event.getSpinModifier();
+                this.spinForce = event.getSpinModifier();
             }
         }
     }
     
-    private void applyMagnusForce(double modifier) {
+    private void applyMagnusForce() {
         if (this.times <= 0) {
-            this.spinModifier = 0F;
+            this.spinForce = 0F;
         }
-        if (spinModifier == 0F) {
+        if (spinForce == 0F) {
             return;
         }
         
         double x, z;
         final Vector originUnit = this.originVector.clone().normalize();
-        
         if (clockwise) {
             x = -originUnit.getZ();
             z = originUnit.getX();
@@ -154,7 +153,7 @@ public final class CustomHitbox extends EntityArmorStand {
             z = -originUnit.getX();
         }
         
-        Vector newVector = originVector.add(new Vector(x, 0, z).multiply(modifier));
+        Vector newVector = originVector.add(new Vector(x, 0, z).multiply(spinForce));
         originVector = newVector.multiply(this.originVector.length() / newVector.length());
     }
     
@@ -219,7 +218,7 @@ public final class CustomHitbox extends EntityArmorStand {
             starter = new Vector(d0, d1, d2);
         }
         
-        this.applyMagnusForce(0.05);
+        this.applyMagnusForce();
         this.spigotTimings(true);
 
         if (this.knockBackBumper > 0) {
