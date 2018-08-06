@@ -2,6 +2,7 @@ package com.github.shynixn.ball.bukkit.core.nms.v1_13_R1;
 
 import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
 import com.github.shynixn.ball.api.bukkit.business.event.BallMoveEvent;
+import com.github.shynixn.ball.api.bukkit.business.event.BallSpinEvent;
 import com.github.shynixn.ball.api.bukkit.business.event.BallWallCollideEvent;
 import com.github.shynixn.ball.api.persistence.BounceObject;
 import com.github.shynixn.ball.bukkit.core.logic.business.helper.ReflectionUtils;
@@ -15,7 +16,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
+import java.text.DecimalFormat;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -72,6 +73,8 @@ public final class CustomHitbox extends EntityArmorStand {
     private Vector reduceVector;
     private Vector originVector;
     private int times;
+    private float spinForce;
+    private boolean clockwise;
 
     CustomHitbox(Location location, BukkitBall ball) {
         super(((CraftWorld) location.getWorld()).getHandle());
@@ -97,6 +100,7 @@ public final class CustomHitbox extends EntityArmorStand {
     void setVelocity(Vector velocity) {
         try {
             this.times = (int) (50 * this.ball.getMeta().getModifiers().getRollingDistanceModifier());
+            this.spinForce = 0F;
             this.getSpigotEntity().setVelocity(velocity);
             final Vector normalized = velocity.clone().normalize();
             this.originVector = velocity.clone();
@@ -107,7 +111,52 @@ public final class CustomHitbox extends EntityArmorStand {
 
         }
     }
-
+    
+    void setMagnusForce(Vector facing, Vector direction) {
+        if (this.times > 0) {
+            DecimalFormat decimal = new DecimalFormat("0.###");
+            float angle = Float.parseFloat(decimal.format(getAngle(direction, facing)));
+            final float modifier = 0.05F;
+            
+            if (angle > 0.3F && angle < 10F) {
+                clockwise = true;
+            }
+            else if (angle < -0.3F && angle > -10F) {
+                clockwise = false;
+            } else {
+                return;
+            }
+    
+            BallSpinEvent event = new BallSpinEvent(this.ball, angle, modifier);
+            Bukkit.getPluginManager().callEvent(event);
+            if (!event.isCancelled()) {
+                this.spinForce = event.getSpinModifier();
+            }
+        }
+    }
+    
+    private void applyMagnusForce() {
+        if (this.times <= 0) {
+            this.spinForce = 0F;
+        }
+        if (spinForce == 0F) {
+            return;
+        }
+        
+        double x, z;
+        final Vector originUnit = this.originVector.clone().normalize();
+        if (clockwise) {
+            x = -originUnit.getZ();
+            z = originUnit.getX();
+        } else {
+            x = originUnit.getZ();
+            z = -originUnit.getX();
+        }
+        
+        Vector newVector = originVector.add(new Vector(x, 0, z).multiply(spinForce));
+        originVector = newVector.multiply(this.originVector.length() / newVector.length());
+    }
+    
     private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block, BlockFace blockFace) {
         if (block == null || block.getType() == org.bukkit.Material.AIR) {
             return;
@@ -132,7 +181,22 @@ public final class CustomHitbox extends EntityArmorStand {
             }
         }
     }
-
+    
+    /**
+     * Calculates the angle between two vectors in two dimension (XZ Plane) <br>
+     * If basis vector is clock-wise to against vector, the angle is negative.
+     * @param basis The basis vector
+     * @param against The vector which the angle is calculated against
+     * @return The angle in the range of -180 to 180 degrees
+     */
+    private double getAngle(Vector basis, Vector against) {
+        final Vector b = basis, a = against;
+        double dot = b.getX() * a.getX() + b.getZ() * a.getZ();
+        double det = b.getX() * a.getZ() - b.getZ() * a.getX();
+        
+        return Math.atan2(det, dot);
+    }
+    
     @Override
     public void move(EnumMoveType enummovetype, double d0, double d1, double d2) {
         final BallMoveEvent cevent = new BallMoveEvent(this.ball);
@@ -153,7 +217,8 @@ public final class CustomHitbox extends EntityArmorStand {
         } else {
             starter = new Vector(d0, d1, d2);
         }
-
+        
+        this.applyMagnusForce();
         this.spigotTimings(true);
 
         if (this.knockBackBumper > 0) {
@@ -331,7 +396,7 @@ public final class CustomHitbox extends EntityArmorStand {
             try {
                 if (this.positionChanged) {
                     org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
-
+                    
                     if (d7 > d0) {
                         if (this.isValidKnockBackBlock(var81)) {
                             var81 = var81.getRelative(BlockFace.EAST);
