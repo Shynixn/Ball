@@ -113,25 +113,26 @@ public final class CustomHitbox extends EntityArmorStand {
     }
     
     void setMagnusForce(Vector facing, Vector direction) {
-        if (this.times > 0) {
-            DecimalFormat decimal = new DecimalFormat("0.###");
-            float angle = Float.parseFloat(decimal.format(getAngle(direction, facing)));
-            final float modifier = 0.05F;
-            
-            if (angle > 0.3F && angle < 10F) {
-                clockwise = true;
-            }
-            else if (angle < -0.3F && angle > -10F) {
-                clockwise = false;
-            } else {
-                return;
-            }
+        if (this.times <= 0) {
+            return;
+        }
+        
+        double angle = getAngle(direction, facing);
+        final float modifier = 0.05F;
     
-            BallSpinEvent event = new BallSpinEvent(this.ball, angle, modifier);
-            Bukkit.getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                this.spinForce = event.getSpinModifier();
-            }
+        if (angle > 0.3F && angle < 10F) {
+            clockwise = true;
+        }
+        else if (angle < -0.3F && angle > -10F) {
+            clockwise = false;
+        } else {
+            return;
+        }
+    
+        BallSpinEvent event = new BallSpinEvent(this.ball, angle, modifier);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            this.spinForce = event.getSpinModifier();
         }
     }
     

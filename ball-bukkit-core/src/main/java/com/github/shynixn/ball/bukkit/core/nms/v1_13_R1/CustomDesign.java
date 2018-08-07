@@ -36,7 +36,9 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
 
     private boolean grabbed;
     private Entity interactionEntity;
-
+    
+    private long spinDelay = 2L;
+    
     private int counter = 20;
     boolean revertAnimation;
     private final UUID uuid;
@@ -252,7 +254,13 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
         if (!event.isCancelled()) {
             this.counter = 2;
             this.moveEntity(vector.getX(), vector.getY(), vector.getZ());
-            this.hitBox.setMagnusForce(livingEntity.getEyeLocation().getDirection(), vector);
+            Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("Ball"), new Runnable() {
+                final CustomHitbox hitBox_ = hitBox;
+                @Override
+                public void run() {
+                    hitBox_.setMagnusForce(livingEntity.getEyeLocation().getDirection(), vector);
+                }
+            }, spinDelay);
         }
     }
 
