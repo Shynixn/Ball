@@ -47,6 +47,21 @@ public interface Ball<Location, Entity, Armorstand> {
      * @return location
      */
     Location getLocation();
+    
+    /**
+     * Returns the scale of spinning force.
+     * If the ball spins clockwise, the scale should be positive.
+     *
+     * @return scale
+     */
+    float getMagnusForce();
+    
+    /**
+     * Sets the scale of spinning force.
+     *
+     * @param scale scale of force
+     */
+    void setMagnusForce(float scale);
 
     /**
      * Kicks the ball by the given entity.

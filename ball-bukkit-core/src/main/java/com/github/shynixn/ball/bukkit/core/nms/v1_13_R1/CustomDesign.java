@@ -34,10 +34,9 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
     private final BallMeta ballMeta;
     private CustomHitbox hitBox;
 
+    private float magnusForce = 0F;
     private boolean grabbed;
     private Entity interactionEntity;
-    
-    private long spinDelay = 2L;
     
     private int counter = 20;
     boolean revertAnimation;
@@ -170,6 +169,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
         if (this.isGrabbed())
             return;
         this.revertAnimation = false;
+        this.magnusForce = 0F;
         this.setHeadPose(new EulerAngle(2, 0, 0));
         final Vector vector = new Vector(x, y, z);
         this.hitBox.setVelocity(vector);
@@ -228,7 +228,28 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
     public Location getLocation() {
         return this.getHitBox().getLocation();
     }
-
+    
+    /**
+     * Returns the scale of spinning force.
+     * If the ball spins clockwise, the scale should be positive.
+     *
+     * @return scale
+     */
+    @Override
+    public float getMagnusForce() {
+        return magnusForce;
+    }
+    
+    /**
+     * Sets the scale of spinning force.
+     *
+     * @param scale scale of force
+     */
+    @Override
+    public void setMagnusForce(float scale) {
+        this.magnusForce = scale;
+    }
+    
     /**
      * Kicks the ball by the given entity.
      * The calculated velocity can be manipulated by the BallKickEvent.
@@ -254,13 +275,6 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
         if (!event.isCancelled()) {
             this.counter = 2;
             this.moveEntity(vector.getX(), vector.getY(), vector.getZ());
-            Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("Ball"), new Runnable() {
-                final CustomHitbox hitBox_ = hitBox;
-                @Override
-                public void run() {
-                    hitBox_.setMagnusForce(livingEntity.getEyeLocation().getDirection(), vector);
-                }
-            }, spinDelay);
         }
     }
 

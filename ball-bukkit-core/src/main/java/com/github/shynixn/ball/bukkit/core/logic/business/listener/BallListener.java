@@ -7,12 +7,10 @@ import com.github.shynixn.ball.api.business.entity.Ball;
 import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
 import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
 import com.github.shynixn.ball.api.persistence.enumeration.ActionEffect;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -22,9 +20,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.util.Vector;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -58,6 +56,7 @@ import java.util.logging.Level;
  */
 public class BallListener extends SimpleListener {
     private final BukkitBallController ballController;
+    private long spinDelay = 3L;
 
     /**
      * Initializes a new ball listener.
@@ -271,6 +270,16 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void ballKickEvent(BallKickEvent event) {
         this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), event.getEntity(), ActionEffect.ONKICK);
+        
+        if(event.getEntity() instanceof HumanEntity) {
+            final HumanEntity entity = (HumanEntity) event.getEntity();
+            Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("Ball"), new Runnable() {
+                @Override
+                public void run() {
+                    setMagnusForce(entity.getEyeLocation().getDirection(), event.getResult(), event.getBall());
+                }
+            }, this.spinDelay);
+        }
     }
 
     /**
@@ -323,6 +332,73 @@ public class BallListener extends SimpleListener {
         if (!event.getBall().isDead()) {
             this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), null, ActionEffect.ONMOVE);
         }
+    }
+    
+    @EventHandler
+    public void ballPostMoveEvent(BallPostMoveEvent event) {
+        BukkitBall ball = event.getBall();
+        float force = ball.getMagnusForce();
+        
+        if(ball.isDead() || !event.isMoving() || force == 0F) {
+            return;
+        }
+        
+        BallSpinEvent spinEvent = new BallSpinEvent(ball, force);
+        Bukkit.getPluginManager().callEvent(spinEvent);
+        
+        force = spinEvent.getMagnusForce();
+        
+        if(ball.getArmorstand().isOnGround()) {
+            return;
+        }
+        
+        if(force != 0F) {
+            event.setVelocity(this.calculateMagnusForce(event.getVelocity(), force));
+        }
+    }
+    
+    private void setMagnusForce(Vector facing, Vector result, BukkitBall ball) {
+        double angle = getAngle(result, facing);
+        final float force;
+        
+        if (angle > 0.3F && angle < 10F) {
+            force = 0.03F;
+        }
+        else if (angle < -0.3F && angle > -10F) {
+            force = -0.03F;
+        } else {
+            return;
+        }
+        
+        BallSpinEvent event = new BallSpinEvent(ball, force);
+        Bukkit.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            ball.setMagnusForce(event.getMagnusForce());
+        }
+    }
+    
+    private Vector calculateMagnusForce(Vector velocity, float force) {
+        final Vector originUnit = velocity.normalize();
+        double x = -originUnit.getZ();
+        double z = originUnit.getX();
+        
+        Vector newVector = velocity.add(new Vector(x, 0, z).multiply(force));
+        return newVector.multiply(velocity.length() / newVector.length());
+    }
+    
+    /**
+     * Calculates the angle between two vectors in two dimension (XZ Plane) <br>
+     * If 'basis' vector is clock-wise to 'against' vector, the angle is negative.
+     * @param basis The basis vector
+     * @param against The vector which the angle is calculated against
+     * @return The angle in the range of -180 to 180 degrees
+     */
+    private double getAngle(Vector basis, Vector against) {
+        final Vector b = basis, a = against;
+        double dot = b.getX() * a.getX() + b.getZ() * a.getZ();
+        double det = b.getX() * a.getZ() - b.getZ() * a.getX();
+        
+        return Math.atan2(det, dot);
     }
 
     private void playEffectsForBall(BukkitBall ball, Location location, Entity cause, ActionEffect actionEffect) {
