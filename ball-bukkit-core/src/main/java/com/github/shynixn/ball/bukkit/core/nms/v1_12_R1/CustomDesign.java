@@ -34,6 +34,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
     private final BallMeta ballMeta;
     private CustomHitbox hitBox;
 
+    private float magnusForce = 0F;
     private boolean grabbed;
     private Entity interactionEntity;
 
@@ -168,6 +169,7 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
         if (this.isGrabbed())
             return;
         this.revertAnimation = false;
+        this.magnusForce = 0F;
         this.setHeadPose(new EulerAngle(2, 0, 0));
         final Vector vector = new Vector(x, y, z);
         this.hitBox.setVelocity(vector);
@@ -226,7 +228,28 @@ public final class CustomDesign extends EntityArmorStand implements BukkitBall {
     public Location getLocation() {
         return this.getHitBox().getLocation();
     }
-
+    
+    /**
+     * Returns the scale of spinning force.
+     * If the ball spins clockwise, the scale should be positive.
+     *
+     * @return scale
+     */
+    @Override
+    public float getMagnusForce() {
+        return this.magnusForce;
+    }
+    
+    /**
+     * Sets the scale of spinning force.
+     *
+     * @param scale scale of force
+     */
+    @Override
+    public void setMagnusForce(float scale) {
+        this.magnusForce = scale;
+    }
+    
     /**
      * Kicks the ball by the given entity.
      * The calculated velocity can be manipulated by the BallKickEvent.

@@ -32,27 +32,24 @@ import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
 public class BallSpinEvent extends BallCancelableEvent {
     private final float angle;
     private float modifier;
-
     /**
      * Initializes a new ball event.
      *
      * @param ball ball
      */
-    public BallSpinEvent(BukkitBall ball, float angle, float modifier) {
+    public BallSpinEvent(BukkitBall ball, float force) {
         super(ball);
-        this.angle = angle;
-        this.modifier = modifier;
+        this.force = force;
     }
+
+    public float getMagnusForce() {
+        return this.force;
+    }
+    
+    public void setMagnusForce(float force) {
+        this.force = force;
 
     public float getAngle() {
         return this.angle;
-    }
-
-    public float getSpinModifier() {
-        return this.modifier;
-    }
-
-    public void setSpinModifier(float modifier) {
-        this.modifier = modifier;
     }
 }
