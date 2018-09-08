@@ -3,13 +3,13 @@ package com.github.shynixn.ball.api.bukkit.business.event;
 import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
 
 /**
- * Created by Shynixn 2017.
+ * Gets called when the ball starts spinning clockwise or counter clockwise.
  * <p>
- * Version 1.1
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2018 by LazoYoung, Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,10 +29,9 @@ import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallSpinEvent extends BallCancelableEvent{
-    
-    private float force;
-    
+public class BallSpinEvent extends BallCancelableEvent {
+    private final float angle;
+    private float modifier;
     /**
      * Initializes a new ball event.
      *
@@ -42,13 +41,15 @@ public class BallSpinEvent extends BallCancelableEvent{
         super(ball);
         this.force = force;
     }
-    
+
     public float getMagnusForce() {
         return this.force;
     }
     
     public void setMagnusForce(float force) {
         this.force = force;
+
+    public float getAngle() {
+        return this.angle;
     }
-    
 }
