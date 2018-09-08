@@ -16,18 +16,19 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Optional;
 import java.util.logging.Level;
 
 /**
- * Rabbit hitbox implementation for minecraft 1.12.0-1.12.2.
+ * Rabbit Hitbox implementation for 1.13.0.
  * <p>
- * Version 1.1
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2018 by LazoYoung, Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -111,22 +112,21 @@ public final class CustomHitbox extends EntityArmorStand {
 
         }
     }
-    
+
     void setMagnusForce(Vector facing, Vector direction) {
         if (this.times > 0) {
-            DecimalFormat decimal = new DecimalFormat("0.###");
-            float angle = Float.parseFloat(decimal.format(getAngle(direction, facing)));
+
+            float angle = BigDecimal.valueOf(this.getAngle(direction, facing)).setScale(3, BigDecimal.ROUND_HALF_UP).floatValue();
             final float modifier = 0.05F;
-            
+
             if (angle > 0.3F && angle < 10F) {
-                clockwise = true;
-            }
-            else if (angle < -0.3F && angle > -10F) {
-                clockwise = false;
+                this.clockwise = true;
+            } else if (angle < -0.3F && angle > -10F) {
+                this.clockwise = false;
             } else {
                 return;
             }
-    
+
             BallSpinEvent event = new BallSpinEvent(this.ball, angle, modifier);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
@@ -134,29 +134,29 @@ public final class CustomHitbox extends EntityArmorStand {
             }
         }
     }
-    
+
     private void applyMagnusForce() {
         if (this.times <= 0) {
             this.spinForce = 0F;
         }
-        if (spinForce == 0F) {
+        if (this.spinForce == 0F) {
             return;
         }
-        
+
         double x, z;
         final Vector originUnit = this.originVector.clone().normalize();
-        if (clockwise) {
+        if (this.clockwise) {
             x = -originUnit.getZ();
             z = originUnit.getX();
         } else {
             x = originUnit.getZ();
             z = -originUnit.getX();
         }
-        
-        Vector newVector = originVector.add(new Vector(x, 0, z).multiply(spinForce));
-        originVector = newVector.multiply(this.originVector.length() / newVector.length());
+
+        Vector newVector = this.originVector.add(new Vector(x, 0, z).multiply(this.spinForce));
+        this.originVector = newVector.multiply(this.originVector.length() / newVector.length());
     }
-    
+
     private void applyKnockBack(Vector starter, Vector n, org.bukkit.block.Block block, BlockFace blockFace) {
         if (block == null || block.getType() == org.bukkit.Material.AIR) {
             return;
@@ -181,11 +181,12 @@ public final class CustomHitbox extends EntityArmorStand {
             }
         }
     }
-    
+
     /**
      * Calculates the angle between two vectors in two dimension (XZ Plane) <br>
      * If basis vector is clock-wise to against vector, the angle is negative.
-     * @param basis The basis vector
+     *
+     * @param basis   The basis vector
      * @param against The vector which the angle is calculated against
      * @return The angle in the range of -180 to 180 degrees
      */
@@ -193,10 +194,10 @@ public final class CustomHitbox extends EntityArmorStand {
         final Vector b = basis, a = against;
         double dot = b.getX() * a.getX() + b.getZ() * a.getZ();
         double det = b.getX() * a.getZ() - b.getZ() * a.getX();
-        
+
         return Math.atan2(det, dot);
     }
-    
+
     @Override
     public void move(EnumMoveType enummovetype, double d0, double d1, double d2) {
         final BallMoveEvent cevent = new BallMoveEvent(this.ball);
@@ -217,7 +218,7 @@ public final class CustomHitbox extends EntityArmorStand {
         } else {
             starter = new Vector(d0, d1, d2);
         }
-        
+
         this.applyMagnusForce();
         this.spigotTimings(true);
 
@@ -396,7 +397,7 @@ public final class CustomHitbox extends EntityArmorStand {
             try {
                 if (this.positionChanged) {
                     org.bukkit.block.Block var81 = this.world.getWorld().getBlockAt(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ));
-                    
+
                     if (d7 > d0) {
                         if (this.isValidKnockBackBlock(var81)) {
                             var81 = var81.getRelative(BlockFace.EAST);
