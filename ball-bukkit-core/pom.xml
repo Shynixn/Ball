@@ -19,6 +19,12 @@
             <version>1.4</version>
         </dependency>
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot18R1</artifactId>
             <version>1.8.0-R1.0</version>
@@ -87,6 +93,22 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <relocations>
+                        <relocation>
+                            <pattern>kotlin</pattern>
+                            <shadedPattern>com.github.shynixn.ball.lib.kotlin</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.intellij</pattern>
+                            <shadedPattern>com.github.shynixn.ball.lib.org.intellij</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.jetbrains</pattern>
+                            <shadedPattern>com.github.shynixn.ball.lib.org.jetbrains</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
             </plugin>
         </plugins>
     </build>
