@@ -1,19 +1,16 @@
-package com.github.shynixn.ball.api.business.controller;
+package com.github.shynixn.ball.api.bukkit.event;
 
 import com.github.shynixn.ball.api.business.proxy.BallProxy;
-import com.github.shynixn.ball.api.persistence.BallMeta;
-import com.github.shynixn.ball.api.persistence.controller.IController;
-
-import java.util.Optional;
+import org.bukkit.Location;
 
 /**
- * Created by Shynixn 2017.
+ * Created by Shynixn 2018.
  * <p>
- * Version 1.1
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2018 by Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,24 +30,24 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallController extends IController<BallProxy> {
+public class BallSpawnEvent extends BallEvent{
+    private Location spawnLocation;
 
     /**
-     * Creates a new ball from the given parameters.
+     * Initializes a new ball event.
      *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
+     * @param ball ball
      */
-    <L, E> BallProxy create(L location, BallMeta ballMeta, boolean persistent, E owner);
+    public BallSpawnEvent(Location spawnLocation, BallProxy ball) {
+        super(ball);
+        this.spawnLocation = spawnLocation;
+    }
 
-    /**
-     * Returns a ball if the given entity is part of a ball.
-     *
-     * @param entity entity
-     * @return ball
-     */
-    <E> Optional<BallProxy> getBallFromEntity(E entity);
+    public Location getSpawnLocation() {
+        return this.spawnLocation;
+    }
+
+    public void setSpawnLocation(Location spawnLocation) {
+        this.spawnLocation = spawnLocation;
+    }
 }

@@ -1,7 +1,7 @@
 package com.github.shynixn.ball.api;
 
 import com.github.shynixn.ball.api.business.controller.BallController;
-import com.github.shynixn.ball.api.business.entity.Ball;
+import com.github.shynixn.ball.api.business.proxy.BallProxy;
 import com.github.shynixn.ball.api.persistence.BallMeta;
 import com.github.shynixn.ball.api.persistence.controller.BallMetaController;
 
@@ -52,36 +52,34 @@ public class BallApi {
      *
      * @param location location
      * @param ballMeta ballMeta
-     * @param <T>      type of ball
      * @return bal
      */
-    public static <T extends Ball> T spawnBall(Object location, BallMeta ballMeta) {
+    public static BallProxy spawnBall(Object location, BallMeta ballMeta) {
         if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (ballMeta == null)
             throw new IllegalArgumentException("BallMeta cannot be null!");
-        final Ball ball = ballController.create(location, ballMeta, true, null);
+        final BallProxy ball = ballController.create(location, ballMeta, true, null);
         ballController.store(ball);
-        return (T) ball;
+        return ball;
     }
 
     /**
      * Creates a new managed ball which spawns at the given location and despawns automatically
      * when the chunk is unloaded. Also, the ball gets removed on restarts.
      *
-     * @param <T>      type of ball
      * @param location location
      * @param ballMeta ballMeta
      * @return ball
      */
-    public static <T extends Ball> T spawnTemporaryBall(Object location, BallMeta ballMeta) {
+    public static BallProxy spawnTemporaryBall(Object location, BallMeta ballMeta) {
         if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (ballMeta == null)
             throw new IllegalArgumentException("BallMeta cannot be null!");
-        final Ball ball = ballController.create(location, ballMeta, false, null);
+        final BallProxy ball = ballController.create(location, ballMeta, false, null);
         ballController.store(ball);
-        return (T) ball;
+        return ball;
     }
 
     /**
@@ -93,14 +91,14 @@ public class BallApi {
      * @param ballMeta meta
      * @return ball
      */
-    public static Ball spawnPlayerBall(Object location, Object entity, BallMeta ballMeta) {
+    public static BallProxy spawnPlayerBall(Object location, Object entity, BallMeta ballMeta) {
         if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (ballMeta == null)
             throw new IllegalArgumentException("BallMeta cannot be null!");
         if (entity == null)
             throw new IllegalArgumentException("Owner cannot be null!");
-        final Ball ball = ballController.create(location, ballMeta, false, entity);
+        final BallProxy ball = ballController.create(location, ballMeta, false, entity);
         ballController.store(ball);
         return ball;
     }
@@ -113,7 +111,7 @@ public class BallApi {
      * @param location location
      * @return ball
      */
-    public static Ball spawnUnmanagedBall(Object location, BallMeta ballMeta) {
+    public static BallProxy spawnUnmanagedBall(Object location, BallMeta ballMeta) {
         if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (ballMeta == null)

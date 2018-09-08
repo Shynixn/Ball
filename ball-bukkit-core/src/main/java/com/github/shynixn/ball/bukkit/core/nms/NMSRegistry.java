@@ -1,8 +1,8 @@
 package com.github.shynixn.ball.bukkit.core.nms;
 
-import com.github.shynixn.ball.bukkit.core.logic.business.helper.ReflectionUtils;
-import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
+import com.github.shynixn.ball.api.business.proxy.BallProxy;
 import com.github.shynixn.ball.api.persistence.BallMeta;
+import com.github.shynixn.ball.bukkit.core.logic.business.helper.ReflectionUtils;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 
@@ -48,7 +48,7 @@ public class NMSRegistry {
      * @param owner      nullable owner entity
      * @return ball
      */
-    public static BukkitBall spawnNMSBall(Location location, BallMeta ballMeta, boolean persistent, LivingEntity owner) {
+    public static BallProxy spawnNMSBall(Location location, BallMeta ballMeta, boolean persistent, LivingEntity owner) {
         if (location == null)
             throw new IllegalArgumentException("Location cannot be null!");
         if (ballMeta == null)
@@ -68,7 +68,7 @@ public class NMSRegistry {
      * @param data data serialized meta data.
      * @return ball
      */
-    public static BukkitBall spawnNMSBall(UUID uuid, Map<String, Object> data) {
+    public static BallProxy spawnNMSBall(UUID uuid, Map<String, Object> data) {
         if (uuid == null)
             throw new IllegalArgumentException("UUID cannot be null!");
         if (data == null)

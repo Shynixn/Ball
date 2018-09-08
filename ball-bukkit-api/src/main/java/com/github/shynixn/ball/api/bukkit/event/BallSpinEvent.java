@@ -1,19 +1,15 @@
-package com.github.shynixn.ball.api.business.controller;
+package com.github.shynixn.ball.api.bukkit.event;
 
 import com.github.shynixn.ball.api.business.proxy.BallProxy;
-import com.github.shynixn.ball.api.persistence.BallMeta;
-import com.github.shynixn.ball.api.persistence.controller.IController;
-
-import java.util.Optional;
 
 /**
- * Created by Shynixn 2017.
+ * Gets called when the ball starts spinning clockwise or counter clockwise.
  * <p>
- * Version 1.1
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2018 by LazoYoung, Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,24 +29,24 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallController extends IController<BallProxy> {
+public class BallSpinEvent extends BallCancelableEvent {
+    private double force;
 
     /**
-     * Creates a new ball from the given parameters.
+     * Initializes a new ball event.
      *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
+     * @param ball ball
      */
-    <L, E> BallProxy create(L location, BallMeta ballMeta, boolean persistent, E owner);
+    public BallSpinEvent(BallProxy ball, double force) {
+        super(ball);
+        this.force = force;
+    }
 
-    /**
-     * Returns a ball if the given entity is part of a ball.
-     *
-     * @param entity entity
-     * @return ball
-     */
-    <E> Optional<BallProxy> getBallFromEntity(E entity);
+    public double getMagnusForce() {
+        return this.force;
+    }
+
+    public void setMagnusForce(double force) {
+        this.force = force;
+    }
 }

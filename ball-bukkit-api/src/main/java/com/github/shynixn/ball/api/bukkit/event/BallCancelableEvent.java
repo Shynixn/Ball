@@ -1,13 +1,10 @@
-package com.github.shynixn.ball.api.business.controller;
+package com.github.shynixn.ball.api.bukkit.event;
 
 import com.github.shynixn.ball.api.business.proxy.BallProxy;
-import com.github.shynixn.ball.api.persistence.BallMeta;
-import com.github.shynixn.ball.api.persistence.controller.IController;
-
-import java.util.Optional;
+import org.bukkit.event.Cancellable;
 
 /**
- * Created by Shynixn 2017.
+ * SubEvent of every Ball event which is cancelable.
  * <p>
  * Version 1.1
  * <p>
@@ -33,24 +30,33 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallController extends IController<BallProxy> {
+public class BallCancelableEvent extends BallEvent implements Cancellable {
+    private boolean cancelled;
 
     /**
-     * Creates a new ball from the given parameters.
+     * Initializes a new ball event.
      *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
+     * @param ball ball
      */
-    <L, E> BallProxy create(L location, BallMeta ballMeta, boolean persistent, E owner);
+    public BallCancelableEvent(BallProxy ball) {
+        super(ball);
+    }
 
     /**
-     * Returns a ball if the given entity is part of a ball.
-     *
-     * @param entity entity
-     * @return ball
+     * Gets if the event was cancelled.
+     * @return cancelled.
      */
-    <E> Optional<BallProxy> getBallFromEntity(E entity);
+    @Override
+    public boolean isCancelled() {
+        return this.cancelled;
+    }
+
+    /**
+     * Sets the event cancelled.
+     * @param cancelled cancelled.
+     */
+    @Override
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
 }

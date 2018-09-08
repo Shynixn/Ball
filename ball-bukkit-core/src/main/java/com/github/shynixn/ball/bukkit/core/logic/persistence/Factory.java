@@ -1,6 +1,6 @@
 package com.github.shynixn.ball.bukkit.core.logic.persistence;
 
-import com.github.shynixn.ball.api.bukkit.business.controller.BukkitBallController;
+import com.github.shynixn.ball.api.business.controller.BallController;
 import com.github.shynixn.ball.api.persistence.controller.BallMetaController;
 import com.github.shynixn.ball.bukkit.core.logic.business.CoreManager;
 import com.github.shynixn.ball.bukkit.core.logic.business.controller.BallEntityController;
@@ -74,7 +74,7 @@ public final class Factory {
      * @param plugin   plugin
      * @return bukkitBallController
      */
-    public static BukkitBallController createBallController(Plugin plugin, String fileName) {
+    public static BallController createBallController(Plugin plugin, String fileName) {
         if (plugin == null)
             throw new IllegalArgumentException("Plugin cannot be null!");
         return new BallEntityController(plugin, fileName);

@@ -1,9 +1,8 @@
 package com.github.shynixn.ball.bukkit.core.logic.business.listener;
 
-import com.github.shynixn.ball.api.bukkit.business.controller.BukkitBallController;
-import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
-import com.github.shynixn.ball.api.bukkit.business.event.*;
-import com.github.shynixn.ball.api.business.entity.Ball;
+import com.github.shynixn.ball.api.bukkit.event.*;
+import com.github.shynixn.ball.api.business.controller.BallController;
+import com.github.shynixn.ball.api.business.proxy.BallProxy;
 import com.github.shynixn.ball.api.persistence.effect.ParticleEffectMeta;
 import com.github.shynixn.ball.api.persistence.effect.SoundEffectMeta;
 import com.github.shynixn.ball.api.persistence.enumeration.ActionEffect;
@@ -22,11 +21,12 @@ import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Optional;
 import java.util.logging.Level;
 
 /**
- * Copyright 2017 Shynixn
+ * Copyright 2017 Shynixn, LazoYoung
  * <p>
  * Do not remove this header!
  * <p>
@@ -55,8 +55,8 @@ import java.util.logging.Level;
  * SOFTWARE.
  */
 public class BallListener extends SimpleListener {
-    private final BukkitBallController ballController;
-    private long spinDelay = 3L;
+    private final BallController ballController;
+    private final long spinDelay = 3L;
 
     /**
      * Initializes a new ball listener.
@@ -64,7 +64,7 @@ public class BallListener extends SimpleListener {
      * @param ballController controller
      * @param plugin         plugin
      */
-    public BallListener(BukkitBallController ballController, Plugin plugin) {
+    public BallListener(BallController ballController, Plugin plugin) {
         super(plugin);
         if (ballController == null)
             throw new IllegalArgumentException("BallEntityController cannot be null!");
@@ -78,8 +78,8 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void onPlayerInteractBallEvent(PlayerInteractEvent event) {
-        for (final BukkitBall ball : this.ballController.getAll()) {
-            if (ball.getLastInteractionEntity() != null && ball.getLastInteractionEntity().equals(event.getPlayer())) {
+        for (final BallProxy ball : this.ballController.getAll()) {
+            if (ball.getLastInteractionEntity().isPresent() && ball.getLastInteractionEntity().get().equals(event.getPlayer())) {
                 ball.throwByEntity(event.getPlayer());
                 event.setCancelled(true);
             }
@@ -96,9 +96,9 @@ public class BallListener extends SimpleListener {
         if (!(event.getRightClicked() instanceof ArmorStand))
             return;
         this.dropBall(event.getPlayer());
-        final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity((LivingEntity) event.getRightClicked());
+        final Optional<BallProxy> optBall = this.ballController.getBallFromEntity(event.getRightClicked());
         if (optBall.isPresent()) {
-            final BukkitBall ball = optBall.get();
+            final BallProxy ball = optBall.get();
             if (ball.getMeta().isCarryable() && !ball.isGrabbed()) {
                 ball.grab(event.getPlayer());
             }
@@ -124,10 +124,10 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void onPlayerDamageBallEvent(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof ArmorStand) {
-            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity((LivingEntity) event.getEntity());
+            final Optional<BallProxy> optBall = this.ballController.getBallFromEntity(event.getEntity());
             if (optBall.isPresent()) {
-                final BukkitBall ball = optBall.get();
-                ball.kickByEntity((LivingEntity) event.getDamager());
+                final BallProxy ball = optBall.get();
+                ball.kickByEntity(event.getDamager());
             }
         }
     }
@@ -140,7 +140,7 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void entityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof ArmorStand) {
-            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity((LivingEntity) event.getEntity());
+            final Optional<BallProxy> optBall = this.ballController.getBallFromEntity(event.getEntity());
             if (optBall.isPresent()) {
                 event.setCancelled(true);
             }
@@ -207,8 +207,8 @@ public class BallListener extends SimpleListener {
      */
     @EventHandler
     public void onInventoryOpen(InventoryClickEvent event) {
-        for (final Ball ball : this.ballController.getAll()) {
-            if (ball.isGrabbed() && ball.getLastInteractionEntity() != null && ball.getLastInteractionEntity().equals(event.getWhoClicked())) {
+        for (final BallProxy ball : this.ballController.getAll()) {
+            if (ball.isGrabbed() && ball.getLastInteractionEntity().isPresent() && ball.getLastInteractionEntity().get().equals(event.getWhoClicked())) {
                 ball.deGrab();
                 event.setCancelled(true);
                 ((Player) event.getWhoClicked()).updateInventory();
@@ -255,7 +255,7 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void entityLeashEvent(PlayerLeashEntityEvent event) {
         if (event instanceof LivingEntity) {
-            final Optional<BukkitBall> optBall = this.ballController.getBallFromEntity((LivingEntity) event.getEntity());
+            final Optional<BallProxy> optBall = this.ballController.getBallFromEntity(event.getEntity());
             if (optBall.isPresent()) {
                 event.setCancelled(true);
             }
@@ -270,15 +270,10 @@ public class BallListener extends SimpleListener {
     @EventHandler
     public void ballKickEvent(BallKickEvent event) {
         this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), event.getEntity(), ActionEffect.ONKICK);
-        
-        if(event.getEntity() instanceof HumanEntity) {
+
+        if (event.getEntity() instanceof HumanEntity) {
             final HumanEntity entity = (HumanEntity) event.getEntity();
-            Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("Ball"), new Runnable() {
-                @Override
-                public void run() {
-                    setMagnusForce(entity.getEyeLocation().getDirection(), event.getResult(), event.getBall());
-                }
-            }, this.spinDelay);
+            Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugin("Ball"), () -> BallListener.this.setMagnusForce(entity.getEyeLocation().getDirection(), event.getResult(), event.getBall()), this.spinDelay);
         }
     }
 
@@ -328,68 +323,68 @@ public class BallListener extends SimpleListener {
      * @param event event
      */
     @EventHandler
-    public void ballMoveEvent(BallMoveEvent event) {
+    public void ballMoveEvent(BallPreMoveEvent event) {
         if (!event.getBall().isDead()) {
             this.playEffectsForBall(event.getBall(), event.getBall().getLocation(), null, ActionEffect.ONMOVE);
         }
     }
-    
+
     @EventHandler
     public void ballPostMoveEvent(BallPostMoveEvent event) {
-        BukkitBall ball = event.getBall();
-        float force = ball.getMagnusForce();
-        
-        if(ball.isDead() || !event.isMoving() || force == 0F) {
+        BallProxy ball = event.getBall();
+        double force = ball.getSpinningForce();
+
+        if (ball.isDead() || !event.isMoving() || force == 0F) {
             return;
         }
-        
-        BallSpinEvent spinEvent = new BallSpinEvent(ball, force);
+
+        final BallSpinEvent spinEvent = new BallSpinEvent(ball, force);
         Bukkit.getPluginManager().callEvent(spinEvent);
-        
+
         force = spinEvent.getMagnusForce();
-        
-        if(ball.getArmorstand().isOnGround()) {
+
+        if (((ArmorStand) ball.getHitboxArmorstand()).isOnGround()) {
             return;
         }
-        
-        if(force != 0F) {
+
+        if (force != 0F) {
             event.setVelocity(this.calculateMagnusForce(event.getVelocity(), force));
         }
     }
-    
-    private void setMagnusForce(Vector facing, Vector result, BukkitBall ball) {
-        double angle = getAngle(result, facing);
+
+    private void setMagnusForce(Vector facing, Vector result, BallProxy ball) {
+        double angle = this.getAngle(result, facing);
         final float force;
-        
+
         if (angle > 0.3F && angle < 10F) {
             force = 0.03F;
-        }
-        else if (angle < -0.3F && angle > -10F) {
+        } else if (angle < -0.3F && angle > -10F) {
             force = -0.03F;
         } else {
             return;
         }
-        
+
         BallSpinEvent event = new BallSpinEvent(ball, force);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            ball.setMagnusForce(event.getMagnusForce());
+            ball.setSpinningForce(event.getMagnusForce());
         }
     }
-    
-    private Vector calculateMagnusForce(Vector velocity, float force) {
+
+    private Vector calculateMagnusForce(Vector velocity, double force) {
         final Vector originUnit = velocity.normalize();
         double x = -originUnit.getZ();
         double z = originUnit.getX();
-        
+
         Vector newVector = velocity.add(new Vector(x, 0, z).multiply(force));
         return newVector.multiply(velocity.length() / newVector.length());
     }
-    
+
     /**
      * Calculates the angle between two vectors in two dimension (XZ Plane) <br>
      * If 'basis' vector is clock-wise to 'against' vector, the angle is negative.
-     * @param basis The basis vector
+     *
+     * @param basis   The basis vector
      * @param against The vector which the angle is calculated against
      * @return The angle in the range of -180 to 180 degrees
      */
@@ -397,11 +392,11 @@ public class BallListener extends SimpleListener {
         final Vector b = basis, a = against;
         double dot = b.getX() * a.getX() + b.getZ() * a.getZ();
         double det = b.getX() * a.getZ() - b.getZ() * a.getX();
-        
+
         return Math.atan2(det, dot);
     }
 
-    private void playEffectsForBall(BukkitBall ball, Location location, Entity cause, ActionEffect actionEffect) {
+    private void playEffectsForBall(BallProxy ball, Location location, Entity cause, ActionEffect actionEffect) {
         try {
             final ParticleEffectMeta<Location, Player, Material> particleEffectMeta;
             if ((particleEffectMeta = ball.getMeta().getParticleEffectOf(actionEffect)) != null) {
@@ -432,8 +427,8 @@ public class BallListener extends SimpleListener {
     }
 
     private void dropBall(Player player) {
-        for (final Ball ball : this.ballController.getAll()) {
-            if (ball.isGrabbed() && ball.getLastInteractionEntity() != null && ball.getLastInteractionEntity().equals(player)) {
+        for (final BallProxy ball : this.ballController.getAll()) {
+            if (ball.isGrabbed() && ball.getLastInteractionEntity().isPresent() && ball.getLastInteractionEntity().get().equals(player)) {
                 ball.deGrab();
             }
         }

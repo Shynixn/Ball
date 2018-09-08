@@ -1,10 +1,7 @@
-package com.github.shynixn.ball.api.business.controller;
+package com.github.shynixn.ball.api.bukkit.event;
 
 import com.github.shynixn.ball.api.business.proxy.BallProxy;
-import com.github.shynixn.ball.api.persistence.BallMeta;
-import com.github.shynixn.ball.api.persistence.controller.IController;
-
-import java.util.Optional;
+import org.bukkit.util.Vector;
 
 /**
  * Created by Shynixn 2017.
@@ -33,24 +30,34 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallController extends IController<BallProxy> {
+public class BallPreMoveEvent extends BallCancelableEvent {
+    private Vector velocity;
 
     /**
-     * Creates a new ball from the given parameters.
+     * Initializes a new ball event.
      *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
+     * @param ball ball
      */
-    <L, E> BallProxy create(L location, BallMeta ballMeta, boolean persistent, E owner);
+    public BallPreMoveEvent(BallProxy ball, Vector vector) {
+        super(ball);
+        this.velocity = vector;
+    }
 
     /**
-     * Returns a ball if the given entity is part of a ball.
+     * Gets the move event velocity.
      *
-     * @param entity entity
-     * @return ball
+     * @return velocity.
      */
-    <E> Optional<BallProxy> getBallFromEntity(E entity);
+    public Vector getVelocity() {
+        return this.velocity;
+    }
+
+    /**
+     * Sets the move event velocity.
+     *
+     * @param velocity velocity
+     */
+    public void setVelocity(Vector velocity) {
+        this.velocity = velocity;
+    }
 }
