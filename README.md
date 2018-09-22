@@ -1,11 +1,8 @@
-# Ball [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://raw.githubusercontent.com/Shynixn/PetBlocks/master/LICENSE)
+# DEPRECATED
 
-| branch        | status        | download      |
-| ------------- | --------------| --------------| 
-| master        | [![Build Status](https://travis-ci.org/Shynixn/Ball.svg?branch=master)](https://travis-ci.org/Shynixn/Ball) |[Download latest release (recommend)](https://github.com/Shynixn/Ball/releases)|
-| development   | [![Build Status](https://travis-ci.org/Shynixn/Ball.svg?branch=development)](https://travis-ci.org/Shynixn/Ball) | [Download snapshots](https://oss.sonatype.org/content/repositories/snapshots/com/github/shynixn/ball/ball-bukkit-plugin/) |
+Please refer to the following project [BlockBall](https://github.com/Shynixn/BlockBall).
 
-JavaDocs: https://shynixn.github.io/Ball/apidocs/
+You are free to continue this project by putting a copy of the licence into the root folder of your project.
 
 ## Description
 
