@@ -1,13 +1,9 @@
-package com.github.shynixn.ball.api.business.controller;
+package com.github.shynixn.ball.api.bukkit.event;
 
 import com.github.shynixn.ball.api.business.proxy.BallProxy;
-import com.github.shynixn.ball.api.persistence.BallMeta;
-import com.github.shynixn.ball.api.persistence.controller.IController;
-
-import java.util.Optional;
 
 /**
- * Created by Shynixn 2017.
+ * Event which gets called when a ball gets removed.
  * <p>
  * Version 1.1
  * <p>
@@ -33,24 +29,14 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallController extends IController<BallProxy> {
+public class BallDeathEvent extends BallEvent {
 
     /**
-     * Creates a new ball from the given parameters.
+     * Initializes a new ball event.
      *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
+     * @param ball ball
      */
-    <L, E> BallProxy create(L location, BallMeta ballMeta, boolean persistent, E owner);
-
-    /**
-     * Returns a ball if the given entity is part of a ball.
-     *
-     * @param entity entity
-     * @return ball
-     */
-    <E> Optional<BallProxy> getBallFromEntity(E entity);
+    public BallDeathEvent(BallProxy ball) {
+        super(ball);
+    }
 }

@@ -1,19 +1,13 @@
-package com.github.shynixn.ball.api.business.controller;
-
-import com.github.shynixn.ball.api.business.proxy.BallProxy;
-import com.github.shynixn.ball.api.persistence.BallMeta;
-import com.github.shynixn.ball.api.persistence.controller.IController;
-
-import java.util.Optional;
+package com.github.shynixn.ball.api.business.service
 
 /**
- * Created by Shynixn 2017.
+ * Created by Shynixn 2018.
  * <p>
- * Version 1.1
+ * Version 1.2
  * <p>
  * MIT License
  * <p>
- * Copyright (c) 2017 by Shynixn
+ * Copyright (c) 2018 by Shynixn
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,24 +27,16 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallController extends IController<BallProxy> {
+interface SpigotTimingService {
+    /**
+     * Starts the spigot timer for ball calculation.
+     * Does nothing if the spigot timer is already running or the timer framework is not installed.
+     */
+    fun startTiming()
 
     /**
-     * Creates a new ball from the given parameters.
-     *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
+     * Stops the spigot timer for ball calculation.
+     * Does nothing if the spigot timer is already stopped or the timer framework is not installed.
      */
-    <L, E> BallProxy create(L location, BallMeta ballMeta, boolean persistent, E owner);
-
-    /**
-     * Returns a ball if the given entity is part of a ball.
-     *
-     * @param entity entity
-     * @return ball
-     */
-    <E> Optional<BallProxy> getBallFromEntity(E entity);
+    fun stopTiming()
 }

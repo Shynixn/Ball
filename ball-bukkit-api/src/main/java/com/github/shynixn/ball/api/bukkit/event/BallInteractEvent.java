@@ -1,13 +1,10 @@
-package com.github.shynixn.ball.api.business.controller;
+package com.github.shynixn.ball.api.bukkit.event;
 
 import com.github.shynixn.ball.api.business.proxy.BallProxy;
-import com.github.shynixn.ball.api.persistence.BallMeta;
-import com.github.shynixn.ball.api.persistence.controller.IController;
-
-import java.util.Optional;
+import org.bukkit.entity.Entity;
 
 /**
- * Created by Shynixn 2017.
+ * Event which gets called when an entity interacts with the ball.
  * <p>
  * Version 1.1
  * <p>
@@ -33,24 +30,26 @@ import java.util.Optional;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public interface BallController extends IController<BallProxy> {
+public class BallInteractEvent extends BallCancelableEvent {
+    private final Entity entity;
 
     /**
-     * Creates a new ball from the given parameters.
+     * Initializes a new ball kick event with the given entity interacting with the ball.
      *
-     * @param location   location
-     * @param ballMeta   ballMeta
-     * @param persistent persistent for restarts
-     * @param owner      entityOwner
-     * @return ball
-     */
-    <L, E> BallProxy create(L location, BallMeta ballMeta, boolean persistent, E owner);
-
-    /**
-     * Returns a ball if the given entity is part of a ball.
-     *
+     * @param ball   ball
      * @param entity entity
-     * @return ball
      */
-    <E> Optional<BallProxy> getBallFromEntity(E entity);
+    public BallInteractEvent(BallProxy ball, Entity entity) {
+        super(ball);
+        this.entity = entity;
+    }
+
+    /**
+     * Returns the entity interacting with the ball.
+     *
+     * @return entity
+     */
+    public Entity getEntity() {
+        return this.entity;
+    }
 }

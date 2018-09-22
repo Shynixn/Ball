@@ -1,8 +1,7 @@
 package com.github.shynixn.ball.bukkit.core.logic.business.listener;
 
+import com.github.shynixn.ball.api.business.proxy.BallProxy;
 import com.github.shynixn.ball.bukkit.core.logic.business.controller.BallEntityController;
-import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
-import com.github.shynixn.ball.api.business.entity.Ball;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -55,11 +54,11 @@ public class StorageListener extends SimpleListener {
      * Initializes a new listener by plugin.
      *
      * @param ballController ballController
-     * @param plugin plugin
+     * @param plugin         plugin
      */
     public StorageListener(Plugin plugin, BallEntityController ballController) {
         super(plugin);
-        if(ballController == null)
+        if (ballController == null)
             throw new IllegalArgumentException("BallEntityController cannot be null!");
         this.ballController = ballController;
     }
@@ -71,8 +70,8 @@ public class StorageListener extends SimpleListener {
      */
     @EventHandler
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
-        final Optional<Ball> optBall = this.getBallFromPlayer(event.getPlayer());
-        optBall.ifPresent(Ball::remove);
+        final Optional<BallProxy> optBall = this.getBallFromPlayer(event.getPlayer());
+        optBall.ifPresent(BallProxy::remove);
     }
 
     /**
@@ -83,8 +82,8 @@ public class StorageListener extends SimpleListener {
     @EventHandler
     public void onPlayerTeleportEvent(PlayerTeleportEvent event) {
         if (!event.getTo().getWorld().equals(event.getFrom().getWorld())) {
-            final Optional<Ball> optBall = this.getBallFromPlayer(event.getPlayer());
-            optBall.ifPresent(Ball::remove);
+            final Optional<BallProxy> optBall = this.getBallFromPlayer(event.getPlayer());
+            optBall.ifPresent(BallProxy::remove);
         }
     }
 
@@ -97,18 +96,18 @@ public class StorageListener extends SimpleListener {
     @EventHandler
     public void onChunkSaveEvent(ChunkUnloadEvent event) {
         for (final Entity entity : event.getChunk().getEntities()) {
-            final Optional<BukkitBall> ball;
+            final Optional<BallProxy> ball;
             if (entity instanceof LivingEntity) {
-                if ((ball = this.ballController.getBallFromEntity((LivingEntity) entity)).isPresent()) {
-                    if (ball.get().isPersistent()) {
+                if ((ball = this.ballController.getBallFromEntity(entity)).isPresent()) {
+                    if (ball.get().getPersistent()) {
                         this.pushToCache(ball.get());
                         this.ballController.remove(ball.get());
                         this.ballController.saveAndDestroy(ball.get(), true);
-                        final ArmorStand armorStand = (ArmorStand) event.getWorld().spawnEntity(((Location) ball.get().getLocation()), EntityType.ARMOR_STAND);
+                        final ArmorStand armorStand = (ArmorStand) event.getWorld().spawnEntity(ball.get().getLocation(), EntityType.ARMOR_STAND);
                         armorStand.setCustomNameVisible(false);
                         armorStand.setRemoveWhenFarAway(false);
                         armorStand.setVisible(false);
-                        armorStand.setCustomName("balluuid-" + ball.get().getUUID().toString());
+                        armorStand.setCustomName("balluuid-" + ball.get().getUuid().toString());
                     } else {
                         ball.get().remove();
                     }
@@ -125,10 +124,10 @@ public class StorageListener extends SimpleListener {
     @EventHandler
     public void onWorldSaveEvent(WorldSaveEvent event) {
         for (final Entity entity : event.getWorld().getEntities()) {
-            final Optional<BukkitBall> ball;
+            final Optional<BallProxy> ball;
             if (entity instanceof LivingEntity) {
-                if ((ball = this.ballController.getBallFromEntity((LivingEntity) entity)).isPresent()) {
-                    if (ball.get().isPersistent()) {
+                if ((ball = this.ballController.getBallFromEntity(entity)).isPresent()) {
+                    if (ball.get().getPersistent()) {
                         this.ballController.saveAndDestroy(ball.get(), false);
                     }
                 }
@@ -156,8 +155,8 @@ public class StorageListener extends SimpleListener {
         }
     }
 
-    private Optional<Ball> getBallFromPlayer(Player player) {
-        for (final Ball ball : this.ballController.getAll()) {
+    private Optional<BallProxy> getBallFromPlayer(Player player) {
+        for (final BallProxy ball : this.ballController.getAll()) {
             if (ball.getOwner().isPresent() && ball.getOwner().get().equals(player)) {
                 return Optional.of(ball);
             }
@@ -171,8 +170,8 @@ public class StorageListener extends SimpleListener {
      * @param ball ball
      * @return success
      */
-    private boolean pushToCache(Ball ball) {
-        final UUID uuid = ball.getUUID();
+    private boolean pushToCache(BallProxy ball) {
+        final UUID uuid = ball.getUuid();
         if (!this.cache.contains(uuid)) {
             this.cache.add(uuid);
             this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {

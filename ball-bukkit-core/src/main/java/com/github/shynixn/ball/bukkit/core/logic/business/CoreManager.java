@@ -4,7 +4,6 @@ import com.github.shynixn.ball.bukkit.core.logic.business.controller.BallEntityC
 import com.github.shynixn.ball.bukkit.core.logic.business.listener.BallListener;
 import com.github.shynixn.ball.bukkit.core.logic.persistence.controller.BallDataRepository;
 import com.github.shynixn.ball.api.BallApi;
-import com.github.shynixn.ball.api.bukkit.business.controller.BukkitBallController;
 import com.github.shynixn.ball.api.business.controller.BallController;
 import com.github.shynixn.ball.api.persistence.controller.BallMetaController;
 import com.github.shynixn.ball.bukkit.core.logic.business.listener.StorageListener;
@@ -47,7 +46,7 @@ public class CoreManager implements AutoCloseable {
     private static Logger logger = Logger.getLogger("BallPlugin");
 
     private final BallMetaController metaController;
-    private final BukkitBallController ballController;
+    private final BallController ballController;
     private final Plugin plugin;
     private String entityStorageFileName;
 

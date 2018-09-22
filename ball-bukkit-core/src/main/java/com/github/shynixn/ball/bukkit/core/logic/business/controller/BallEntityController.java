@@ -1,8 +1,7 @@
 package com.github.shynixn.ball.bukkit.core.logic.business.controller;
 
-import com.github.shynixn.ball.api.bukkit.business.controller.BukkitBallController;
-import com.github.shynixn.ball.api.bukkit.business.entity.BukkitBall;
-import com.github.shynixn.ball.api.business.entity.Ball;
+import com.github.shynixn.ball.api.business.controller.BallController;
+import com.github.shynixn.ball.api.business.proxy.BallProxy;
 import com.github.shynixn.ball.api.persistence.BallMeta;
 import com.github.shynixn.ball.bukkit.core.nms.NMSRegistry;
 import org.bukkit.Location;
@@ -46,9 +45,8 @@ import java.util.logging.Level;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-public class BallEntityController implements BukkitBallController {
-
-    private final Set<BukkitBall> balls = new HashSet<>();
+public class BallEntityController implements BallController {
+    private final Set<BallProxy> balls = new HashSet<>();
     private final Plugin plugin;
     private final String fileName;
 
@@ -70,9 +68,8 @@ public class BallEntityController implements BukkitBallController {
      * @return ball
      */
     @Override
-    public BukkitBall create(Location location, BallMeta ballMeta, boolean persistent, LivingEntity owner) {
-        final BukkitBall ball = NMSRegistry.spawnNMSBall(location, ballMeta, persistent, owner);
-        ball.respawn();
+    public <L, E> BallProxy create(L location, BallMeta ballMeta, boolean persistent, E owner) {
+        final BallProxy ball = NMSRegistry.spawnNMSBall((Location) location, ballMeta, persistent, (LivingEntity) owner);
         return ball;
     }
 
@@ -83,10 +80,8 @@ public class BallEntityController implements BukkitBallController {
      * @param data data
      * @return ball
      */
-    @Override
-    public BukkitBall create(UUID uuid, Map<String, Object> data) {
-        final BukkitBall ball = NMSRegistry.spawnNMSBall(uuid, data);
-        ball.respawn();
+    public BallProxy create(UUID uuid, Map<String, Object> data) {
+        final BallProxy ball = NMSRegistry.spawnNMSBall(uuid, data);
         return ball;
     }
 
@@ -97,11 +92,11 @@ public class BallEntityController implements BukkitBallController {
      * @return ball
      */
     @Override
-    public Optional<BukkitBall> getBallFromEntity(LivingEntity entity) {
+    public <E> Optional<BallProxy> getBallFromEntity(E entity) {
         if (entity == null)
             throw new IllegalArgumentException("Entity cannot be null!");
-        for (final BukkitBall ball : this.balls) {
-            if (ball.getArmorstand().equals(entity) || ball.getHitBox().equals(entity)) {
+        for (final BallProxy ball : this.balls) {
+            if (ball.getDesignArmorstand().equals(entity) || ball.getHitboxArmorstand().equals(entity)) {
                 return Optional.of(ball);
             }
         }
@@ -114,7 +109,7 @@ public class BallEntityController implements BukkitBallController {
      * @param destroy should ball be destroyed after saving
      * @param ball    ball
      */
-    public void saveAndDestroy(Ball ball, boolean destroy) {
+    public void saveAndDestroy(BallProxy ball, boolean destroy) {
         this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
             try {
                 synchronized (this.fileName) {
@@ -122,7 +117,7 @@ public class BallEntityController implements BukkitBallController {
                     final FileConfiguration configuration = new YamlConfiguration();
                     configuration.load(storageFile);
                     final ConfigurationSerializable serializable = (ConfigurationSerializable) ball;
-                    configuration.set("balls." + ball.getUUID().toString(), serializable.serialize());
+                    configuration.set("balls." + ball.getUuid().toString(), serializable.serialize());
                     configuration.save(storageFile);
                     if (destroy) {
                         this.plugin.getServer().getScheduler().runTask(this.plugin, ball::remove);
@@ -148,7 +143,7 @@ public class BallEntityController implements BukkitBallController {
                     if (balls.containsKey(dataUUID)) {
                         final Map<String, Object> data = ((MemorySection) balls.get(dataUUID)).getValues(true);
                         this.plugin.getServer().getScheduler().runTask(this.plugin, () -> {
-                            final BukkitBall ball = this.create(uuid, data);
+                            final BallProxy ball = this.create(uuid, data);
                             this.store(ball);
                         });
                     }
@@ -165,11 +160,11 @@ public class BallEntityController implements BukkitBallController {
      * @param item item
      */
     @Override
-    public void store(BukkitBall item) {
+    public void store(BallProxy item) {
         if (item == null)
             throw new IllegalArgumentException("Ball cannot be null!");
         if (item.getOwner().isPresent()) {
-            for (final Ball ball : this.getAll()) {
+            for (final BallProxy ball : this.getAll()) {
                 if (ball.getOwner().isPresent() && ball.getOwner().get().equals(item.getOwner().get())) {
                     ball.remove();
                 }
@@ -184,7 +179,7 @@ public class BallEntityController implements BukkitBallController {
      * @param item item
      */
     @Override
-    public void remove(BukkitBall item) {
+    public void remove(BallProxy item) {
         if (item == null)
             throw new IllegalArgumentException("Ball cannot be null!");
         if (this.balls.contains(item)) {
@@ -216,7 +211,7 @@ public class BallEntityController implements BukkitBallController {
      * @return items
      */
     @Override
-    public List<BukkitBall> getAll() {
+    public List<BallProxy> getAll() {
         return new ArrayList<>(this.balls);
     }
 
@@ -230,7 +225,7 @@ public class BallEntityController implements BukkitBallController {
      */
     @Override
     public void close() throws Exception {
-        for (final Ball ball : this.balls.toArray(new Ball[this.balls.size()])) {
+        for (final BallProxy ball : this.balls.toArray(new BallProxy[this.balls.size()])) {
             ball.remove();
         }
         this.balls.clear();
